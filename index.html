@@ -3,263 +3,186 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>OIPP Author OS™ — Phase 1</title>
+<title>Outright IP Publishing™ — The Book-to-Business Publishing Company</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;}
-body{background:#0A0A0A;color:#DEDAD2;font-family:"Montserrat","Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased;}
-.gold{color:#B08A3C;} .green{color:#2D5C14;} .amber{color:#6A5000;} .red{color:#7B1414;}
-.card{background:#131313;border:1px solid rgba(176,138,60,0.18);padding:18px;margin-bottom:12px;}
-.card-gold{border:1px solid #B08A3C;}
-.lbl{font-size:9px;font-weight:700;letter-spacing:2.5px;color:#B08A3C;text-transform:uppercase;margin-bottom:7px;}
-.tag{font-family:"Courier New",monospace;font-size:8px;font-weight:700;letter-spacing:1.5px;border:1px solid;padding:2px 7px;text-transform:uppercase;white-space:nowrap;margin:2px;}
-.tag-pass{color:#2D5C14;border-color:#2D5C14;}
-.tag-amber{color:#6A5000;border-color:#6A5000;}
-.tag-gold{color:#B08A3C;border-color:#B08A3C;}
-.tag-green{color:#2D5C14;border-color:#2D5C14;}
-.tag-blue{color:#1A3A5C;border-color:#1A3A5C;}
-.tag-genesis{color:#1A4A2A;border-color:#1A4A2A;}
-.tag-kdp{color:#1A1A4A;border-color:#1A1A4A;}
-.mono{font-family:"Courier New",monospace;font-size:9px;color:#3A3830;}
-.header{background:#111;border-bottom:1px solid rgba(176,138,60,0.18);padding:14px 20px;position:fixed;top:0;left:0;right:0;z-index:100;}
-.header-inner{max-width:1060px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
-.nav{background:#181818;border-bottom:1px solid rgba(176,138,60,0.18);padding:0 20px;position:fixed;top:48px;left:0;right:0;z-index:99;overflow-x:auto;white-space:nowrap;}
-.nav button{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:11px 14px;color:#3A3830;border-bottom:2px solid transparent;background:none;border-top:none;border-left:none;border-right:none;cursor:pointer;}
-.nav button.active{color:#B08A3C;border-bottom:2px solid #B08A3C;}
-.main{max-width:1060px;margin:0 auto;padding:110px 20px 48px;}
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
-.stat-box{background:#181818;padding:10px 12px;}
-.bar{height:4px;background:#181818;margin:6px 0;}
-.bar-fill{height:100%;background:#B08A3C;}
-.section{display:none;}
-.section.active{display:block;}
-h1{font-family:"Playfair Display",Georgia,serif;font-size:28px;color:#F0EBE1;}
-h2{font-size:14px;font-weight:700;color:#F0EBE1;margin-bottom:8px;}
-p{font-size:11px;color:#6A6660;line-height:1.7;}
-.state-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid rgba(176,138,60,0.1);}
-.state-name{font-size:11px;font-weight:500;color:#DEDAD2;flex:1;}
-@media(max-width:600px){.grid-2{grid-template-columns:1fr;}.grid-3{grid-template-columns:1fr 1fr;}}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: #0A0A0A; color: #DEDAD2; font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
+
+  /* NAV */
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; background: rgba(10,10,10,0.95); border-bottom: 1px solid rgba(176,138,60,0.15); }
+  .logo { font-family: 'Playfair Display', Georgia, serif; font-size: 18px; color: #F0EBE1; letter-spacing: 1px; }
+  .logo span { color: #B08A3C; }
+  nav a { color: #9A9A9A; font-size: 11px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; margin-left: 32px; transition: color 0.2s; }
+  nav a:hover { color: #B08A3C; }
+
+  /* HERO */
+  .hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; padding: 120px 40px 80px; position: relative; }
+  .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(176,138,60,0.06) 0%, transparent 70%); pointer-events: none; }
+  .hero-eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 4px; text-transform: uppercase; color: #B08A3C; margin-bottom: 24px; }
+  .hero h1 { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(36px, 6vw, 72px); font-weight: 600; color: #F0EBE1; line-height: 1.1; margin-bottom: 12px; }
+  .hero h1 em { font-style: italic; color: #B08A3C; }
+  .hero-sub { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(18px, 3vw, 26px); color: #9A9A9A; font-weight: 400; margin-bottom: 32px; }
+  .hero p { font-size: 15px; color: #6A6660; line-height: 1.8; max-width: 560px; margin: 0 auto 48px; font-weight: 300; }
+  .btn-primary { display: inline-block; background: #B08A3C; color: #0A0A0A; font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; padding: 18px 40px; text-decoration: none; transition: background 0.2s; }
+  .btn-primary:hover { background: #C9A84C; }
+  .btn-ghost { display: inline-block; border: 1px solid #B08A3C; color: #B08A3C; font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; padding: 18px 40px; text-decoration: none; margin-left: 16px; transition: all 0.2s; }
+  .btn-ghost:hover { background: #B08A3C; color: #0A0A0A; }
+  .rule { width: 60px; height: 1px; background: #B08A3C; margin: 48px auto; }
+
+  /* SECTIONS */
+  section { padding: 100px 40px; max-width: 1100px; margin: 0 auto; }
+  .section-eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 4px; text-transform: uppercase; color: #B08A3C; margin-bottom: 16px; }
+  .section-title { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(28px, 4vw, 48px); color: #F0EBE1; line-height: 1.2; margin-bottom: 20px; }
+  .section-body { font-size: 15px; color: #6A6660; line-height: 1.9; font-weight: 300; max-width: 640px; }
+
+  /* PIPELINE */
+  .pipeline { display: grid; gap: 1px; background: rgba(176,138,60,0.12); margin-top: 60px; }
+  .pipeline-step { background: #0A0A0A; padding: 36px 40px; display: grid; grid-template-columns: 80px 1fr; gap: 24px; align-items: start; transition: background 0.2s; }
+  .pipeline-step:hover { background: #0F0F0F; }
+  .step-num { font-family: 'Playfair Display', Georgia, serif; font-size: 48px; color: rgba(176,138,60,0.2); line-height: 1; }
+  .step-label { font-size: 10px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: #B08A3C; margin-bottom: 8px; }
+  .step-title { font-family: 'Playfair Display', Georgia, serif; font-size: 22px; color: #F0EBE1; margin-bottom: 10px; }
+  .step-body { font-size: 13px; color: #6A6660; line-height: 1.8; font-weight: 300; }
+
+  /* PROOF */
+  .proof-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1px; background: rgba(176,138,60,0.12); margin-top: 60px; }
+  .proof-card { background: #0A0A0A; padding: 40px; }
+  .proof-title { font-family: 'Playfair Display', Georgia, serif; font-size: 18px; color: #F0EBE1; margin-bottom: 8px; }
+  .proof-meta { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #B08A3C; margin-bottom: 16px; }
+  .proof-body { font-size: 13px; color: #6A6660; line-height: 1.8; font-weight: 300; }
+
+  /* CTA */
+  .cta-section { background: #0F0F0F; border-top: 1px solid rgba(176,138,60,0.15); border-bottom: 1px solid rgba(176,138,60,0.15); padding: 100px 40px; text-align: center; }
+  .cta-section h2 { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(28px, 4vw, 52px); color: #F0EBE1; margin-bottom: 16px; }
+  .cta-section h2 em { font-style: italic; color: #B08A3C; }
+  .cta-section p { font-size: 15px; color: #6A6660; line-height: 1.8; max-width: 520px; margin: 0 auto 40px; font-weight: 300; }
+
+  /* FOOTER */
+  footer { padding: 48px 40px; border-top: 1px solid rgba(176,138,60,0.1); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+  .footer-logo { font-family: 'Playfair Display', Georgia, serif; font-size: 14px; color: #F0EBE1; }
+  .footer-copy { font-size: 11px; color: #3A3830; letter-spacing: 1px; }
+
+  @media (max-width: 640px) {
+    nav { padding: 16px 20px; }
+    nav a { display: none; }
+    .hero { padding: 100px 24px 60px; }
+    section { padding: 60px 24px; }
+    .pipeline-step { grid-template-columns: 1fr; gap: 8px; padding: 28px 24px; }
+    .step-num { font-size: 32px; }
+    .btn-ghost { margin-left: 0; margin-top: 12px; display: block; text-align: center; }
+    footer { padding: 32px 24px; flex-direction: column; }
+  }
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="header-inner">
-    <div style="display:flex;align-items:center;gap:12px;">
-      <span style="font-family:'Playfair Display',Georgia,serif;font-size:14px;color:#F0EBE1;font-weight:600;">OUTRIGHT IP PUBLISHING™</span>
-      <span style="font-size:9px;color:#B08A3C;letter-spacing:2px;">AUTHOR 0-100 OS · PHASE 1 LV1</span>
-    </div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;">
-      <span class="tag tag-pass">PHASE 0A PASS</span>
-      <span class="tag tag-pass">PHASE 0B PASS</span>
-      <span class="tag tag-gold">PHASE 1 LV1 ACTIVE</span>
+<nav>
+  <div class="logo">Outright IP <span>Publishing™</span></div>
+  <div>
+    <a href="#how-it-works">How It Works</a>
+    <a href="#books">Books</a>
+    <a href="#apply">Apply</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div>
+    <div class="hero-eyebrow">The Book-to-Business Publishing Company™</div>
+    <h1>Your Expertise.<br/><em>Your Empire.</em></h1>
+    <div class="hero-sub">We don't just publish books.<br/>We build businesses from them.</div>
+    <p>Outright IP Publishing™ transforms expert practitioners into published authors — and published authors into commercial empires. One book. Unlimited leverage.</p>
+    <div>
+      <a href="#apply" class="btn-primary">Apply to Work With Us</a>
+      <a href="#how-it-works" class="btn-ghost">See How It Works</a>
     </div>
   </div>
 </div>
 
-<div class="nav">
-  <button class="active" onclick="show('command')">Publishing Command™</button>
-  <button onclick="show('authors')">Author Engine™ 001</button>
-  <button onclick="show('authors2')">Author Engine™ 002</button>
-  <button onclick="show('genesis')">Genesis</button>
-  <button onclick="show('system')">System</button>
+<div class="rule"></div>
+
+<section id="how-it-works">
+  <div class="section-eyebrow">The Process</div>
+  <h2 class="section-title">From Expertise to Empire.<br/>In One Proven Pipeline.</h2>
+  <p class="section-body">Most experts spend years trying to figure out how to package what they know. We've built the system that does it for them — from IP discovery through commercial activation.</p>
+
+  <div class="pipeline">
+    <div class="pipeline-step">
+      <div class="step-num">01</div>
+      <div>
+        <div class="step-label">IP Discovery</div>
+        <div class="step-title">We Find Your Gold</div>
+        <div class="step-body">Every expert has intellectual capital they can't see. Our discovery process surfaces the frameworks, methods, and systems buried in your experience — and turns them into protectable IP.</div>
+      </div>
+    </div>
+    <div class="pipeline-step">
+      <div class="step-num">02</div>
+      <div>
+        <div class="step-label">Book Development</div>
+        <div class="step-title">We Build Your King Book™</div>
+        <div class="step-body">Your King Book™ is the anchor asset — the definitive work that establishes your authority, captures your methodology, and becomes the engine for everything that follows.</div>
+      </div>
+    </div>
+    <div class="pipeline-step">
+      <div class="step-num">03</div>
+      <div>
+        <div class="step-label">Publishing</div>
+        <div class="step-title">We Manufacture It Right</div>
+        <div class="step-body">Professional editorial, interior design, cover production, metadata strategy, and Amazon KDP distribution — executed to a standard most publishers don't match.</div>
+      </div>
+    </div>
+    <div class="pipeline-step">
+      <div class="step-num">04</div>
+      <div>
+        <div class="step-label">Commercialization</div>
+        <div class="step-title">We Build the Business Around It</div>
+        <div class="step-body">The book is the beginning. We build the speaking platform, consulting practice, course curriculum, licensing deals, and institutional sales channels that turn your IP into recurring revenue.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div style="background:#0F0F0F; border-top:1px solid rgba(176,138,60,0.1); border-bottom:1px solid rgba(176,138,60,0.1); padding:80px 40px; text-align:center;">
+  <div class="section-eyebrow" style="text-align:center;">The Difference</div>
+  <h2 style="font-family:'Playfair Display',Georgia,serif;font-size:clamp(22px,3vw,38px);color:#F0EBE1;max-width:700px;margin:16px auto 0;line-height:1.3;">Other publishers amplify your book.<br/>We build your business from your IP.</h2>
 </div>
 
-<div class="main">
+<section id="books">
+  <div class="section-eyebrow">Published Works</div>
+  <h2 class="section-title">Books That Build Businesses.</h2>
+  <p class="section-body">Each title in the OIPP catalog is an anchor asset — engineered to generate speaking engagements, consulting clients, courses, and licensing revenue.</p>
 
-  <!-- PUBLISHING COMMAND -->
-  <div id="command" class="section active">
-    <div class="card card-gold" style="margin-bottom:16px;">
-      <div class="lbl">Publishing Command™ — OIPP Phase 1 LV1</div>
-      <div class="grid-3" style="margin-top:10px;">
-        <div class="stat-box"><div class="mono">PERSISTENCE</div><div class="gold" style="font-size:10px;font-weight:700;margin-top:3px;">SUPABASE</div></div>
-        <div class="stat-box"><div class="mono">PROJECT</div><div class="gold" style="font-size:10px;font-weight:700;margin-top:3px;">venture-factory-enterprise</div></div>
-        <div class="stat-box"><div class="mono">PHASE 0A</div><div style="font-size:10px;font-weight:700;margin-top:3px;color:#2D5C14;">PASS — 14/14</div></div>
-        <div class="stat-box"><div class="mono">PHASE 0B</div><div style="font-size:10px;font-weight:700;margin-top:3px;color:#2D5C14;">PASS</div></div>
-        <div class="stat-box"><div class="mono">DB IMMUTABILITY</div><div style="font-size:10px;font-weight:700;margin-top:3px;color:#2D5C14;">VERIFIED</div></div>
-        <div class="stat-box"><div class="mono">RLS POLICIES</div><div style="font-size:10px;font-weight:700;margin-top:3px;color:#2D5C14;">INSTALLED</div></div>
-        <div class="stat-box"><div class="mono">GENESIS BOUNDARY</div><div class="gold" style="font-size:10px;font-weight:700;margin-top:3px;">LOCKED</div></div>
-        <div class="stat-box"><div class="mono">AUTHOR 001</div><div style="font-size:10px;font-weight:700;margin-top:3px;color:#6A5000;">PENDING IDENTITY</div></div>
-        <div class="stat-box"><div class="mono">AUTHOR 002</div><div style="font-size:10px;font-weight:700;margin-top:3px;color:#6A5000;">PENDING IDENTITY</div></div>
-        <div class="stat-box"><div class="mono">HERCULES OIPP</div><div class="gold" style="font-size:10px;font-weight:700;margin-top:3px;">PROTECTED MASTER</div></div>
-        <div class="stat-box"><div class="mono">STRIPE + MERCURY</div><div style="font-size:10px;font-weight:700;margin-top:3px;color:#2D5C14;">LOCKED</div></div>
-        <div class="stat-box"><div class="mono">PHASE 1</div><div class="gold" style="font-size:10px;font-weight:700;margin-top:3px;">LV1 ACTIVE</div></div>
-      </div>
+  <div class="proof-grid">
+    <div class="proof-card">
+      <div class="proof-meta">Tellis Savalas Young</div>
+      <div class="proof-title">The Second Talk™</div>
+      <div class="proof-body">The definitive guide to having the financial conversations families avoid — until it's too late. The anchor book for a full curriculum, workshop system, and family advisory practice.</div>
     </div>
-
-    <div class="card">
-      <div class="lbl">29-State Machine — Genesis / KDP Boundary Correct</div>
-      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;">
-        <span class="tag tag-blue">LEAD</span><span class="tag tag-blue">QUALIFIED</span><span class="tag tag-blue">ENGAGED</span><span class="tag tag-blue">PAID</span><span class="tag tag-blue">ONBOARDED</span>
-        <span class="tag tag-genesis">GENESIS_INTAKE</span><span class="tag tag-genesis">IP_ARCHITECTURE</span><span class="tag tag-genesis">MANUSCRIPT_DEVELOPMENT</span><span class="tag tag-genesis">EDITORIAL</span><span class="tag tag-genesis">AUTHOR_APPROVAL_2</span><span class="tag tag-genesis">RIGHTS_CLEARANCE</span><span class="tag tag-genesis">PRODUCTION_AUTHORIZED</span>
-        <span class="tag tag-kdp">KDP_PROJECT_CREATED</span><span class="tag tag-kdp">METADATA</span><span class="tag tag-kdp">INTERIOR</span><span class="tag tag-kdp">COVER</span><span class="tag tag-kdp">AUTHOR_APPROVAL_3</span><span class="tag tag-kdp">QA</span><span class="tag tag-kdp">RELEASE_APPROVAL</span><span class="tag tag-kdp">KDP_SUBMITTED</span><span class="tag tag-kdp">AMAZON_REVIEW</span><span class="tag tag-kdp">REPAIR</span><span class="tag tag-kdp">AMAZON_APPROVED</span><span class="tag tag-kdp">LISTING_VERIFIED</span><span class="tag tag-kdp">PUBLICATION_ARCHIVED</span>
-        <span class="tag tag-gold">GOLIATH_ANALYSIS</span><span class="tag tag-gold">COMMERCIAL_PATH_APPROVAL</span><span class="tag tag-gold">COMMERCIAL_ACTIVATION</span>
-        <span class="tag tag-blue">MAINTENANCE</span>
-      </div>
-      <p style="margin-top:10px;">MANUSCRIPT_DEVELOPMENT · EDITORIAL · AUTHOR_APPROVAL_2 · RIGHTS_CLEARANCE → <strong style="color:#1A4A2A;">GENESIS</strong> &nbsp;|&nbsp; KDP starts at KDP_PROJECT_CREATED</p>
+    <div class="proof-card">
+      <div class="proof-meta">Tellis Savalas Young</div>
+      <div class="proof-title">Fear-Less™</div>
+      <div class="proof-body">A framework for dismantling the fear that keeps people from building the life and legacy they were designed for. Book, workbook, journal, and facilitator system.</div>
     </div>
-
-    <div class="card">
-      <div class="lbl">Four-Head Architecture</div>
-      <div class="grid-2" style="margin-top:8px;">
-        <div style="padding:12px;background:#181818;border-left:3px solid #1A3A5C;"><div style="font-size:10px;font-weight:700;color:#1A3A5C;margin-bottom:4px;">PUBLIC</div><p>Acquisition · Qualification · Onboarding</p></div>
-        <div style="padding:12px;background:#181818;border-left:3px solid #1A4A2A;"><div style="font-size:10px;font-weight:700;color:#1A4A2A;margin-bottom:4px;">GENESIS</div><p>IP Discovery · Manuscript Development · Author Approval · Production Authorization</p></div>
-        <div style="padding:12px;background:#181818;border-left:3px solid #1A1A4A;"><div style="font-size:10px;font-weight:700;color:#4A4A9A;margin-bottom:4px;">KDP OS™</div><p>Manufacturing · Interior · Cover · QA · KDP Submission · Amazon Review · Verification</p></div>
-        <div style="padding:12px;background:#181818;border-left:3px solid #3A1A4A;"><div style="font-size:10px;font-weight:700;color:#6A3A9A;margin-bottom:4px;">GOLIATH™</div><p>Commercialization · Revenue · Distribution · Licensing · Scaling</p></div>
-      </div>
+    <div class="proof-card">
+      <div class="proof-meta">Tellis Savalas Young</div>
+      <div class="proof-title">Unlocked &amp; Unleashed™</div>
+      <div class="proof-body">The IP discovery and activation playbook — for the expert who knows they have something, but hasn't found the system to deploy it at scale.</div>
     </div>
   </div>
+</section>
 
-  <!-- AUTHOR 001 -->
-  <div id="authors" class="section">
-    <div class="card card-gold">
-      <div class="lbl">Author Engine™ — Author 001</div>
-      <h1 style="margin:8px 0 4px;">IDENTITY PENDING</h1>
-      <p style="margin-bottom:12px;">Awaiting Founder confirmation. Chassis does not wait.</p>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
-        <span class="tag tag-amber">PENDING IDENTITY</span>
-        <span class="tag tag-blue">OIPP</span>
-      </div>
-      <div class="mono" style="margin-bottom:16px;">OIPP-AUT-SLOT001</div>
-      <div class="lbl">Project State</div>
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-        <span class="tag tag-blue">PUBLIC</span>
-        <span style="font-size:13px;font-weight:500;">LEAD</span>
-        <span style="font-size:10px;color:#6A6660;">State 1 of 29</span>
-      </div>
-      <div class="bar"><div class="bar-fill" style="width:3%;"></div></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:12px;">
-        <div class="stat-box"><div class="mono">AGREEMENT</div><div style="font-size:10px;color:#3A3830;margin-top:3px;">NOT STARTED</div></div>
-        <div class="stat-box"><div class="mono">PAYMENT</div><div style="font-size:10px;color:#3A3830;margin-top:3px;">NONE</div></div>
-        <div class="stat-box"><div class="mono">LEGAL GATE</div><div style="font-size:10px;color:#3A3830;margin-top:3px;">NOT STARTED</div></div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="lbl">Identity Binding</div>
-      <p>Author identities are bound when Founder confirms names. Crane Hearn / MASTERMIND(S) is a candidate for Author 001 — not canonized. The chassis operates on slots until binding occurs.</p>
-    </div>
-  </div>
-
-  <!-- AUTHOR 002 -->
-  <div id="authors2" class="section">
-    <div class="card card-gold">
-      <div class="lbl">Author Engine™ — Author 002</div>
-      <h1 style="margin:8px 0 4px;">IDENTITY PENDING</h1>
-      <p style="margin-bottom:12px;">Awaiting Founder confirmation. Chassis does not wait.</p>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
-        <span class="tag tag-amber">PENDING IDENTITY</span>
-        <span class="tag tag-blue">OIPP</span>
-      </div>
-      <div class="mono" style="margin-bottom:16px;">OIPP-AUT-SLOT002</div>
-      <div class="lbl">Project State</div>
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-        <span class="tag tag-blue">PUBLIC</span>
-        <span style="font-size:13px;font-weight:500;">LEAD</span>
-        <span style="font-size:10px;color:#6A6660;">State 1 of 29</span>
-      </div>
-      <div class="bar"><div class="bar-fill" style="width:3%;"></div></div>
-    </div>
-  </div>
-
-  <!-- GENESIS -->
-  <div id="genesis" class="section">
-    <div class="card card-gold">
-      <div class="lbl">Genesis Integration</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;">
-        <div class="stat-box"><div class="mono">APP ID</div><div style="font-size:9px;color:#B08A3C;margin-top:3px;word-break:break-all;">6a87b33e104964ee3494a748</div></div>
-        <div class="stat-box"><div class="mono">PLATFORM</div><div class="gold" style="font-size:10px;font-weight:700;margin-top:3px;">Base44</div></div>
-        <div class="stat-box"><div class="mono">RECONCILIATION</div><div style="font-size:10px;font-weight:700;margin-top:3px;color:#2D5C14;">COMPLETE</div></div>
-        <div class="stat-box"><div class="mono">LIVE INTEGRATION</div><div style="font-size:10px;font-weight:700;margin-top:3px;color:#6A5000;">PENDING PHASE 2</div></div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="lbl">Genesis Catalog</div>
-      <div style="margin-top:8px;">
-        <div style="padding:12px;border-bottom:1px solid rgba(176,138,60,0.1);">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-            <span style="font-family:'Playfair Display',Georgia,serif;font-size:14px;color:#F0EBE1;">THE SECOND TALK™</span>
-            <div><span class="tag tag-amber">QA</span><span class="tag tag-gold">P1</span></div>
-          </div>
-          <p>Tellis Savalas Young (KOJAK) · OIPP · qa ≠ manuscript complete</p>
-        </div>
-        <div style="padding:12px;border-bottom:1px solid rgba(176,138,60,0.1);">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-            <span style="font-family:'Playfair Display',Georgia,serif;font-size:14px;color:#F0EBE1;">Powered by GI™</span>
-            <div><span class="tag tag-amber">WRITING</span><span class="tag tag-gold">P2</span></div>
-          </div>
-          <p>Tellis Savalas Young (KOJAK) · OIPP · manuscript in progress</p>
-        </div>
-        <div style="padding:12px;border-bottom:1px solid rgba(176,138,60,0.1);">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-            <span style="font-family:'Playfair Display',Georgia,serif;font-size:14px;color:#F0EBE1;">119™</span>
-            <div><span class="tag tag-green">CANON</span><span class="tag tag-gold">P1</span></div>
-          </div>
-          <p>Tellis Savalas Young (KOJAK) · Maww &amp; Paww Publishing™ · architecture phase</p>
-        </div>
-        <div style="padding:12px;">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-            <span style="font-family:'Playfair Display',Georgia,serif;font-size:14px;color:#F0EBE1;">MASTERMIND(S)</span>
-            <div><span class="tag tag-amber">INTAKE</span><span class="tag tag-gold">P3</span></div>
-          </div>
-          <p>Author 001 candidate (unconfirmed) · Crane Hearn · OIPP · intake stage</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- SYSTEM -->
-  <div id="system" class="section">
-    <div class="card card-gold">
-      <div class="lbl">System State of Record</div>
-      <div style="margin-top:8px;">
-        <div class="state-row"><span class="state-name mono">PERSISTENCE_PROVIDER</span><span style="font-size:10px;font-weight:700;color:#2D5C14;">SUPABASE</span></div>
-        <div class="state-row"><span class="state-name mono">SUPABASE_PROJECT</span><span style="font-size:10px;font-weight:700;color:#2D5C14;">venture-factory-enterprise</span></div>
-        <div class="state-row"><span class="state-name mono">CONVEX</span><span style="font-size:10px;font-weight:700;color:#6A5000;">DETOURED</span></div>
-        <div class="state-row"><span class="state-name mono">PHASE_0A</span><span style="font-size:10px;font-weight:700;color:#2D5C14;">PASS — 14/14</span></div>
-        <div class="state-row"><span class="state-name mono">PHASE_0B</span><span style="font-size:10px;font-weight:700;color:#2D5C14;">PASS</span></div>
-        <div class="state-row"><span class="state-name mono">DB_IMMUTABILITY</span><span style="font-size:10px;font-weight:700;color:#2D5C14;">VERIFIED — DB level</span></div>
-        <div class="state-row"><span class="state-name mono">DB_AUDIT_PROTECTION</span><span style="font-size:10px;font-weight:700;color:#2D5C14;">VERIFIED — append only</span></div>
-        <div class="state-row"><span class="state-name mono">RLS_POLICIES</span><span style="font-size:10px;font-weight:700;color:#2D5C14;">INSTALLED</span></div>
-        <div class="state-row"><span class="state-name mono">LIVE_JWT_RLS_TEST</span><span style="font-size:10px;font-weight:700;color:#6A5000;">DEFERRED — FT-DEFER-001</span></div>
-        <div class="state-row"><span class="state-name mono">GENESIS_INTEGRATION</span><span style="font-size:10px;font-weight:700;color:#6A5000;">MATRIX COMPLETE — live pending Phase 2</span></div>
-        <div class="state-row"><span class="state-name mono">GENESIS_KDP_BOUNDARY</span><span style="font-size:10px;font-weight:700;color:#B08A3C;">LOCKED</span></div>
-        <div class="state-row"><span class="state-name mono">HERCULES_OIPP</span><span style="font-size:10px;font-weight:700;color:#B08A3C;">PROTECTED MASTER</span></div>
-        <div class="state-row"><span class="state-name mono">STRIPE_MERCURY</span><span style="font-size:10px;font-weight:700;color:#B08A3C;">LOCKED</span></div>
-        <div class="state-row"><span class="state-name mono">PHASE_1</span><span style="font-size:10px;font-weight:700;color:#B08A3C;">LV1 ACTIVE</span></div>
-        <div class="state-row"><span class="state-name mono">AUTHOR_001_IDENTITY</span><span style="font-size:10px;font-weight:700;color:#6A5000;">PENDING — Founder confirmation</span></div>
-        <div class="state-row"><span class="state-name mono">AUTHOR_002_IDENTITY</span><span style="font-size:10px;font-weight:700;color:#6A5000;">PENDING — Founder confirmation</span></div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="lbl">Deferred Fire Tests</div>
-      <div style="padding:10px 0;border-bottom:1px solid rgba(176,138,60,0.1);">
-        <div style="font-size:10px;font-weight:600;color:#6A5000;margin-bottom:4px;">FT-DEFER-001 — Live JWT/RLS two-user session test</div>
-        <p>Create oipp.author001@test.local + oipp.author002@test.local in Supabase Auth → run live RLS artifact → paste UUIDs to close</p>
-      </div>
-      <div style="padding:10px 0;">
-        <div style="font-size:10px;font-weight:600;color:#6A5000;margin-bottom:4px;">FT-DEFER-002 — KDP OS GatewayRecord + Build entities</div>
-        <p>Build four V1 minimum KDP OS entities → wire OIPP→KDP handoff → integration fire test</p>
-      </div>
-    </div>
-  </div>
-
+<div class="cta-section" id="apply">
+  <div class="section-eyebrow">Work With Us</div>
+  <h2>Ready to Turn Your<br/><em>Expertise Into an Empire?</em></h2>
+  <p>We work with a limited number of expert practitioners each year. If you have the IP, we have the system to build the business around it.</p>
+  <a href="mailto:info@outrightippublishing.com" class="btn-primary">Apply to Work With Us</a>
 </div>
 
-<div style="border-top:1px solid rgba(176,138,60,0.18);padding:14px 20px;margin-top:20px;">
-  <div style="max-width:1060px;margin:0 auto;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-    <span class="mono">OIPP Author 0–100 OS™ · Phase 1 LV1 · BILLD BOARD OS™ · WBOS™ #001</span>
-    <span class="mono">RECOVER → RECONCILE → BUILD → CONNECT → TEST → VERIFY → FOUNDER ACCEPTANCE → RELEASE</span>
-  </div>
-</div>
-
-<script>
-function show(id) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  event.target.classList.add('active');
-}
-</script>
+<footer>
+  <div class="footer-logo">Outright IP Publishing™</div>
+  <div class="footer-copy">© 2026 Outright IP, LLC · EIN 41-3205098 · All operations executed through Outright IP, LLC</div>
+</footer>
 
 </body>
 </html>

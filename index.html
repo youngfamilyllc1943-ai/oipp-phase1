@@ -4,12 +4,262 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>OIPP Author OS™ — Phase 1</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-<style>*{box-sizing:border-box;margin:0;padding:0;}body{background:#0A0A0A;min-height:100vh;}</style>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#0A0A0A;color:#DEDAD2;font-family:"Montserrat","Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased;}
+.gold{color:#B08A3C;} .green{color:#2D5C14;} .amber{color:#6A5000;} .red{color:#7B1414;}
+.card{background:#131313;border:1px solid rgba(176,138,60,0.18);padding:18px;margin-bottom:12px;}
+.card-gold{border:1px solid #B08A3C;}
+.lbl{font-size:9px;font-weight:700;letter-spacing:2.5px;color:#B08A3C;text-transform:uppercase;margin-bottom:7px;}
+.tag{font-family:"Courier New",monospace;font-size:8px;font-weight:700;letter-spacing:1.5px;border:1px solid;padding:2px 7px;text-transform:uppercase;white-space:nowrap;margin:2px;}
+.tag-pass{color:#2D5C14;border-color:#2D5C14;}
+.tag-amber{color:#6A5000;border-color:#6A5000;}
+.tag-gold{color:#B08A3C;border-color:#B08A3C;}
+.tag-green{color:#2D5C14;border-color:#2D5C14;}
+.tag-blue{color:#1A3A5C;border-color:#1A3A5C;}
+.tag-genesis{color:#1A4A2A;border-color:#1A4A2A;}
+.tag-kdp{color:#1A1A4A;border-color:#1A1A4A;}
+.mono{font-family:"Courier New",monospace;font-size:9px;color:#3A3830;}
+.header{background:#111;border-bottom:1px solid rgba(176,138,60,0.18);padding:14px 20px;position:fixed;top:0;left:0;right:0;z-index:100;}
+.header-inner{max-width:1060px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+.nav{background:#181818;border-bottom:1px solid rgba(176,138,60,0.18);padding:0 20px;position:fixed;top:48px;left:0;right:0;z-index:99;overflow-x:auto;white-space:nowrap;}
+.nav button{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:11px 14px;color:#3A3830;border-bottom:2px solid transparent;background:none;border-top:none;border-left:none;border-right:none;cursor:pointer;}
+.nav button.active{color:#B08A3C;border-bottom:2px solid #B08A3C;}
+.main{max-width:1060px;margin:0 auto;padding:110px 20px 48px;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.stat-box{background:#181818;padding:10px 12px;}
+.bar{height:4px;background:#181818;margin:6px 0;}
+.bar-fill{height:100%;background:#B08A3C;}
+.section{display:none;}
+.section.active{display:block;}
+h1{font-family:"Playfair Display",Georgia,serif;font-size:28px;color:#F0EBE1;}
+h2{font-size:14px;font-weight:700;color:#F0EBE1;margin-bottom:8px;}
+p{font-size:11px;color:#6A6660;line-height:1.7;}
+.state-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid rgba(176,138,60,0.1);}
+.state-name{font-size:11px;font-weight:500;color:#DEDAD2;flex:1;}
+@media(max-width:600px){.grid-2{grid-template-columns:1fr;}.grid-3{grid-template-columns:1fr 1fr;}}
+</style>
 </head>
 <body>
-<div id="root"></div>
-<script src="bundle.js"></script>
+
+<div class="header">
+  <div class="header-inner">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span style="font-family:'Playfair Display',Georgia,serif;font-size:14px;color:#F0EBE1;font-weight:600;">OUTRIGHT IP PUBLISHING™</span>
+      <span style="font-size:9px;color:#B08A3C;letter-spacing:2px;">AUTHOR 0-100 OS · PHASE 1 LV1</span>
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+      <span class="tag tag-pass">PHASE 0A PASS</span>
+      <span class="tag tag-pass">PHASE 0B PASS</span>
+      <span class="tag tag-gold">PHASE 1 LV1 ACTIVE</span>
+    </div>
+  </div>
+</div>
+
+<div class="nav">
+  <button class="active" onclick="show('command')">Publishing Command™</button>
+  <button onclick="show('authors')">Author Engine™ 001</button>
+  <button onclick="show('authors2')">Author Engine™ 002</button>
+  <button onclick="show('genesis')">Genesis</button>
+  <button onclick="show('system')">System</button>
+</div>
+
+<div class="main">
+
+  <!-- PUBLISHING COMMAND -->
+  <div id="command" class="section active">
+    <div class="card card-gold" style="margin-bottom:16px;">
+      <div class="lbl">Publishing Command™ — OIPP Phase 1 LV1</div>
+      <div class="grid-3" style="margin-top:10px;">
+        <div class="stat-box"><div class="mono">PERSISTENCE</div><div class="gold" style="font-size:10px;font-weight:700;margin-top:3px;">SUPABASE</div></div>
+        <div class="stat-box"><div class="mono">PROJECT</div><div class="gold" style="font-size:10px;font-weight:700;margin-top:3px;">venture-factory-enterprise</div></div>
+        <div class="stat-box"><div class="mono">PHASE 0A</div><div style="font-size:10px;font-weight:700;margin-top:3px;color:#2D5C14;">PASS — 14/14</div></div>
+        <div class="stat-box"><div class="mono">PHASE 0B</div><div style="font-size:10px;font-weight:700;margin-top:3px;color:#2D5C14;">PASS</div></div>
+        <div class="stat-box"><div class="mono">DB IMMUTABILITY</div><div style="font-size:10px;font-weight:700;margin-top:3px;color:#2D5C14;">VERIFIED</div></div>
+        <div class="stat-box"><div class="mono">RLS POLICIES</div><div style="font-size:10px;font-weight:700;margin-top:3px;color:#2D5C14;">INSTALLED</div></div>
+        <div class="stat-box"><div class="mono">GENESIS BOUNDARY</div><div class="gold" style="font-size:10px;font-weight:700;margin-top:3px;">LOCKED</div></div>
+        <div class="stat-box"><div class="mono">AUTHOR 001</div><div style="font-size:10px;font-weight:700;margin-top:3px;color:#6A5000;">PENDING IDENTITY</div></div>
+        <div class="stat-box"><div class="mono">AUTHOR 002</div><div style="font-size:10px;font-weight:700;margin-top:3px;color:#6A5000;">PENDING IDENTITY</div></div>
+        <div class="stat-box"><div class="mono">HERCULES OIPP</div><div class="gold" style="font-size:10px;font-weight:700;margin-top:3px;">PROTECTED MASTER</div></div>
+        <div class="stat-box"><div class="mono">STRIPE + MERCURY</div><div style="font-size:10px;font-weight:700;margin-top:3px;color:#2D5C14;">LOCKED</div></div>
+        <div class="stat-box"><div class="mono">PHASE 1</div><div class="gold" style="font-size:10px;font-weight:700;margin-top:3px;">LV1 ACTIVE</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="lbl">29-State Machine — Genesis / KDP Boundary Correct</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;">
+        <span class="tag tag-blue">LEAD</span><span class="tag tag-blue">QUALIFIED</span><span class="tag tag-blue">ENGAGED</span><span class="tag tag-blue">PAID</span><span class="tag tag-blue">ONBOARDED</span>
+        <span class="tag tag-genesis">GENESIS_INTAKE</span><span class="tag tag-genesis">IP_ARCHITECTURE</span><span class="tag tag-genesis">MANUSCRIPT_DEVELOPMENT</span><span class="tag tag-genesis">EDITORIAL</span><span class="tag tag-genesis">AUTHOR_APPROVAL_2</span><span class="tag tag-genesis">RIGHTS_CLEARANCE</span><span class="tag tag-genesis">PRODUCTION_AUTHORIZED</span>
+        <span class="tag tag-kdp">KDP_PROJECT_CREATED</span><span class="tag tag-kdp">METADATA</span><span class="tag tag-kdp">INTERIOR</span><span class="tag tag-kdp">COVER</span><span class="tag tag-kdp">AUTHOR_APPROVAL_3</span><span class="tag tag-kdp">QA</span><span class="tag tag-kdp">RELEASE_APPROVAL</span><span class="tag tag-kdp">KDP_SUBMITTED</span><span class="tag tag-kdp">AMAZON_REVIEW</span><span class="tag tag-kdp">REPAIR</span><span class="tag tag-kdp">AMAZON_APPROVED</span><span class="tag tag-kdp">LISTING_VERIFIED</span><span class="tag tag-kdp">PUBLICATION_ARCHIVED</span>
+        <span class="tag tag-gold">GOLIATH_ANALYSIS</span><span class="tag tag-gold">COMMERCIAL_PATH_APPROVAL</span><span class="tag tag-gold">COMMERCIAL_ACTIVATION</span>
+        <span class="tag tag-blue">MAINTENANCE</span>
+      </div>
+      <p style="margin-top:10px;">MANUSCRIPT_DEVELOPMENT · EDITORIAL · AUTHOR_APPROVAL_2 · RIGHTS_CLEARANCE → <strong style="color:#1A4A2A;">GENESIS</strong> &nbsp;|&nbsp; KDP starts at KDP_PROJECT_CREATED</p>
+    </div>
+
+    <div class="card">
+      <div class="lbl">Four-Head Architecture</div>
+      <div class="grid-2" style="margin-top:8px;">
+        <div style="padding:12px;background:#181818;border-left:3px solid #1A3A5C;"><div style="font-size:10px;font-weight:700;color:#1A3A5C;margin-bottom:4px;">PUBLIC</div><p>Acquisition · Qualification · Onboarding</p></div>
+        <div style="padding:12px;background:#181818;border-left:3px solid #1A4A2A;"><div style="font-size:10px;font-weight:700;color:#1A4A2A;margin-bottom:4px;">GENESIS</div><p>IP Discovery · Manuscript Development · Author Approval · Production Authorization</p></div>
+        <div style="padding:12px;background:#181818;border-left:3px solid #1A1A4A;"><div style="font-size:10px;font-weight:700;color:#4A4A9A;margin-bottom:4px;">KDP OS™</div><p>Manufacturing · Interior · Cover · QA · KDP Submission · Amazon Review · Verification</p></div>
+        <div style="padding:12px;background:#181818;border-left:3px solid #3A1A4A;"><div style="font-size:10px;font-weight:700;color:#6A3A9A;margin-bottom:4px;">GOLIATH™</div><p>Commercialization · Revenue · Distribution · Licensing · Scaling</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AUTHOR 001 -->
+  <div id="authors" class="section">
+    <div class="card card-gold">
+      <div class="lbl">Author Engine™ — Author 001</div>
+      <h1 style="margin:8px 0 4px;">IDENTITY PENDING</h1>
+      <p style="margin-bottom:12px;">Awaiting Founder confirmation. Chassis does not wait.</p>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+        <span class="tag tag-amber">PENDING IDENTITY</span>
+        <span class="tag tag-blue">OIPP</span>
+      </div>
+      <div class="mono" style="margin-bottom:16px;">OIPP-AUT-SLOT001</div>
+      <div class="lbl">Project State</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <span class="tag tag-blue">PUBLIC</span>
+        <span style="font-size:13px;font-weight:500;">LEAD</span>
+        <span style="font-size:10px;color:#6A6660;">State 1 of 29</span>
+      </div>
+      <div class="bar"><div class="bar-fill" style="width:3%;"></div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:12px;">
+        <div class="stat-box"><div class="mono">AGREEMENT</div><div style="font-size:10px;color:#3A3830;margin-top:3px;">NOT STARTED</div></div>
+        <div class="stat-box"><div class="mono">PAYMENT</div><div style="font-size:10px;color:#3A3830;margin-top:3px;">NONE</div></div>
+        <div class="stat-box"><div class="mono">LEGAL GATE</div><div style="font-size:10px;color:#3A3830;margin-top:3px;">NOT STARTED</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="lbl">Identity Binding</div>
+      <p>Author identities are bound when Founder confirms names. Crane Hearn / MASTERMIND(S) is a candidate for Author 001 — not canonized. The chassis operates on slots until binding occurs.</p>
+    </div>
+  </div>
+
+  <!-- AUTHOR 002 -->
+  <div id="authors2" class="section">
+    <div class="card card-gold">
+      <div class="lbl">Author Engine™ — Author 002</div>
+      <h1 style="margin:8px 0 4px;">IDENTITY PENDING</h1>
+      <p style="margin-bottom:12px;">Awaiting Founder confirmation. Chassis does not wait.</p>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+        <span class="tag tag-amber">PENDING IDENTITY</span>
+        <span class="tag tag-blue">OIPP</span>
+      </div>
+      <div class="mono" style="margin-bottom:16px;">OIPP-AUT-SLOT002</div>
+      <div class="lbl">Project State</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <span class="tag tag-blue">PUBLIC</span>
+        <span style="font-size:13px;font-weight:500;">LEAD</span>
+        <span style="font-size:10px;color:#6A6660;">State 1 of 29</span>
+      </div>
+      <div class="bar"><div class="bar-fill" style="width:3%;"></div></div>
+    </div>
+  </div>
+
+  <!-- GENESIS -->
+  <div id="genesis" class="section">
+    <div class="card card-gold">
+      <div class="lbl">Genesis Integration</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;">
+        <div class="stat-box"><div class="mono">APP ID</div><div style="font-size:9px;color:#B08A3C;margin-top:3px;word-break:break-all;">6a87b33e104964ee3494a748</div></div>
+        <div class="stat-box"><div class="mono">PLATFORM</div><div class="gold" style="font-size:10px;font-weight:700;margin-top:3px;">Base44</div></div>
+        <div class="stat-box"><div class="mono">RECONCILIATION</div><div style="font-size:10px;font-weight:700;margin-top:3px;color:#2D5C14;">COMPLETE</div></div>
+        <div class="stat-box"><div class="mono">LIVE INTEGRATION</div><div style="font-size:10px;font-weight:700;margin-top:3px;color:#6A5000;">PENDING PHASE 2</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="lbl">Genesis Catalog</div>
+      <div style="margin-top:8px;">
+        <div style="padding:12px;border-bottom:1px solid rgba(176,138,60,0.1);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+            <span style="font-family:'Playfair Display',Georgia,serif;font-size:14px;color:#F0EBE1;">THE SECOND TALK™</span>
+            <div><span class="tag tag-amber">QA</span><span class="tag tag-gold">P1</span></div>
+          </div>
+          <p>Tellis Savalas Young (KOJAK) · OIPP · qa ≠ manuscript complete</p>
+        </div>
+        <div style="padding:12px;border-bottom:1px solid rgba(176,138,60,0.1);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+            <span style="font-family:'Playfair Display',Georgia,serif;font-size:14px;color:#F0EBE1;">Powered by GI™</span>
+            <div><span class="tag tag-amber">WRITING</span><span class="tag tag-gold">P2</span></div>
+          </div>
+          <p>Tellis Savalas Young (KOJAK) · OIPP · manuscript in progress</p>
+        </div>
+        <div style="padding:12px;border-bottom:1px solid rgba(176,138,60,0.1);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+            <span style="font-family:'Playfair Display',Georgia,serif;font-size:14px;color:#F0EBE1;">119™</span>
+            <div><span class="tag tag-green">CANON</span><span class="tag tag-gold">P1</span></div>
+          </div>
+          <p>Tellis Savalas Young (KOJAK) · Maww &amp; Paww Publishing™ · architecture phase</p>
+        </div>
+        <div style="padding:12px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+            <span style="font-family:'Playfair Display',Georgia,serif;font-size:14px;color:#F0EBE1;">MASTERMIND(S)</span>
+            <div><span class="tag tag-amber">INTAKE</span><span class="tag tag-gold">P3</span></div>
+          </div>
+          <p>Author 001 candidate (unconfirmed) · Crane Hearn · OIPP · intake stage</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SYSTEM -->
+  <div id="system" class="section">
+    <div class="card card-gold">
+      <div class="lbl">System State of Record</div>
+      <div style="margin-top:8px;">
+        <div class="state-row"><span class="state-name mono">PERSISTENCE_PROVIDER</span><span style="font-size:10px;font-weight:700;color:#2D5C14;">SUPABASE</span></div>
+        <div class="state-row"><span class="state-name mono">SUPABASE_PROJECT</span><span style="font-size:10px;font-weight:700;color:#2D5C14;">venture-factory-enterprise</span></div>
+        <div class="state-row"><span class="state-name mono">CONVEX</span><span style="font-size:10px;font-weight:700;color:#6A5000;">DETOURED</span></div>
+        <div class="state-row"><span class="state-name mono">PHASE_0A</span><span style="font-size:10px;font-weight:700;color:#2D5C14;">PASS — 14/14</span></div>
+        <div class="state-row"><span class="state-name mono">PHASE_0B</span><span style="font-size:10px;font-weight:700;color:#2D5C14;">PASS</span></div>
+        <div class="state-row"><span class="state-name mono">DB_IMMUTABILITY</span><span style="font-size:10px;font-weight:700;color:#2D5C14;">VERIFIED — DB level</span></div>
+        <div class="state-row"><span class="state-name mono">DB_AUDIT_PROTECTION</span><span style="font-size:10px;font-weight:700;color:#2D5C14;">VERIFIED — append only</span></div>
+        <div class="state-row"><span class="state-name mono">RLS_POLICIES</span><span style="font-size:10px;font-weight:700;color:#2D5C14;">INSTALLED</span></div>
+        <div class="state-row"><span class="state-name mono">LIVE_JWT_RLS_TEST</span><span style="font-size:10px;font-weight:700;color:#6A5000;">DEFERRED — FT-DEFER-001</span></div>
+        <div class="state-row"><span class="state-name mono">GENESIS_INTEGRATION</span><span style="font-size:10px;font-weight:700;color:#6A5000;">MATRIX COMPLETE — live pending Phase 2</span></div>
+        <div class="state-row"><span class="state-name mono">GENESIS_KDP_BOUNDARY</span><span style="font-size:10px;font-weight:700;color:#B08A3C;">LOCKED</span></div>
+        <div class="state-row"><span class="state-name mono">HERCULES_OIPP</span><span style="font-size:10px;font-weight:700;color:#B08A3C;">PROTECTED MASTER</span></div>
+        <div class="state-row"><span class="state-name mono">STRIPE_MERCURY</span><span style="font-size:10px;font-weight:700;color:#B08A3C;">LOCKED</span></div>
+        <div class="state-row"><span class="state-name mono">PHASE_1</span><span style="font-size:10px;font-weight:700;color:#B08A3C;">LV1 ACTIVE</span></div>
+        <div class="state-row"><span class="state-name mono">AUTHOR_001_IDENTITY</span><span style="font-size:10px;font-weight:700;color:#6A5000;">PENDING — Founder confirmation</span></div>
+        <div class="state-row"><span class="state-name mono">AUTHOR_002_IDENTITY</span><span style="font-size:10px;font-weight:700;color:#6A5000;">PENDING — Founder confirmation</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="lbl">Deferred Fire Tests</div>
+      <div style="padding:10px 0;border-bottom:1px solid rgba(176,138,60,0.1);">
+        <div style="font-size:10px;font-weight:600;color:#6A5000;margin-bottom:4px;">FT-DEFER-001 — Live JWT/RLS two-user session test</div>
+        <p>Create oipp.author001@test.local + oipp.author002@test.local in Supabase Auth → run live RLS artifact → paste UUIDs to close</p>
+      </div>
+      <div style="padding:10px 0;">
+        <div style="font-size:10px;font-weight:600;color:#6A5000;margin-bottom:4px;">FT-DEFER-002 — KDP OS GatewayRecord + Build entities</div>
+        <p>Build four V1 minimum KDP OS entities → wire OIPP→KDP handoff → integration fire test</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div style="border-top:1px solid rgba(176,138,60,0.18);padding:14px 20px;margin-top:20px;">
+  <div style="max-width:1060px;margin:0 auto;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+    <span class="mono">OIPP Author 0–100 OS™ · Phase 1 LV1 · BILLD BOARD OS™ · WBOS™ #001</span>
+    <span class="mono">RECOVER → RECONCILE → BUILD → CONNECT → TEST → VERIFY → FOUNDER ACCEPTANCE → RELEASE</span>
+  </div>
+</div>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+
 </body>
 </html>

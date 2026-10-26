@@ -1,7 +1,8 @@
 name: GOD GEAR Printify Rail (allowlist)
 
-# Runs only when someone with write access to this repo starts it (GitHub sign-in = authentication).
-# Fixed operations only. No order, publish, delete, upload or arbitrary-endpoint operation exists here.
+# Manual dispatch only (GitHub allows workflow_dispatch only for accounts with write access to this repo).
+# Additionally restricted to the approved YFE executor account below.
+# Fixed read-only operations. No order, publish, delete, create, upload or arbitrary-endpoint operation exists.
 on:
   workflow_dispatch:
     inputs:
@@ -18,19 +19,33 @@ on:
         required: false
         default: "0"
 
-permissions:
-  contents: read
+permissions: {}
+
+concurrency:
+  group: gg-printify-rail
+  cancel-in-progress: false
 
 jobs:
   run:
+    if: github.triggering_actor == 'youngfamilyllc1943-ai'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - name: Validate inputs (runs before any secret is read)
+        env:
+          OP: ${{ inputs.op }}
+          PID: ${{ inputs.provider_id }}
+        run: |
+          case "$OP" in shops|providers) ;; variants)
+            if ! [[ "$PID" =~ ^[0-9]{1,6}$ ]] || [ "$PID" = "0" ]; then echo "REJECTED: provider_id must be digits"; exit 2; fi ;;
+            *) echo "REJECTED: operation not on allowlist"; exit 2 ;;
+          esac
+          echo "inputs OK"
       - name: Check secret is set
         env:
           T: ${{ secrets.PRINTIFY_TOKEN }}
         run: |
-          if [ -z "$T" ]; then echo "PRINTIFY_TOKEN secret is not set"; exit 1; fi
+          if [ -z "$T" ]; then echo "CONTROLLED FAILURE: PRINTIFY_TOKEN secret is not set"; exit 1; fi
       - name: Call Printify (fixed GET endpoints only)
         env:
           T: ${{ secrets.PRINTIFY_TOKEN }}
@@ -49,7 +64,13 @@ jobs:
           esac
           code=$(curl -sS -o out.json -w '%{http_code}' -H "Authorization: Bearer $T" -H "User-Agent: GOD-GEAR-Rail" "$URL")
           echo "HTTP $code"
-          echo "----- RESULT -----"
-          cat out.json
-          echo
-          [ "$code" = "200" ]
+          if [ "$code" != "200" ]; then rm -f out.json; echo "Request failed; response body withheld from public log"; exit 1; fi
+          if [ "$OP" = "shops" ]; then
+            # Account data is not printed in this public log: only a count and a yes/no check.
+            echo "shop_count=$(jq 'length' out.json)"
+            echo "god_gear_shop_connected=$(jq '[.[] | select(.id==29470786 and .sales_channel=="shopify")] | length > 0' out.json)"
+          else
+            # Public Printify catalog data only.
+            jq -c '.' out.json
+          fi
+          rm -f out.json

@@ -1,0 +1,55 @@
+name: GOD GEAR Printify Rail (allowlist)
+
+# Runs only when someone with write access to this repo starts it (GitHub sign-in = authentication).
+# Fixed operations only. No order, publish, delete, upload or arbitrary-endpoint operation exists here.
+on:
+  workflow_dispatch:
+    inputs:
+      op:
+        description: "Operation"
+        required: true
+        type: choice
+        options:
+          - shops
+          - providers
+          - variants
+      provider_id:
+        description: "Print provider ID (variants only, digits)"
+        required: false
+        default: "0"
+
+permissions:
+  contents: read
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check secret is set
+        env:
+          T: ${{ secrets.PRINTIFY_TOKEN }}
+        run: |
+          if [ -z "$T" ]; then echo "PRINTIFY_TOKEN secret is not set"; exit 1; fi
+      - name: Call Printify (fixed GET endpoints only)
+        env:
+          T: ${{ secrets.PRINTIFY_TOKEN }}
+          OP: ${{ inputs.op }}
+          PID: ${{ inputs.provider_id }}
+        run: |
+          set -euo pipefail
+          BASE=https://api.printify.com/v1
+          case "$OP" in
+            shops)     URL="$BASE/shops.json" ;;
+            providers) URL="$BASE/catalog/blueprints/795/print_providers.json" ;;
+            variants)
+              if ! [[ "$PID" =~ ^[0-9]{1,6}$ ]] || [ "$PID" = "0" ]; then echo "REJECTED: provider_id must be digits"; exit 2; fi
+              URL="$BASE/catalog/blueprints/795/print_providers/$PID/variants.json" ;;
+            *) echo "REJECTED: operation not on allowlist"; exit 2 ;;
+          esac
+          code=$(curl -sS -o out.json -w '%{http_code}' -H "Authorization: Bearer $T" -H "User-Agent: GOD-GEAR-Rail" "$URL")
+          echo "HTTP $code"
+          echo "----- RESULT -----"
+          cat out.json
+          echo
+          [ "$code" = "200" ]

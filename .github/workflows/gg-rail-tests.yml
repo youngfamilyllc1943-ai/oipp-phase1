@@ -1,0 +1,19 @@
+name: GOD GEAR Rail fire test (offline)
+
+# Runs the offline mock fire test on every change to the Rail. Uses no secrets and no network beyond localhost.
+on:
+  push:
+    paths: ["rail/**", "tests/printify-mock/**", ".github/workflows/gg-*.yml"]
+  pull_request:
+    paths: ["rail/**", "tests/printify-mock/**", ".github/workflows/gg-*.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  fire-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash tests/printify-mock/run.sh

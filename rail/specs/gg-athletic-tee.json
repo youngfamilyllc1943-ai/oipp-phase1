@@ -1,0 +1,47 @@
+{
+ "spec_id": "gg-athletic-tee",
+ "title": "GG ATHLETIC™ Everyday Tee",
+ "shopify_draft_id": "10249996501184",
+ "_source": "Copy, sizes and prices copied verbatim from Shopify draft 10249996501184 (read 2026-10-27).",
+ "description_html": "<p><strong>FAITH IN MOTION.™</strong></p><p>GG ATHLETIC™ is clean, premium GOD GEAR™ built to move — everyday apparel carrying the FAITH IN MOTION.™ identity.</p><p><strong>GOD IS MY SOURCE!</strong></p><h3>Details</h3><ul>\n<li>Unisex heavyweight tee, Black</li>\n<li>GOD GEAR™ wordmark on the front; GG mark on the back</li>\n<li>Made to order</li>\n</ul><p>Fabric, weight and size measurements are published once the heavyweight garment passes GOD GEAR™ sample certification. See the <a href=\"/pages/size-guide\">Size guide</a>.</p><h3>Care</h3><ul>\n<li>Machine wash cold, inside out</li>\n<li>Tumble dry low or hang dry</li>\n<li>Do not iron directly on the print</li>\n<li>Do not dry clean</li>\n</ul>",
+ "tags": [
+  "GG ATHLETIC",
+  "GOD GEAR",
+  "Everyday Tee",
+  "printify-built",
+  "colorway-black-approved"
+ ],
+ "color": "black",
+ "sizes": [
+  "S",
+  "M",
+  "L",
+  "XL",
+  "2XL",
+  "3XL",
+  "4XL"
+ ],
+ "price_cents": {
+  "S": 4900,
+  "M": 4900,
+  "L": 4900,
+  "XL": 4900,
+  "2XL": 5400,
+  "3XL": 5900,
+  "4XL": 6400
+ },
+ "_allowed_models_note": "BMW: Bella+Canvas 3001 replaced. Only Comfort Colors 1717 (the heavyweight already accepted on live GG ACTIVE) is allowed. Changing this list requires a reviewed commit.",
+ "allowed_models": [
+  "1717"
+ ],
+ "front_art": {
+  "file_name": "GG_GOD_GEAR_WORDMARK_ART-01.png",
+  "url": "https://cdn.shopify.com/s/files/1/0784/3610/6432/files/GG_GOD_GEAR_WORDMARK_PRINTFUL_EXACT.png?v=1790883120",
+  "x": 0.5,
+  "y": 0.35,
+  "scale": 0.8,
+  "angle": 0
+ },
+ "back_art": null,
+ "_back_art_note": "No print-ready GG mark exists in custody (GG-master-logo.jpg is a 1086x1448 concept JPG). Back print disabled until one does."
+}

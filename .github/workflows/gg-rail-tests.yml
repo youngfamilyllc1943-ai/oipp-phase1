@@ -1,0 +1,62 @@
+name: GOD GEAR Rail fire test (offline)
+
+# Runs on every change to the Rail. Uses no secrets.
+#  - fire-test: offline mock of Printify (localhost only)
+#  - art-check: downloads the allowlisted YFE-owned files in rail/assets.json, measures ART-01 contrast on black,
+#    and uploads the files as an evidence artifact (no write anywhere)
+on:
+  push:
+    paths: ["rail/**", "tests/**", ".github/workflows/gg-*.yml"]
+  pull_request:
+    paths: ["rail/**", "tests/**", ".github/workflows/gg-*.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  fire-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash tests/printify-mock/run.sh
+  art-check:
+    if: github.event_name == 'push'
+    # Writes only to the gg-evidence branch (evidence custody); never to main or the Rail branch.
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch allowlisted assets
+        run: |
+          mkdir -p out/assets
+          for k in $(jq -r 'to_entries[] | select(.key|startswith("_")|not) | .key' rail/assets.json); do
+            u=$(jq -r --arg k "$k" '.[$k]' rail/assets.json)
+            case "$u" in https://cdn.shopify.com/s/files/1/0784/3610/6432/files/*) ;; *) echo "REJECTED $k"; exit 2 ;; esac
+            ext=$(echo "${u%%\?*}" | sed 's/.*\.//'); curl -sSfL -o "out/assets/$k.$ext" "$u"
+            echo "$k $(sha256sum "out/assets/$k.$ext" | cut -c1-16) $(stat -c%s "out/assets/$k.$ext")" | tee -a out/manifest.txt
+          done
+          echo "::notice title=assets::$(wc -l < out/manifest.txt) files fetched"
+      - name: ART-01 on black
+        id: art
+        continue-on-error: true
+        run: |
+          pip install --quiet pillow
+          set +e; python3 tests/art_check.py out/assets/art01_wordmark.png out > out/art_check.out; rc=$?; set -e
+          echo "::notice title=art-check::$(cat out/art_check.out)"; exit $rc
+      - name: Store evidence on gg-evidence branch
+        if: always()
+        env:
+          SHA: ${{ github.sha }}
+        run: |
+          d=$(mktemp -d); cp -r out "$d/run-${SHA:0:7}"
+          git fetch --depth 1 origin gg-evidence 2>/dev/null && git checkout -q FETCH_HEAD || git checkout -q --orphan gg-evidence
+          git rm -rq --cached . 2>/dev/null || true; find . -mindepth 1 -maxdepth 1 ! -name .git ! -name 'run-*' -exec rm -rf {} +
+          cp -r "$d/run-${SHA:0:7}" . ; git add "run-${SHA:0:7}"
+          git -c user.name=gg-evidence-bot -c user.email=actions@users.noreply.github.com commit -qm "evidence for ${SHA:0:7}"
+          git push -q origin HEAD:refs/heads/gg-evidence
+      - name: Report artwork verdict (the Rail's create gate enforces it)
+        if: always() && steps.art.outcome == 'failure'
+        run: echo "::warning title=ART-01::not legible on black garments; GG ATHLETIC create stays blocked by spec flag"

@@ -1,0 +1,53 @@
+{
+ "spec_id": "gg-athletic-tee",
+ "title": "GG ATHLETIC™ Everyday Tee",
+ "shopify_draft_id": "10249996501184",
+ "_source": "Title, sizes, prices and care copy from Shopify draft 10249996501184 (read 2026-10-28). Garment line and print-location line corrected to match the blank and the front-only artwork.",
+ "description_html": "<p><strong>FAITH IN MOTION.™</strong></p><p>GG ATHLETIC™ is clean, premium GOD GEAR™ built to move — everyday apparel carrying the FAITH IN MOTION.™ identity.</p><p><strong>GOD IS MY SOURCE!</strong></p><h3>Details</h3><ul>\n<li>Unisex jersey tee (Bella+Canvas 3001), Black</li>\n<li>GOD GEAR™ wordmark on the front</li>\n<li>Made to order</li>\n</ul><p>Fabric, weight and size measurements are published once the garment passes GOD GEAR™ sample certification. See the <a href=\"/pages/size-guide\">Size guide</a>.</p><h3>Care</h3><ul>\n<li>Machine wash cold, inside out</li>\n<li>Tumble dry low or hang dry</li>\n<li>Do not iron directly on the print</li>\n<li>Do not dry clean</li>\n</ul>",
+ "tags": [
+  "GG ATHLETIC",
+  "GOD GEAR",
+  "Everyday Tee",
+  "printify-built",
+  "colorway-black-approved",
+  "blank-BellaCanvas-3001",
+  "awaiting-founder-acceptance"
+ ],
+ "color": "black",
+ "sizes": [
+  "S",
+  "M",
+  "L",
+  "XL",
+  "2XL",
+  "3XL",
+  "4XL"
+ ],
+ "price_cents": {
+  "S": 4900,
+  "M": 4900,
+  "L": 4900,
+  "XL": 4900,
+  "2XL": 5400,
+  "3XL": 5900,
+  "4XL": 6400
+ },
+ "_allowed_models_note": "Founder-approved evidence: Founder Option A 2026-10-24 + PF-W2 work order 1pPkL5c7dLszdVutx56IyOW8WovSmvefZQ60wfUHoQzY (rebuild GG ATHLETIC on Bella+Canvas 3001); PY-02 1W-CLGvM_CNVn7VWO84C2jRv9JTpyBHGGLGPm7VNU3zU row 1 (3001, GO); concept sheet 2026-10-20 (3001). Open objection: CRITIC Cycle 3 ruling 2026-10-25 (1km6hLDIF8q7bXGUvKF5z6OUVDG4SrjewDnDfOWCnv90) removed 3001 as default and opened a heavyweight qualification; no Founder decision adopting it was found and no heavyweight was qualified. Comfort Colors 1717 is NOT allowed (it is GG ACTIVE's blank; no approval to reuse it here). BMW canon: no sale before physical sample certification regardless of blank.",
+ "allowed_models": [
+  "3001"
+ ],
+ "front_art": {
+  "file_name": "GG_GOD_GEAR_WORDMARK_ART-01.png",
+  "url": "https://cdn.shopify.com/s/files/1/0784/3610/6432/files/GG_GOD_GEAR_WORDMARK_PRINTFUL_EXACT.png?v=1790883120",
+  "x": 0.5,
+  "y": 0.35,
+  "scale": 0.8,
+  "angle": 0,
+  "sha256_16": "41f6743b24d5c904",
+  "approved_for_garment_color": false,
+  "_qc": "CI art-check 2026-10-28 (gg-evidence run-437f5fe): ART-01 ink mean RGB 20,20,20, contrast 1.13:1 on black (min 3.0) = FAIL. ART-01 is a photo of black tonal embroidery (used on GG MOVE/GG ACTIVE as black-on-black); DTG on a black 3001 would print a near-invisible flat image of stitching. A flat light/metallic print-ready wordmark is required; an alpha-silhouette recolor has ragged stitch edges and is not BMW print-ready. Create is refused until this flag is true."
+ },
+ "back_art": null,
+ "expected_blueprint_id": 12,
+ "_back_art_note": "Front-only. The approved G mark (GG_G_MARK_PRINTFUL_EXACT.png) is in Printful's file library only, with no YFE-hosted URL; it is added here when one exists."
+}

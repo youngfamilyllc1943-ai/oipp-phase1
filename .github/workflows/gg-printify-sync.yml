@@ -1,0 +1,68 @@
+name: GOD GEAR Printify -> Shopify Sync (allowlist)
+
+# Manual dispatch only, restricted to the approved YFE executor account.
+# Pushes ONE Printify product built by the Draft Builder to the connected Shopify store.
+# It runs only if: shop verified, title matches the spec, not already synced, all spec sizes enabled,
+# prices match the spec exactly, no loss variant, front print present. Requires a typed confirmation.
+# Hidden-first: visibility is set to hidden and read back BEFORE the publish call; if Printify does not confirm
+# hidden, nothing is sent to Shopify. The existing Shopify draft is never touched (the Rail has no Shopify access).
+on:
+  workflow_dispatch:
+    inputs:
+      product:
+        description: "Fixed product spec"
+        required: true
+        type: choice
+        options: [gg-athletic-tee]
+      printify_product_id:
+        description: "Printify product id (24 hex characters) from the Draft Builder run"
+        required: true
+      confirm:
+        description: "Type SYNC-GG-ATHLETIC to confirm"
+        required: true
+
+permissions:
+  contents: write   # only used by rail/push_evidence.sh to write the gg-evidence branch
+
+concurrency:
+  group: gg-printify-rail
+  cancel-in-progress: false
+
+jobs:
+  run:
+    if: github.triggering_actor == 'youngfamilyllc1943-ai'
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    env:
+      SHOP_ID: "29470786"
+    steps:
+      - name: Validate inputs (runs before any secret is read)
+        env:
+          PRODUCT: ${{ inputs.product }}
+          PID: ${{ inputs.printify_product_id }}
+          CONFIRM: ${{ inputs.confirm }}
+        run: |
+          case "$PRODUCT" in gg-athletic-tee) ;; *) echo "REJECTED: product not on allowlist"; exit 2 ;; esac
+          [[ "$PID" =~ ^[0-9a-f]{24}$ ]] || { echo "REJECTED: printify_product_id"; exit 2; }
+          [ "$CONFIRM" = "SYNC-GG-ATHLETIC" ] || { echo "REJECTED: confirmation text"; exit 2; }
+          echo "inputs OK"
+      - uses: actions/checkout@v4
+      - name: Check secret is set
+        env:
+          T: ${{ secrets.PRINTIFY_TOKEN }}
+        run: |
+          if [ -z "$T" ]; then echo "CONTROLLED FAILURE: PRINTIFY_TOKEN secret is not set"; exit 1; fi
+      - name: Verify and sync
+        env:
+          T: ${{ secrets.PRINTIFY_TOKEN }}
+          PID: ${{ inputs.printify_product_id }}
+          SPEC: rail/specs/${{ inputs.product }}.json
+        run: |
+          mkdir -p "$RUNNER_TEMP/w" && cd "$RUNNER_TEMP/w"
+          export EVIDENCE="$RUNNER_TEMP/evidence"
+          bash "$GITHUB_WORKSPACE/rail/printify_sync.sh"
+      - name: Store evidence on gg-evidence branch
+        if: always()
+        env:
+          T: ${{ secrets.PRINTIFY_TOKEN }}
+        run: bash "$GITHUB_WORKSPACE/rail/push_evidence.sh" "$RUNNER_TEMP/evidence" "sync-${{ github.run_id }}"

@@ -41,7 +41,9 @@ fi
 api GET "/catalog/blueprints/$BP.json"
 echo "blueprint=$(jq -c '{id,title,brand,model}' resp.json)"
 jq -e --slurpfile s "$SPEC" '.model as $m | $s[0].allowed_models | index($m)' resp.json >/dev/null \
-  || { echo "FAIL: blueprint model $(jq -r .model resp.json) is not on the BMW allowlist $(jq -c .allowed_models "$SPEC")"; exit 1; }
+  || { echo "FAIL: blueprint model $(jq -r .model resp.json) is not on the approved-blank allowlist $(jq -c .allowed_models "$SPEC")"; exit 1; }
+EXP=$(jq -r '.expected_blueprint_id // empty' "$SPEC")
+if [ -n "$EXP" ] && [ "$EXP" != "$BP" ]; then echo "FAIL: spec pins blueprint $EXP, got $BP"; exit 1; fi
 
 # 3. Providers.
 if [ "$PP" = "0" ]; then
@@ -90,7 +92,7 @@ else BIMG=""; echo "back_print=none (spec has no print-ready back art)"; fi
 # 7. Create the product. Products are created unpublished; this script contains no publish call.
 jq -n --slurpfile s "$SPEC" --slurpfile v variants.json --argjson bp "$BP" --argjson pp "$PP" --arg img "$IMG" --arg bimg "$BIMG" '
   $s[0] as $sp | $v[0] as $vs
-  | {title: $sp.title, description: $sp.description_html, tags: $sp.tags,
+  | {title: $sp.title, description: $sp.description_html, tags: $sp.tags, visible: false,
      blueprint_id: $bp, print_provider_id: $pp,
      variants: ($vs | map({id, price, is_enabled})),
      print_areas: [{ variant_ids: ($vs | map(.id)),
@@ -98,7 +100,10 @@ jq -n --slurpfile s "$SPEC" --slurpfile v variants.json --argjson bp "$BP" --arg
          + (if $bimg=="" then [] else [{position:"back", images:[{id:$bimg, x:$sp.back_art.x, y:$sp.back_art.y, scale:$sp.back_art.scale, angle:$sp.back_art.angle}]}] end)) }]}' > product.json
 api POST "/shops/$SHOP_ID/products.json" product.json
 
-# 8. Evidence for CRITIC: id, visibility, per-size cost vs price, mockups.
+# 8. Evidence for CRITIC: id, visibility, per-size cost vs price, mockups. Saved to $EVIDENCE for upload.
+EVIDENCE=${EVIDENCE:-evidence}; mkdir -p "$EVIDENCE"
+jq '{id,title,visible,is_locked,blueprint_id,print_provider_id,variants:[.variants[]|select(.is_enabled)|{id,title,price,cost}],images:[.images[]?|{src,position,is_default}]}' resp.json > "$EVIDENCE/printify_product.json"
+jq -r '.images[]? | .src' resp.json | head -8 > "$EVIDENCE/mockup_urls.txt"
 echo "CREATED printify_product_id=$(jq -r '.id' resp.json) visible=$(jq -r '.visible' resp.json)"
 jq -r '.variants[] | select(.is_enabled) | "variant \(.title) price=\(.price) cost=\(.cost // "n/a") contribution_before_shipping_fees=\(if .cost then (.price - .cost) else "n/a" end)"' resp.json
 loss=$(jq '[.variants[] | select(.is_enabled and .cost != null and .price <= .cost)] | length' resp.json)

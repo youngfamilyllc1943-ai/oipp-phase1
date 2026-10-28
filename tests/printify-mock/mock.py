@@ -1,12 +1,12 @@
 """Offline mock of the Printify v1 endpoints the Rail uses. No real credentials, no network.
-MOCK_MODE selects behaviour: ok | thin | dup | err | wrongshop | synced | badprice | loss"""
+MOCK_MODE selects behaviour: ok | thin | dup | err | wrongshop | synced | badprice | loss | visignored | vismissing"""
 import http.server, json, os, urllib.parse
 LOG = open('requests.log', 'a')
 MODE = os.environ.get('MOCK_MODE', 'ok')
 SIZES = ["XS", "S", "M", "L", "XL", "2XL", "3XL", "4XL", "5XL"]
 PRICE = {"S": 4900, "M": 4900, "L": 4900, "XL": 4900, "2XL": 5400, "3XL": 5900, "4XL": 6400}
 PID = "65a1b2c3d4e5f60718293a4b"
-STATE = {"published": False}
+STATE = {"published": False, "visible": True}
 
 def product():
     v = []
@@ -15,10 +15,11 @@ def product():
         cost = 7000 if MODE == "loss" and s == "4XL" else 1550 + 200 * i
         v.append({"id": 2000 + i, "title": f"Black / {s}", "price": price, "cost": cost, "is_enabled": True})
     ext = {"id": "10299999999999", "handle": "gg-athletic-everyday-tee"} if (STATE["published"] or MODE == "synced") else None
-    p = {"id": PID, "title": "GG ATHLETIC™ Everyday Tee", "visible": False, "is_locked": False, "variants": v,
+    p = {"id": PID, "title": "GG ATHLETIC™ Everyday Tee", "blueprint_id": 12, "visible": STATE["visible"], "is_locked": False, "variants": v,
          "print_areas": [{"variant_ids": [x["id"] for x in v], "placeholders": [{"position": "front", "images": [{"id": "img_mock_1"}]}]}],
          "images": [{"src": "https://images-api.printify.com/mock/front.jpg", "position": "front", "is_default": True}]}
     if ext: p["external"] = ext
+    if MODE == "vismissing": p.pop("visible")
     return p
 
 class H(http.server.BaseHTTPRequestHandler):
@@ -39,7 +40,7 @@ class H(http.server.BaseHTTPRequestHandler):
         if p == "/catalog/blueprints.json":
             return self.send(200, [{"id": 12, "title": "Unisex Jersey Tee", "brand": "Bella+Canvas", "model": "3001"},
                                    {"id": 706, "title": "Unisex Garment-Dyed T-shirt", "brand": "Comfort Colors", "model": "1717"}])
-        if p == "/catalog/blueprints/12.json": return self.send(200, {"id": 12, "title": "Unisex Jersey Tee", "brand": "Bella+Canvas", "model": "3001"})
+        if p == "/catalog/blueprints/12.json": return self.send(200, {"id": 12, "title": "Unisex Jersey Short Sleeve Tee", "brand": "Bella+Canvas", "model": "3001"})
         if p == "/catalog/blueprints/706.json": return self.send(200, {"id": 706, "title": "Unisex Garment-Dyed T-shirt", "brand": "Comfort Colors", "model": "1717"})
         if p.endswith("/print_providers.json"): return self.send(200, [{"id": 99, "title": "Mock Provider", "location": {"country": "US"}}])
         if p.endswith("/variants.json"):
@@ -57,8 +58,14 @@ class H(http.server.BaseHTTPRequestHandler):
             if MODE == "err": return self.send(400, {"errors": {"reason": "mock validation"}})
             open('product_payload.json', 'w').write(body)
             return self.send(200, product())
+        if p == f"/shops/29470786/products/{PID}.json" and self.command == "PUT":
+            j = json.loads(body or "{}")
+            if set(j) != {"visible"}: return self.send(500, {"error": "UNEXPECTED UPDATE FIELDS"})
+            if MODE != "visignored": STATE["visible"] = j["visible"]
+            return self.send(200, product())
         if p == f"/shops/29470786/products/{PID}.json": return self.send(200, product())
         if p == f"/shops/29470786/products/{PID}/publish.json" and self.command == "POST":
+            if STATE["visible"] is not False: return self.send(500, {"error": "PUBLISHED WHILE VISIBLE"})
             STATE["published"] = True; open('publish_payload.json', 'w').write(body)
             return self.send(200, {})
         return self.send(404, {"error": "not found"})

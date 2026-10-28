@@ -4,7 +4,8 @@ name: GOD GEAR Printify -> Shopify Sync (allowlist)
 # Pushes ONE Printify product built by the Draft Builder to the connected Shopify store.
 # It runs only if: shop verified, title matches the spec, not already synced, all spec sizes enabled,
 # prices match the spec exactly, no loss variant, front print present. Requires a typed confirmation.
-# SU-WaB sets the resulting Shopify product to DRAFT immediately; nothing here activates or sells it.
+# Hidden-first: visibility is set to hidden and read back BEFORE the publish call; if Printify does not confirm
+# hidden, nothing is sent to Shopify. The existing Shopify draft is never touched (the Rail has no Shopify access).
 on:
   workflow_dispatch:
     inputs:
@@ -58,4 +59,12 @@ jobs:
           SPEC: rail/specs/${{ inputs.product }}.json
         run: |
           mkdir -p "$RUNNER_TEMP/w" && cd "$RUNNER_TEMP/w"
+          export EVIDENCE="$RUNNER_TEMP/evidence"
           bash "$GITHUB_WORKSPACE/rail/printify_sync.sh"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: printify-evidence
+          path: ${{ runner.temp }}/evidence/
+          if-no-files-found: ignore
+          retention-days: 90

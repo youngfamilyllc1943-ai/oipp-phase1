@@ -70,4 +70,12 @@ jobs:
           SPEC: rail/specs/${{ inputs.product }}.json
         run: |
           mkdir -p "$RUNNER_TEMP/w" && cd "$RUNNER_TEMP/w"
+          export EVIDENCE="$RUNNER_TEMP/evidence"
           bash "$GITHUB_WORKSPACE/rail/printify_draft.sh"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: printify-evidence
+          path: ${{ runner.temp }}/evidence/
+          if-no-files-found: ignore
+          retention-days: 90

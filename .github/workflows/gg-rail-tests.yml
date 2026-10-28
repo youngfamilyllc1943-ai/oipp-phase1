@@ -1,11 +1,14 @@
 name: GOD GEAR Rail fire test (offline)
 
-# Runs the offline mock fire test on every change to the Rail. Uses no secrets and no network beyond localhost.
+# Runs on every change to the Rail. Uses no secrets.
+#  - fire-test: offline mock of Printify (localhost only)
+#  - art-check: downloads the allowlisted YFE-owned files in rail/assets.json, measures ART-01 contrast on black,
+#    and uploads the files as an evidence artifact (no write anywhere)
 on:
   push:
-    paths: ["rail/**", "tests/printify-mock/**", ".github/workflows/gg-*.yml"]
+    paths: ["rail/**", "tests/**", ".github/workflows/gg-*.yml"]
   pull_request:
-    paths: ["rail/**", "tests/printify-mock/**", ".github/workflows/gg-*.yml"]
+    paths: ["rail/**", "tests/**", ".github/workflows/gg-*.yml"]
 
 permissions:
   contents: read
@@ -17,3 +20,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: bash tests/printify-mock/run.sh
+  art-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch allowlisted assets
+        run: |
+          mkdir -p out/assets
+          for k in $(jq -r 'to_entries[] | select(.key|startswith("_")|not) | .key' rail/assets.json); do
+            u=$(jq -r --arg k "$k" '.[$k]' rail/assets.json)
+            case "$u" in https://cdn.shopify.com/s/files/1/0784/3610/6432/files/*) ;; *) echo "REJECTED $k"; exit 2 ;; esac
+            ext=$(echo "${u%%\?*}" | sed 's/.*\.//'); curl -sSfL -o "out/assets/$k.$ext" "$u"
+            echo "$k $(sha256sum "out/assets/$k.$ext" | cut -c1-16) $(stat -c%s "out/assets/$k.$ext")"
+          done
+      - name: ART-01 on black
+        run: |
+          pip install --quiet pillow
+          python3 tests/art_check.py out/assets/art01_wordmark.png out
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gg-evidence
+          path: out/
+          retention-days: 30

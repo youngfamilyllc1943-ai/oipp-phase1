@@ -1,0 +1,75 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+@font-face{font-family:Mi;src:url(img/mi.woff2)}
+@font-face{font-family:Mo;font-weight:400;src:url(img/montserrat-latin-400-normal.woff2)}
+@font-face{font-family:Mo;font-weight:600;src:url(img/montserrat-latin-600-normal.woff2)}
+@font-face{font-family:Mo;font-weight:800;src:url(img/montserrat-latin-800-normal.woff2)}
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--gold1:#f3dfa2;--gold2:#c9a24f;--gold3:#8a6a2a;--ink:#09090a}
+body{width:var(--w);height:var(--h);overflow:hidden;background:var(--ink);font-family:Mo;color:#d9d9dc}
+.stage{position:relative;width:100%;height:100%;
+ background:
+  radial-gradient(ellipse 55% 42% at 50% var(--gy,46%), rgba(214,178,96,.30), rgba(214,178,96,.08) 45%, transparent 70%),
+  radial-gradient(ellipse 120% 90% at 50% 50%, #1a1a1d 0%, #0c0c0d 55%, #050505 100%);}
+.stage:after{content:"";position:absolute;inset:0;box-shadow:inset 0 0 220px 60px rgba(0,0,0,.85);pointer-events:none}
+.rule{height:1px;background:linear-gradient(90deg,transparent,var(--gold2),transparent)}
+.lockup{display:block;margin:0 auto}
+.hero{position:absolute;left:0;right:0;display:flex;justify-content:center;align-items:flex-end;gap:0}
+.hero img{filter:drop-shadow(0 0 1px rgba(255,236,190,.55)) drop-shadow(0 0 34px rgba(214,178,96,.32)) drop-shadow(0 30px 40px rgba(0,0,0,.8))}
+.hero .back{margin-right:-9%;transform:scale(.86);transform-origin:bottom right;opacity:.96}
+.floor{position:absolute;left:50%;transform:translateX(-50%);width:62%;height:60px;border-radius:50%;background:radial-gradient(ellipse at center,rgba(0,0,0,.9),transparent 70%)}
+.name{font-family:Mi;letter-spacing:.06em;background:linear-gradient(180deg,#ffffff 0%,#cfcfd4 45%,#8c8c93 100%);-webkit-background-clip:text;color:transparent}
+.gold{background:linear-gradient(180deg,var(--gold1),var(--gold2) 55%,var(--gold3));-webkit-background-clip:text;color:transparent}
+.sub{font-family:Mi;letter-spacing:.32em;color:#a7a7ad}
+.line{font-weight:400;color:#c9c9ce;letter-spacing:.04em}
+.specs{font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#8f8f96}
+.cta{display:inline-flex;align-items:center;gap:.7em;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#141008;
+ background:linear-gradient(180deg,#f6e6b4,#d4ad5c 50%,#a07b33);border-radius:999px;box-shadow:0 0 0 1px rgba(255,240,200,.5) inset,0 10px 30px rgba(201,162,79,.25)}
+.cta b{font-family:Mi;font-weight:400;letter-spacing:.04em}
+.tag{font-family:Mi;letter-spacing:.24em}
+.center{text-align:center}
+</style></head><body><div class="stage" id="s"></div>
+<script>
+const q=new URLSearchParams(location.search);
+const P={move:{name:"GG MOVE™",sub:"PREMIUM BLACK-ON-BLACK HOODIE",line:"Understated in appearance. Unmistakable in meaning.",specs:"8.5 oz fleece · XS–4XL · Made to order",price:"$59",cta:"Shop GG MOVE™",imgs:["move_front"]},
+ active:{name:"GG ACTIVE™",sub:"PREMIUM HEAVYWEIGHT TEE",line:"For faith that moves beyond Sunday.",specs:"Garment-dyed · GG mark on back · S–4XL",price:"From $49",cta:"Shop GG ACTIVE™",imgs:["active_back","active_front"]}}[q.get("p")];
+const f=q.get("f"); const W={feed:[1080,1350],story:[1080,1920],wide:[1200,628]}[f];
+document.documentElement.style.setProperty("--w",W[0]+"px");document.documentElement.style.setProperty("--h",W[1]+"px");
+const s=document.getElementById("s");
+const heroImgs=(h)=>P.imgs.map((n,i)=>`<img class="${P.imgs.length>1&&i==0?'back':''}" src="img/${n}.png" style="height:${h}px">`).join("");
+if(f!=="wide"){
+ const st=f==="story", H=W[1];
+ const k=P.imgs.length>1?0.8:1; const heroH=Math.round((st?900:650)*k), heroBottom=st?660:440;
+ s.style.setProperty("--gy",st?"50%":"47%");
+ s.innerHTML=`
+ <div style="position:absolute;top:${st?150:62}px;left:0;right:0" class="center">
+   <img class="lockup" src="img/lockup.png" style="width:${st?600:520}px">
+ </div>
+ <div class="floor" style="bottom:${heroBottom-30}px"></div>
+ <div class="hero" style="bottom:${heroBottom}px">${heroImgs(heroH)}</div>
+ <div style="position:absolute;left:0;right:0;bottom:${st?150:58}px" class="center">
+   <div class="name" style="font-size:${st?64:54}px">${P.name}</div>
+   <div class="sub" style="font-size:${st?22:19}px;margin-top:14px">${P.sub}</div>
+   <div class="rule" style="width:${st?520:460}px;margin:${st?30:22}px auto"></div>
+   <div class="line" style="font-size:${st?30:25}px">${P.line}</div>
+   <div class="specs" style="font-size:${st?17:15}px;margin-top:${st?18:12}px">${P.specs}</div>
+   <div class="cta" style="font-size:${st?22:19}px;padding:${st?'24px 46px':'19px 38px'};margin-top:${st?44:28}px">${P.cta}<span style="opacity:.45">|</span><b>${P.price}</b></div>
+   <div class="tag gold" style="font-size:${st?18:15}px;margin-top:${st?46:26}px">GOT GOD? GOT GEAR?™</div>
+ </div>`;
+}else{
+ s.style.setProperty("--gy","50%");
+ s.style.background=`radial-gradient(ellipse 34% 60% at 27% 52%, rgba(214,178,96,.30), rgba(214,178,96,.07) 50%, transparent 72%),radial-gradient(ellipse 120% 100% at 40% 50%, #1a1a1d, #0b0b0c 60%, #050505)`;
+ s.innerHTML=`
+ <div class="floor" style="left:27%;bottom:6px;width:36%"></div>
+ <div class="hero" style="left:1%;right:auto;width:50%;bottom:${P.imgs.length>1?60:22}px">${heroImgs(P.imgs.length>1?400:560)}</div>
+ <div style="position:absolute;left:55%;right:40px;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center">
+   <img src="img/lockup.png" style="width:380px">
+   <div class="rule" style="width:380px;margin:26px 0;background:linear-gradient(90deg,var(--gold2),transparent)"></div>
+   <div class="name" style="font-size:44px">${P.name}</div>
+   <div class="sub" style="font-size:13px;letter-spacing:.24em;margin-top:10px;white-space:nowrap">${P.sub}</div>
+   <div class="line" style="font-size:19px;margin-top:20px;max-width:520px">${P.line}</div>
+   <div class="specs" style="font-size:12.5px;margin-top:10px">${P.specs}</div>
+   <div><div class="cta" style="font-size:15px;padding:15px 30px;margin-top:26px">${P.cta}<span style="opacity:.45">|</span><b>${P.price}</b></div></div>
+ </div>`;
+}
+document.fonts.ready.then(()=>{document.body.dataset.ready=1});
+</script></body></html>

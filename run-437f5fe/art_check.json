@@ -1,0 +1,18 @@
+{
+ "size": [
+  4248,
+  462
+ ],
+ "transparent_fraction": 0.409,
+ "ink_mean_rgb": [
+  20,
+  20,
+  20
+ ],
+ "contrast_ratio_on": {
+  "pure_black": 1.14,
+  "bc3001_black_approx": 1.13
+ },
+ "threshold": 3.0,
+ "verdict": "FAIL"
+}

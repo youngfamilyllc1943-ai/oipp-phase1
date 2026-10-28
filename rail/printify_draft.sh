@@ -68,6 +68,11 @@ fi
 if [ "$MODE" = "plan" ]; then echo "PLAN OK: $want variants would be created. No write performed."; exit 0; fi
 [ "$MODE" = "create" ] || { echo "REJECTED: mode"; exit 2; }
 
+# Artwork gate: create only with artwork approved for this garment colour (contrast/QC evidence in the spec).
+if [ "$(jq -r '.front_art.approved_for_garment_color // false' "$SPEC")" != "true" ]; then
+  echo "BLOCKED: front artwork is not approved for a $COLOR garment ($(jq -r '.front_art._qc // "no QC record"' "$SPEC" | head -c 160)...). Nothing created."; exit 4
+fi
+
 # 5. Duplicate guard: abort if a product with this title already exists in the shop (all pages).
 page=1
 while :; do

@@ -2,14 +2,17 @@
 # Offline fire test for rail/printify_draft.sh and rail/printify_sync.sh against a mock Printify API.
 # No real credentials and no network. Exit 0 only if every case passes.
 set -u; cd "$(dirname "$0")"; HERE=$PWD; ROOT=$(cd ../.. && pwd)
-SPEC=$ROOT/rail/specs/gg-athletic-tee.json
+REAL_SPEC=$ROOT/rail/specs/gg-athletic-tee.json
+# Test spec = real spec with the artwork flag forced true, so create paths can be exercised. The real spec is tested separately.
+SPEC=$(mktemp); jq '.front_art.approved_for_garment_color=true' "$REAL_SPEC" > "$SPEC"
 rm -rf requests.log w_* product_payload.json publish_payload.json; fail=0
 PID=65a1b2c3d4e5f60718293a4b
 
 # case name | mock mode | script | MODE BP PP | expected exit | required output substring
 run(){ local name=$1 mm=$2 script=$3 mode=$4 bp=$5 pp=$6 want=$7 needle=$8
   MOCK_MODE=$mm python3 mock.py & local P=$!; sleep 0.6; mkdir -p w_$name
-  (cd w_$name && env -i PATH="$PATH" HOME="$HOME" T=MOCKTOKEN BASE=http://127.0.0.1:8765/v1 SHOP_ID=29470786 SPEC="$SPEC" \
+  local spec=$SPEC; [ "$name" = create-blocked-art ] && spec=$REAL_SPEC
+  (cd w_$name && env -i PATH="$PATH" HOME="$HOME" T=MOCKTOKEN BASE=http://127.0.0.1:8765/v1 SHOP_ID=29470786 SPEC="$spec" \
      MODE=$mode BP=$bp PP=$pp PID=$PID POLL=15 bash "$ROOT/rail/$script" >out.txt 2>&1); local rc=$?
   kill $P; wait $P 2>/dev/null; for f in product_payload.json publish_payload.json; do [ -f $f ] && mv $f w_$name/; done
   if [ $rc = $want ] && grep -q -- "$needle" w_$name/out.txt; then echo "PASS $name"
@@ -26,6 +29,7 @@ run duplicate-guard   dup        printify_draft.sh create 12  99 1 'duplicate gu
 run api-error         err        printify_draft.sh create 12  99 1 'mock validation'
 run create-ok         ok         printify_draft.sh create 12  99 0 'CREATED printify_product_id='
 run loss-flag         loss       printify_draft.sh create 12  99 0 'loss_variants=1'
+run create-blocked-art ok        printify_draft.sh create 12  99 4 'BLOCKED: front artwork is not approved'
 # Sync (hidden-first)
 run sync-ok           ok         printify_sync.sh  -      -   -  0 'SYNCED shopify_product_id=10299999999999 visible=false'
 run sync-vis-ignored  visignored printify_sync.sh  -      -   -  1 'did not confirm hidden state'

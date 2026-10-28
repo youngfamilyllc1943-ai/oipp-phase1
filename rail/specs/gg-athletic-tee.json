@@ -42,7 +42,10 @@
   "x": 0.5,
   "y": 0.35,
   "scale": 0.8,
-  "angle": 0
+  "angle": 0,
+  "sha256_16": "41f6743b24d5c904",
+  "approved_for_garment_color": false,
+  "_qc": "CI art-check 2026-10-28 (gg-evidence run-437f5fe): ART-01 ink mean RGB 20,20,20, contrast 1.13:1 on black (min 3.0) = FAIL. ART-01 is a photo of black tonal embroidery (used on GG MOVE/GG ACTIVE as black-on-black); DTG on a black 3001 would print a near-invisible flat image of stitching. A flat light/metallic print-ready wordmark is required; an alpha-silhouette recolor has ragged stitch edges and is not BMW print-ready. Create is refused until this flag is true."
  },
  "back_art": null,
  "expected_blueprint_id": 12,

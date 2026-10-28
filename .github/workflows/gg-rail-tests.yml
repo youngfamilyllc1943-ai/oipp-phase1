@@ -21,6 +21,7 @@ jobs:
       - uses: actions/checkout@v4
       - run: bash tests/printify-mock/run.sh
   art-check:
+    if: github.event_name == 'push'
     # Writes only to the gg-evidence branch (evidence custody); never to main or the Rail branch.
     permissions:
       contents: write
@@ -43,7 +44,7 @@ jobs:
         continue-on-error: true
         run: |
           pip install --quiet pillow
-          python3 tests/art_check.py out/assets/art01_wordmark.png out > out/art_check.out; rc=$?
+          set +e; python3 tests/art_check.py out/assets/art01_wordmark.png out > out/art_check.out; rc=$?; set -e
           echo "::notice title=art-check::$(cat out/art_check.out)"; exit $rc
       - name: Store evidence on gg-evidence branch
         if: always()
@@ -57,11 +58,5 @@ jobs:
           git -c user.name=gg-evidence-bot -c user.email=actions@users.noreply.github.com commit -qm "evidence for ${SHA:0:7}"
           git push -q origin HEAD:refs/heads/gg-evidence
       - name: Report artwork verdict (the Rail's create gate enforces it)
-        if: steps.art.outcome == 'failure'
+        if: always() && steps.art.outcome == 'failure'
         run: echo "::warning title=ART-01::not legible on black garments; GG ATHLETIC create stays blocked by spec flag"
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: gg-evidence
-          path: out/
-          retention-days: 30

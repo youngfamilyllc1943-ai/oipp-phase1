@@ -22,7 +22,7 @@ on:
         required: true
 
 permissions:
-  contents: read
+  contents: write   # only used by rail/push_evidence.sh to write the gg-evidence branch
 
 concurrency:
   group: gg-printify-rail
@@ -61,10 +61,8 @@ jobs:
           mkdir -p "$RUNNER_TEMP/w" && cd "$RUNNER_TEMP/w"
           export EVIDENCE="$RUNNER_TEMP/evidence"
           bash "$GITHUB_WORKSPACE/rail/printify_sync.sh"
-      - uses: actions/upload-artifact@v4
+      - name: Store evidence on gg-evidence branch
         if: always()
-        with:
-          name: printify-evidence
-          path: ${{ runner.temp }}/evidence/
-          if-no-files-found: ignore
-          retention-days: 90
+        env:
+          T: ${{ secrets.PRINTIFY_TOKEN }}
+        run: bash "$GITHUB_WORKSPACE/rail/push_evidence.sh" "$RUNNER_TEMP/evidence" "sync-${{ github.run_id }}"

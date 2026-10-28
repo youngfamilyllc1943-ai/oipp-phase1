@@ -55,7 +55,7 @@ pubs=$(jq -s '[.[]|select(.p|test("publish"))]|length' requests.log)
 jq -s -e 'all(.[]; .m=="GET" or .m=="POST" or (.m=="PUT" and (.body|fromjson)=={"visible":false}))' requests.log >/dev/null && echo "PASS only-GET/POST-and-hide-PUT" || { echo "FAIL unexpected method or PUT body"; fail=1; }
 jq -s -e 'all(.[]; .m!="DELETE")' requests.log >/dev/null && echo "PASS no-delete" || { echo "FAIL delete called"; fail=1; }
 jq -s -e 'all(.[]; (.p|test("orders|webhooks"))|not)' requests.log >/dev/null && echo "PASS no-orders-webhooks" || { echo "FAIL orders/webhooks touched"; fail=1; }
-grep -rq MOCKTOKEN w_*/out.txt && { echo "FAIL token leaked"; fail=1; } || echo "PASS no-token-in-output"
+grep -rq MOCKTOKEN w_* && { echo "FAIL token leaked"; fail=1; } || echo "PASS no-token-in-output"
 [ "$(grep -c 'publish.json\|"visible":true\|visible: true' "$ROOT/rail/printify_draft.sh")" = 0 ] && echo "PASS draft-script-has-no-publish-call" || { echo "FAIL draft script references publish.json"; fail=1; }
 
 grep -q '"visible":true\|visible: true' "$ROOT/rail/printify_sync.sh" && { echo "FAIL sync can set visible"; fail=1; } || echo "PASS sync-never-sets-visible"
@@ -69,4 +69,6 @@ for f in "$ROOT"/.github/workflows/gg-printify-*.yml; do
   grep -q "github.triggering_actor == 'youngfamilyllc1943-ai'" "$f" && echo "PASS actor-allowlist $b" || { echo "FAIL actor-allowlist $b"; fail=1; }
 done
 
+e=$(mktemp -d); echo "x MOCKTOKEN x" > $e/f; if T=MOCKTOKEN GITHUB_WORKSPACE=$ROOT bash "$ROOT/rail/push_evidence.sh" $e t >/dev/null 2>&1; then echo "FAIL evidence-token-guard"; fail=1; else echo "PASS evidence-token-guard"; fi
+ls w_create-ok/evidence/run.log w_create-ok/evidence/printify_product.json >/dev/null 2>&1 && echo "PASS evidence-files-written" || { echo "FAIL evidence-files-written"; fail=1; }
 rm -rf w_* requests.log product_payload.json publish_payload.json; echo; [ $fail = 0 ] && echo "ALL PASS" || echo "FAILURES PRESENT"; exit $fail

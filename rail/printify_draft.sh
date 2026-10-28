@@ -4,6 +4,7 @@
 # Env: T (token), SHOP_ID, MODE (plan|create), SPEC (path), BP (blueprint id, 0 = search allowlisted models),
 #      PP (provider id, 0 = list providers), BASE (default https://api.printify.com/v1)
 set -euo pipefail
+EVIDENCE=${EVIDENCE:-evidence}; mkdir -p "$EVIDENCE"; exec > >(tee -a "$EVIDENCE/run.log") 2>&1
 BASE=${BASE:-https://api.printify.com/v1}
 : "${T:?}" "${SHOP_ID:?}" "${MODE:?}" "${SPEC:?}" "${BP:?}" "${PP:?}"
 

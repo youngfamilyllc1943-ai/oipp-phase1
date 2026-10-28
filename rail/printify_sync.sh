@@ -12,6 +12,7 @@
 # the run is not accepted until that read-back shows the product is not on the storefront.
 # Env: T, SHOP_ID, SPEC, PID (24-hex Printify product id), BASE (optional), POLL (seconds, default 180), EVIDENCE (dir)
 set -euo pipefail
+EVIDENCE=${EVIDENCE:-evidence}; mkdir -p "$EVIDENCE"; exec > >(tee -a "$EVIDENCE/run.log") 2>&1
 BASE=${BASE:-https://api.printify.com/v1}
 POLL=${POLL:-180}
 EVIDENCE=${EVIDENCE:-evidence}; mkdir -p "$EVIDENCE"

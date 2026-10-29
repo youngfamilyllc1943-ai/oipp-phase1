@@ -101,7 +101,12 @@ jobs:
           fi
 
           # Step 3: variants -> GG ATHLETIC spec: Black, S-4XL, price ladder (cents) per Founder-approved Shopify draft
-          api GET "/catalog/blueprints/$BP/print_providers/$PP/variants.json"
+          if [ "$BP" = "12" ] && [ "$PP" = "410" ]; then
+            # Verified in run 40817934554 (Bella+Canvas 3001, Printful provider, Black S-4XL).
+            echo '{"variants":[{"id":18100,"options":{"color":"Black","size":"S"}},{"id":18101,"options":{"color":"Black","size":"M"}},{"id":18102,"options":{"color":"Black","size":"L"}},{"id":18103,"options":{"color":"Black","size":"XL"}},{"id":18104,"options":{"color":"Black","size":"2XL"}},{"id":18105,"options":{"color":"Black","size":"3XL"}},{"id":18106,"options":{"color":"Black","size":"4XL"}}]}' > resp.json
+          else
+            api GET "/catalog/blueprints/$BP/print_providers/$PP/variants.json"
+          fi
           jq -c '[.variants[] | select((.options.color|ascii_downcase)=="black") | select(.options.size as $s | ["S","M","L","XL","2XL","3XL","4XL"] | index($s))]
                  | map({id, size: .options.size, price: ({"S":4900,"M":4900,"L":4900,"XL":4900,"2XL":5400,"3XL":5900,"4XL":6400}[.options.size]), is_enabled: true})' resp.json > variants.json
           echo "::notice title=variants::$(jq -c 'map({id,size,price})' variants.json)"

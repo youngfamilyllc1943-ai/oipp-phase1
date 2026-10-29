@@ -43,9 +43,12 @@ jobs:
     timeout-minutes: 5
     env:
       SHOP_ID: "29470786"
-      # Allowlisted artwork: ART-01 GOD GEAR wordmark, YFE-owned, hosted in the GOD GEAR Shopify Files.
-      ART_URL: "https://cdn.shopify.com/s/files/1/0784/3610/6432/files/GG_GOD_GEAR_WORDMARK_PRINTFUL_EXACT.png?v=1790883120"
+      # Allowlisted artwork: GOD GEAR master logo (G mark + wordmark + FAITH IN MOTION.), transparent print file in this repo.
+      ART_FILE: "rail/art/gg-master-logo-print.png"
     steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: rail/art
       - name: Validate inputs (runs before any secret is read)
         env:
           MODE: ${{ inputs.mode }}
@@ -82,18 +85,18 @@ jobs:
             else
               code=$(curl -sS -o resp.json -w '%{http_code}' -X "$m" -H "Authorization: Bearer $T" -H "User-Agent: GOD-GEAR-Rail" "$BASE$p")
             fi
-            echo "$m $p -> HTTP $code"
-            if [ "${code:0:1}" != "2" ]; then echo "error keys: $(jq -c 'if type=="object" then (.errors // .error // keys) else "n/a" end' resp.json 2>/dev/null | head -c 600)"; rm -f resp.json; exit 1; fi
+            echo "$m $p -> HTTP $code"; echo "::notice title=api::$m $p -> HTTP $code"
+            if [ "${code:0:1}" != "2" ]; then echo "::error title=printify::$(jq -c 'if type=="object" then (.errors // .error // keys) else "n/a" end' resp.json 2>/dev/null | head -c 600)"; rm -f resp.json; exit 1; fi
           }
 
           # Step 1: blueprint check (public catalog data)
           api GET "/catalog/blueprints/$BP.json"
-          echo "blueprint=$(jq -c '{id,title,brand,model}' resp.json)"
+          echo "::notice title=blueprint::$(jq -c '{id,title,brand,model}' resp.json)"
 
           # Step 2: providers (stop here if none chosen)
           if [ "$PP" = "0" ]; then
             api GET "/catalog/blueprints/$BP/print_providers.json"
-            jq -c '.[] | {id,title}' resp.json
+            echo "::notice title=providers::$(jq -c '[.[] | {id,title,loc:.location.country}]' resp.json)"
             echo "STOP: choose provider_id and re-run"; exit 0
           fi
 
@@ -101,26 +104,28 @@ jobs:
           api GET "/catalog/blueprints/$BP/print_providers/$PP/variants.json"
           jq -c '[.variants[] | select((.options.color|ascii_downcase)=="black") | select(.options.size as $s | ["S","M","L","XL","2XL","3XL","4XL"] | index($s))]
                  | map({id, size: .options.size, price: ({"S":4900,"M":4900,"L":4900,"XL":4900,"2XL":5400,"3XL":5900,"4XL":6400}[.options.size]), is_enabled: true})' resp.json > variants.json
-          echo "matched_variants=$(jq -c 'map({id,size,price})' variants.json)"
+          echo "::notice title=variants::$(jq -c 'map({id,size,price})' variants.json)"
           n=$(jq 'length' variants.json)
           if [ "$n" -lt 4 ]; then echo "FAIL: provider lacks Black S-4XL coverage ($n matched)"; exit 1; fi
 
           if [ "$MODE" = "plan" ]; then echo "PLAN OK: $n variants would be created. No write performed."; exit 0; fi
 
           # Step 4: upload allowlisted artwork by URL
-          jq -n --arg u "$ART_URL" '{file_name:"GG_GOD_GEAR_WORDMARK_ART-01.png", url:$u}' > up.json
+          base64 -w0 "$ART_FILE" > art.b64
+          jq -n --rawfile c art.b64 '{file_name:"GG_MASTER_LOGO_PRINT.png", contents:$c}' > up.json
           api POST "/uploads/images.json" up.json
-          IMG=$(jq -r '.id' resp.json); echo "image_id=$IMG size=$(jq -c '{width,height}' resp.json)"
+          IMG=$(jq -r '.id' resp.json); echo "::notice title=image::$IMG $(jq -c '{width,height}' resp.json)"
 
           # Step 5: create product (unpublished; publish endpoint is never called)
           jq -n --argjson bp "$BP" --argjson pp "$PP" --arg img "$IMG" --slurpfile v variants.json '{
             title: "GG ATHLETIC™ Everyday Tee",
-            description: "FAITH IN MOTION.™ GOD GEAR™ wordmark on the front. Made to order.",
+            description: "FAITH IN MOTION.™ GOD GEAR™ gold and silver G mark and wordmark on the front. Made to order.",
             blueprint_id: $bp, print_provider_id: $pp,
             variants: ($v[0] | map({id, price, is_enabled})),
             print_areas: [{ variant_ids: ($v[0] | map(.id)),
-              placeholders: [{ position: "front", images: [{ id: $img, x: 0.5, y: 0.35, scale: 0.8, angle: 0 }] }] }]
+              placeholders: [{ position: "front", images: [{ id: $img, x: 0.5, y: 0.45, scale: 0.75, angle: 0 }] }] }]
           }' > product.json
           api POST "/shops/$SHOP_ID/products.json" product.json
-          echo "CREATED printify_product_id=$(jq -r '.id' resp.json) visible=$(jq -r '.visible' resp.json) variants_enabled=$(jq '[.variants[]|select(.is_enabled)]|length' resp.json)"
+          echo "::notice title=created::id=$(jq -r '.id' resp.json) visible=$(jq -r '.visible' resp.json) enabled=$(jq '[.variants[]|select(.is_enabled)]|length' resp.json)"
+          echo "::notice title=mockups::$(jq -c '[.images[] | select(.is_default or (.position=="front")) | .src][0:4]' resp.json)"
           rm -f resp.json

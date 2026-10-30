@@ -21,6 +21,7 @@ on:
           - update
           - sync-draft
           - map
+          - link-external
       product:
         description: "Fixed product spec"
         required: true
@@ -70,7 +71,7 @@ jobs:
           BP: ${{ inputs.blueprint_id }}
           PP: ${{ inputs.provider_id }}
         run: |
-          case "$MODE" in plan|create|catalog|blueprints|audit|update|sync-draft|map) ;; *) echo "REJECTED: mode"; exit 2 ;; esac
+          case "$MODE" in plan|create|catalog|blueprints|audit|update|sync-draft|map|link-external) ;; *) echo "REJECTED: mode"; exit 2 ;; esac
           case "$PRODUCT" in gg-athletic-tee|gg-athletic-tee-canon|gg-active-tee-bmw-raised|gg-move-hoodie-bmw-raised|gg-culture-cap-bmw-raised) ;; *) echo "REJECTED: product not on allowlist"; exit 2 ;; esac
           [[ "$BP" =~ ^[0-9]{1,6}$ ]] || { echo "REJECTED: blueprint_id"; exit 2; }
           [[ "$PP" =~ ^[0-9]{1,6}$ ]] || { echo "REJECTED: provider_id"; exit 2; }
@@ -117,6 +118,25 @@ jobs:
             echo "STOP: choose provider_id and re-run"; exit 0
           fi
 
+          if [ "$MODE" = "link-external" ]; then
+            # Experiment: try to directly PUT external on Printify draft to link to existing Shopify product.
+            # SAFE: PUT only; no publish, no delete. On rejection, no state change.
+            PRODUCT_ID=6ae41ac5cccda5b54006571c
+            SHOPIFY_PRODUCT_ID=10249996501184
+            SHOPIFY_HANDLE="gg-athletic-everyday-tee"
+            jq -n --arg id "$SHOPIFY_PRODUCT_ID" --arg h "$SHOPIFY_HANDLE" '{external:{id:$id, handle:$h}}' > ext.json
+            echo "::notice title=attempt::PUT external linkage to Shopify product $SHOPIFY_PRODUCT_ID"
+            code=$(curl -sS -o resp.json -w '%{http_code}' -X PUT -H "Authorization: Bearer $T" -H "User-Agent: GOD-GEAR-Rail" -H "Content-Type: application/json" --data @ext.json "$BASE/shops/$SHOP_ID/products/$PRODUCT_ID.json")
+            echo "::notice title=result::HTTP $code"
+            if [ "${code:0:1}" = "2" ]; then
+              # Verify by re-reading
+              api GET "/shops/$SHOP_ID/products/$PRODUCT_ID.json"
+              echo "::notice title=verified-external::$(jq -c '.external' resp.json)"
+            else
+              echo "::notice title=rejected::$(jq -c '.' resp.json | head -c 500)"
+            fi
+            exit 0
+          fi
           if [ "$MODE" = "map" ]; then
             # Export verified Printify variant map for ATHLETIC canon draft (variant_id, size, price, cost) — no writes
             api GET "/shops/$SHOP_ID/products/6ae41ac5cccda5b54006571c.json"

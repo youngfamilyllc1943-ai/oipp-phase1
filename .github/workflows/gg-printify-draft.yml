@@ -120,7 +120,7 @@ jobs:
           if [ "$MODE" = "map" ]; then
             # Export verified Printify variant map for ATHLETIC canon draft (variant_id, size, price, cost) — no writes
             api GET "/shops/$SHOP_ID/products/6ae41ac5cccda5b54006571c.json"
-            echo "::notice title=athletic-map::$(jq -c '[.variants[]|{id, title, sku, size:.title|split(" / ")|.[1], price, cost, is_enabled}]' resp.json | head -c 4000)"
+            echo "::notice title=athletic-map::$(jq -c '[.variants[]|select(.is_enabled)|{id, size:.title|split(" / ")|.[1], color:.title|split(" / ")|.[0], price, cost}]' resp.json)"
             echo "::notice title=athletic-images::$(jq -c '[.images[]|{src:.src, variant_ids, position:.position, is_default}]|.[0:6]' resp.json | head -c 2500)"
             echo "::notice title=athletic-print-areas::$(jq -c '.print_areas|map({variant_ids: (.variant_ids|length), placeholders: [.placeholders[]|{position, images:[.images[]|{id,x,y,scale,angle}]}]})' resp.json | head -c 2500)"
             exit 0

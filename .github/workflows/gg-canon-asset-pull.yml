@@ -1,0 +1,21 @@
+name: GOD GEAR canon asset pull (fixed allowlist)
+# Copies Founder-approved masters from the GOD GEAR Shopify Files CDN into rail/art/canon. Fixed URLs only.
+on:
+  workflow_dispatch: {}
+permissions:
+  contents: write
+jobs:
+  pull:
+    if: github.triggering_actor == 'youngfamilyllc1943-ai'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          set -euo pipefail
+          mkdir -p rail/art/canon
+          curl -fsSL -o rail/art/canon/GG_GOD_GEAR_WORDMARK_PRINTFUL_EXACT.png "https://cdn.shopify.com/s/files/1/0784/3610/6432/files/GG_GOD_GEAR_WORDMARK_PRINTFUL_EXACT.png?v=1790883120"
+          curl -fsSL -o rail/art/canon/GG-master-logo.jpg "https://cdn.shopify.com/s/files/1/0784/3610/6432/files/GG-master-logo.jpg?v=1792397600"
+          sha256sum rail/art/canon/* | tee rail/art/canon/SHA256SUMS
+          git config user.name youngfamilyllc1943-ai; git config user.email youngfamilyllc1943@gmail.com
+          git add rail/art/canon && git commit -m "Canon masters pulled from GOD GEAR Shopify Files" && git push

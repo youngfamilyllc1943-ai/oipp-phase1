@@ -17,6 +17,7 @@ on:
           - create
           - catalog
           - blueprints
+          - audit
       product:
         description: "Fixed product spec"
         required: true
@@ -66,7 +67,7 @@ jobs:
           BP: ${{ inputs.blueprint_id }}
           PP: ${{ inputs.provider_id }}
         run: |
-          case "$MODE" in plan|create|catalog|blueprints) ;; *) echo "REJECTED: mode"; exit 2 ;; esac
+          case "$MODE" in plan|create|catalog|blueprints|audit) ;; *) echo "REJECTED: mode"; exit 2 ;; esac
           case "$PRODUCT" in gg-athletic-tee|gg-athletic-tee-canon|gg-active-tee-bmw-raised|gg-move-hoodie-bmw-raised|gg-culture-cap-bmw-raised) ;; *) echo "REJECTED: product not on allowlist"; exit 2 ;; esac
           [[ "$BP" =~ ^[0-9]{1,6}$ ]] || { echo "REJECTED: blueprint_id"; exit 2; }
           [[ "$PP" =~ ^[0-9]{1,6}$ ]] || { echo "REJECTED: provider_id"; exit 2; }
@@ -112,6 +113,18 @@ jobs:
             echo "STOP: choose provider_id and re-run"; exit 0
           fi
 
+          if [ "$MODE" = "audit" ]; then
+            # Read-only: provider, blueprint, cost vs price per variant, US shipping, for GOD GEAR drafts.
+            for PID in 6ae41ac5cccda5b54006571c 6ae4543e50d43121ba068196 6ae45451fc0f61752e04efce 6ae454283838eb14700212e1; do
+              api GET "/shops/$SHOP_ID/products/$PID.json"; cp resp.json p.json
+              B=$(jq .blueprint_id p.json); V=$(jq .print_provider_id p.json)
+              echo "::notice title=prod $PID::$(jq -c '{t:.title,bp:.blueprint_id,pp:.print_provider_id,visible,published:(.external!=null)}' p.json)"
+              echo "::notice title=cost $PID::$(jq -c '[.variants[]|select(.is_enabled)|{t:.title,cost,price}]' p.json | head -c 3000)"
+              api GET "/catalog/blueprints/$B/print_providers/$V/shipping.json"
+              echo "::notice title=ship $PID::$(jq -c '[.profiles[]|select(.countries|index("US"))|{first:.first_item.cost,add:.additional_items.cost}]|unique' resp.json)"
+            done
+            exit 0
+          fi
           if [ "$MODE" = "blueprints" ]; then
             api GET "/catalog/blueprints.json"
             echo "::notice title=matches::$(jq -c '[.[] | select((.model|tostring|test("^(1717|18500|3001|3001T|3001Y|6245CM|6245)$")) or (.title|test("mbroider";"i"))) | {id,t:.title,b:.brand,m:.model}]' resp.json | head -c 60000)"

@@ -1,0 +1,73 @@
+name: GOD GEAR Printify order relay
+# Dispatched by the hourly order relay scheduled task.
+# Creates a Printify order on behalf of a Shopify order. HOLD mode by default (gated).
+on:
+  workflow_dispatch:
+    inputs:
+      shopify_order_id:
+        description: "Shopify order ID (digits)"
+        required: true
+      external_id:
+        description: "Idempotency key, usually Shopify order name"
+        required: true
+      line_items_json:
+        description: 'JSON array of {product_id, variant_id, quantity}'
+        required: true
+      address_json:
+        description: 'JSON object: first_name, last_name, email, phone, country, region, address1, address2, city, zip'
+        required: true
+      send_to_production:
+        description: "false=HOLD (safe default), true=submit to Printful via Printify"
+        required: true
+        type: choice
+        default: "false"
+        options: ["false","true"]
+
+permissions: {}
+
+jobs:
+  relay:
+    if: github.triggering_actor == 'youngfamilyllc1943-ai'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      SHOP_ID: "29470786"
+    steps:
+      - name: Validate inputs
+        env:
+          OID: ${{ inputs.shopify_order_id }}
+          EID: ${{ inputs.external_id }}
+          LI:  ${{ inputs.line_items_json }}
+          ADR: ${{ inputs.address_json }}
+          STP: ${{ inputs.send_to_production }}
+        run: |
+          [[ "$OID" =~ ^[0-9]{6,20}$ ]] || { echo "REJECTED: shopify_order_id"; exit 2; }
+          [ ${#EID} -ge 1 ] && [ ${#EID} -le 128 ] || { echo "REJECTED: external_id length"; exit 2; }
+          echo "$LI" | jq 'if type!="array" then error("not array") else .[] | {product_id, variant_id, quantity} end' >/dev/null || { echo "REJECTED: line_items_json"; exit 2; }
+          echo "$ADR" | jq '{first_name, last_name, email, phone, country, region, address1, city, zip}' >/dev/null || { echo "REJECTED: address_json"; exit 2; }
+          case "$STP" in true|false) ;; *) echo "REJECTED: send_to_production"; exit 2 ;; esac
+          echo "inputs OK"
+      - name: Check secret
+        env:
+          T: ${{ secrets.PRINTIFY_TOKEN }}
+        run: '[ -n "$T" ] || { echo "CONTROLLED FAILURE: PRINTIFY_TOKEN missing"; exit 1; }'
+      - name: Create Printify order
+        env:
+          T:   ${{ secrets.PRINTIFY_TOKEN }}
+          EID: ${{ inputs.external_id }}
+          LI:  ${{ inputs.line_items_json }}
+          ADR: ${{ inputs.address_json }}
+          STP: ${{ inputs.send_to_production }}
+        run: |
+          set -euo pipefail
+          T=$(printf '%s' "$T" | tr -d '[:space:]')
+          BASE=https://api.printify.com/v1
+          jq -n --arg eid "$EID" --argjson li "$LI" --argjson adr "$ADR" '{
+            external_id:$eid, label:"GOD GEAR auto-relay",
+            line_items:$li, shipping_method:1, send_shipping_notification:false,
+            address_to:$adr
+          }' > o.json
+          code=$(curl -sS -o resp.json -w '%{http_code}' -X POST -H "Authorization: Bearer $T" -H "User-Agent: GOD-GEAR-Rail" -H "Content-Type: application/json" --data @o.json "$BASE/shops/$SHOP_ID/orders.json?send_to_production=$STP")
+          echo "POST /orders.json -> HTTP $code"
+          echo "::notice title=printify-order::HTTP $code $(jq -c '{id,status,msg:(.errors//.error//null)}' resp.json 2>/dev/null | head -c 400)"
+          [ "${code:0:1}" = "2" ] || exit 1

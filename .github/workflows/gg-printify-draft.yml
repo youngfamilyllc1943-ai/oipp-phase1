@@ -15,6 +15,7 @@ on:
         options:
           - plan
           - create
+          - catalog
       product:
         description: "Fixed product spec"
         required: true
@@ -56,7 +57,7 @@ jobs:
           BP: ${{ inputs.blueprint_id }}
           PP: ${{ inputs.provider_id }}
         run: |
-          case "$MODE" in plan|create) ;; *) echo "REJECTED: mode"; exit 2 ;; esac
+          case "$MODE" in plan|create|catalog) ;; *) echo "REJECTED: mode"; exit 2 ;; esac
           case "$PRODUCT" in gg-athletic-tee) ;; *) echo "REJECTED: product not on allowlist"; exit 2 ;; esac
           [[ "$BP" =~ ^[0-9]{1,6}$ ]] || { echo "REJECTED: blueprint_id"; exit 2; }
           [[ "$PP" =~ ^[0-9]{1,6}$ ]] || { echo "REJECTED: provider_id"; exit 2; }
@@ -99,6 +100,14 @@ jobs:
             api GET "/catalog/blueprints/$BP/print_providers.json"
             echo "::notice title=providers::$(jq -c '[.[] | {id,title,loc:.location.country}]' resp.json)"
             echo "STOP: choose provider_id and re-run"; exit 0
+          fi
+
+          if [ "$MODE" = "catalog" ]; then
+            api GET "/catalog/blueprints/$BP/print_providers/$PP/variants.json"
+            echo "::notice title=catalog::$(jq -c '[.variants[]|.options.color]|unique' resp.json)"
+            echo "::notice title=sizes::$(jq -c '[.variants[]|.options.size]|unique' resp.json)"
+            echo "::notice title=count::$(jq '.variants|length' resp.json)"
+            exit 0
           fi
 
           # Step 3: variants -> GG ATHLETIC spec: Black, S-4XL, price ladder (cents) per Founder-approved Shopify draft

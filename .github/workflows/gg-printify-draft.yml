@@ -98,7 +98,7 @@ jobs:
             else
               code=$(curl -sS -o resp.json -w '%{http_code}' -X "$m" -H "Authorization: Bearer $T" -H "User-Agent: GOD-GEAR-Rail" "$BASE$p")
             fi
-            echo "$m $p -> HTTP $code"; echo "::notice title=api::$m $p -> HTTP $code"
+            echo "$m $p -> HTTP $code"; [ -n "${QUIET:-}" ] || echo "::notice title=api::$m $p -> HTTP $code"
             if [ "${code:0:1}" != "2" ]; then echo "::error title=printify::$(jq -c 'if type=="object" then (.errors // .error // keys) else "n/a" end' resp.json 2>/dev/null | head -c 600)"; rm -f resp.json; exit 1; fi
           }
 
@@ -114,14 +114,13 @@ jobs:
           fi
 
           if [ "$MODE" = "audit" ]; then
-            # Read-only: provider, blueprint, cost vs price per variant, US shipping, for GOD GEAR drafts.
+            # Read-only: provider, blueprint, cost vs price per variant, US shipping. One annotation per product.
+            QUIET=1
             for PID in 6ae41ac5cccda5b54006571c 6ae4543e50d43121ba068196 6ae45451fc0f61752e04efce 6ae454283838eb14700212e1; do
               api GET "/shops/$SHOP_ID/products/$PID.json"; cp resp.json p.json
               B=$(jq .blueprint_id p.json); V=$(jq .print_provider_id p.json)
-              echo "::notice title=prod $PID::$(jq -c '{t:.title,bp:.blueprint_id,pp:.print_provider_id,visible,published:(.external!=null)}' p.json)"
-              echo "::notice title=cost $PID::$(jq -c '[.variants[]|select(.is_enabled)|{t:.title,cost,price}]' p.json | head -c 3000)"
-              api GET "/catalog/blueprints/$B/print_providers/$V/shipping.json"
-              echo "::notice title=ship $PID::$(jq -c '[.profiles[]|select(.countries|index("US"))|{first:.first_item.cost,add:.additional_items.cost}]|unique' resp.json)"
+              api GET "/catalog/blueprints/$B/print_providers/$V/shipping.json"; cp resp.json s.json
+              echo "::notice title=audit $PID::$(jq -c --slurpfile sh s.json '{t:.title,bp:.blueprint_id,pp:.print_provider_id,shopify_published:(.external!=null),ship_us:([$sh[0].profiles[]|select(.countries|index("US"))|{first:.first_item.cost,add:.additional_items.cost}]|unique),v:([.variants[]|select(.is_enabled)|[.title,.cost,.price]]|unique_by(.[0]|split(" / ")|map(select(test("^(XS|S|M|L|XL|[2-5]XL|One size)$")))) )}' p.json | head -c 3500)"
             done
             exit 0
           fi

@@ -24,6 +24,9 @@ on:
         options:
           - gg-athletic-tee
           - gg-athletic-tee-canon
+          - gg-active-tee-bmw-raised
+          - gg-move-hoodie-bmw-raised
+          - gg-culture-cap-bmw-raised
       blueprint_id:
         description: "Printify blueprint ID (digits)"
         required: true
@@ -55,6 +58,7 @@ jobs:
             rail/art
             rail/specs
             rail/tools
+            rail/art/embroidery
       - name: Validate inputs (runs before any secret is read)
         env:
           MODE: ${{ inputs.mode }}
@@ -63,7 +67,7 @@ jobs:
           PP: ${{ inputs.provider_id }}
         run: |
           case "$MODE" in plan|create|catalog|blueprints) ;; *) echo "REJECTED: mode"; exit 2 ;; esac
-          case "$PRODUCT" in gg-athletic-tee|gg-athletic-tee-canon) ;; *) echo "REJECTED: product not on allowlist"; exit 2 ;; esac
+          case "$PRODUCT" in gg-athletic-tee|gg-athletic-tee-canon|gg-active-tee-bmw-raised|gg-move-hoodie-bmw-raised|gg-culture-cap-bmw-raised) ;; *) echo "REJECTED: product not on allowlist"; exit 2 ;; esac
           [[ "$BP" =~ ^[0-9]{1,6}$ ]] || { echo "REJECTED: blueprint_id"; exit 2; }
           [[ "$PP" =~ ^[0-9]{1,6}$ ]] || { echo "REJECTED: provider_id"; exit 2; }
           if [ "$MODE" = "create" ] && [ "$PP" = "0" ]; then echo "REJECTED: create needs a provider_id"; exit 2; fi
@@ -137,7 +141,13 @@ jobs:
               na=$(jq '.art|length' "$SPEC")
               for k in $(seq 0 $((na-1))); do
                 POS=$(jq -r ".art[$k].position" "$SPEC"); Y0=$(jq -r ".art[$k].crop[0]" "$SPEC"); Y1=$(jq -r ".art[$k].crop[1]" "$SPEC")
-                python3 rail/tools/tonal.py "$ART_FILE" art_${i}_$k.png "$HX" auto "$Y0" "$Y1"
+                AF=$(jq -r ".art[$k].file // empty" "$SPEC")
+                if [ -n "$AF" ]; then
+                  TH=$(jq -r ".colors[$i].thread // .colors[$i].hex" "$SPEC")
+                  python3 rail/tools/tonal.py "$AF" art_${i}_$k.png "$TH" recolor
+                else
+                  python3 rail/tools/tonal.py "$ART_FILE" art_${i}_$k.png "$HX" auto "$Y0" "$Y1"
+                fi
                 jq -n --rawfile c <(base64 -w0 art_${i}_$k.png) --arg f "GG_TONAL_${HX}_${POS}.png" '{file_name:$f, contents:$c}' > up.json
                 api POST "/uploads/images.json" up.json; IMG=$(jq -r .id resp.json)
                 PH=$(jq -c --arg img "$IMG" --argjson k "$k" --slurpfile s "$SPEC" '. + [{position:$s[0].art[$k].position, images:[($s[0].art[$k] | {x,y,scale,angle}) + {id:$img}]}]' <<<"$PH")

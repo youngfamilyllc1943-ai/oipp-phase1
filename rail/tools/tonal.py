@@ -6,7 +6,28 @@ import sys
 import numpy as np
 from PIL import Image
 
+def flat(src, hexcolor, thr=0.30):
+    """Embroidery-ready: one solid thread color, no gradients. Dark recessed channels become open fabric."""
+    im = Image.open(src).convert("RGBA")
+    a = np.asarray(im).astype(np.float32) / 255.0
+    lum = 0.2126*a[...,0] + 0.7152*a[...,1] + 0.0722*a[...,2]
+    keep = (a[..., 3] > 0.5) & (lum > thr)
+    g = [int(hexcolor[i:i+2], 16) for i in (0, 2, 4)]
+    out = np.zeros(a.shape, np.uint8); out[keep] = g + [255]
+    return Image.fromarray(out, "RGBA")
+
+def recolor(src, hexcolor):
+    """Embroidery thread: solid single color, original alpha."""
+    im = Image.open(src).convert("RGBA")
+    g = tuple(int(hexcolor[i:i+2], 16) for i in (0, 2, 4))
+    out = Image.new("RGBA", im.size, g + (0,)); out.putalpha(im.split()[3])
+    return out
+
 def tonal(src, hexcolor, mode="auto"):
+    if mode == "recolor":
+        return recolor(src, hexcolor)
+    if mode == "flat":
+        return flat(src, hexcolor)
     im = Image.open(src).convert("RGBA")
     a = np.asarray(im).astype(np.float32) / 255.0
     rgb, alpha = a[..., :3], a[..., 3:]

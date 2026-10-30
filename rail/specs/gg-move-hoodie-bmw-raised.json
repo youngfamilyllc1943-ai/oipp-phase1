@@ -1,6 +1,6 @@
 {
  "title": "GG MOVE™ Hoodie — BMW RAISED™ Embroidered",
- "description": "FAITH IN MOTION.™ GOD GEAR™ wordmark embroidered tone-on-tone at center chest: black-on-black or white-on-white. Gildan 18500 heavy blend hoodie. Made to order.",
+ "description": "FAITH IN MOTION.™ canon GOD GEAR™ wordmark embroidered tone-on-tone at center chest: black-on-black or white-on-white. Gildan 18500 heavy blend hoodie. Made to order.",
  "blueprint_id": 77,
  "provider_id": 410,
  "sizes": [
@@ -38,11 +38,12 @@
  "art": [
   {
    "position": "front_center_chest",
-   "file": "rail/art/embroidery/gg-wordmark.png",
+   "file": "rail/art/embroidery/gg-wordmark-canon.png",
    "x": 0.5,
    "y": 0.5,
    "scale": 1,
    "angle": 0
   }
- ]
+ ],
+ "product_id": "6ae45451fc0f61752e04efce"
 }

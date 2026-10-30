@@ -18,6 +18,7 @@ on:
           - catalog
           - blueprints
           - audit
+          - update
       product:
         description: "Fixed product spec"
         required: true
@@ -67,7 +68,7 @@ jobs:
           BP: ${{ inputs.blueprint_id }}
           PP: ${{ inputs.provider_id }}
         run: |
-          case "$MODE" in plan|create|catalog|blueprints|audit) ;; *) echo "REJECTED: mode"; exit 2 ;; esac
+          case "$MODE" in plan|create|catalog|blueprints|audit|update) ;; *) echo "REJECTED: mode"; exit 2 ;; esac
           case "$PRODUCT" in gg-athletic-tee|gg-athletic-tee-canon|gg-active-tee-bmw-raised|gg-move-hoodie-bmw-raised|gg-culture-cap-bmw-raised) ;; *) echo "REJECTED: product not on allowlist"; exit 2 ;; esac
           [[ "$BP" =~ ^[0-9]{1,6}$ ]] || { echo "REJECTED: blueprint_id"; exit 2; }
           [[ "$PP" =~ ^[0-9]{1,6}$ ]] || { echo "REJECTED: provider_id"; exit 2; }
@@ -126,7 +127,7 @@ jobs:
           fi
           if [ "$MODE" = "blueprints" ]; then
             api GET "/catalog/blueprints.json"
-            echo "::notice title=matches::$(jq -c '[.[] | select((.model|tostring|test("^(1717|18500|3001|3001T|3001Y|6245CM|6245)$")) or (.title|test("mbroider";"i"))) | {id,t:.title,b:.brand,m:.model}]' resp.json | head -c 60000)"
+            echo "::notice title=matches::$(jq -c '[.[] | select((.model|tostring|test("^(1717|18500|3001|3001T|3001Y|6245CM|6245)$")) or (.title|test("mbroider|puff|3d";"i"))) | {id,t:.title,b:.brand,m:.model}]' resp.json | head -c 60000)"
             exit 0
           fi
           if [ "$MODE" = "catalog" ]; then
@@ -141,7 +142,7 @@ jobs:
           fi
 
           SPEC="rail/specs/$PRODUCT.json"
-          if [ -f "$SPEC" ] && [ "$MODE" = "create" ]; then
+          if [ -f "$SPEC" ] && { [ "$MODE" = "create" ] || [ "$MODE" = "update" ]; }; then
             python3 -m pip install -q --break-system-packages pillow numpy
             BP=$(jq -r .blueprint_id "$SPEC"); PP=$(jq -r .provider_id "$SPEC")
             api GET "/catalog/blueprints/$BP/print_providers/$PP/variants.json"; cp resp.json cat.json
@@ -171,7 +172,12 @@ jobs:
             done
             tot=$(wc -l < vars.jsonl); if [ "$tot" -gt 100 ] || [ "$tot" -lt 1 ]; then echo "FAIL: $tot variants (Printify limit 100)"; exit 1; fi
             jq -n --slurpfile s "$SPEC" --slurpfile v vars.jsonl --slurpfile a areas.jsonl '{title:$s[0].title, description:$s[0].description, blueprint_id:$s[0].blueprint_id, print_provider_id:$s[0].provider_id, variants:$v, print_areas:$a}' > product.json
-            api POST "/shops/$SHOP_ID/products.json" product.json
+            if [ "$MODE" = "update" ]; then
+              UPID=$(jq -r '.product_id // empty' "$SPEC"); [ -n "$UPID" ] || { echo "FAIL: spec has no product_id"; exit 1; }
+              api PUT "/shops/$SHOP_ID/products/$UPID.json" product.json
+            else
+              api POST "/shops/$SHOP_ID/products.json" product.json
+            fi
             echo "::notice title=created::id=$(jq -r .id resp.json) enabled=$(jq '[.variants[]|select(.is_enabled)]|length' resp.json)"
             echo "::notice title=mockups::$(jq -c '[.images[] | select(.position=="front" or .position=="back") | .src][0:8]' resp.json)"
             rm -f resp.json; exit 0

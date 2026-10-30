@@ -77,6 +77,7 @@ jobs:
       - name: Build draft (never publishes)
         env:
           T: ${{ secrets.PRINTIFY_TOKEN }}
+          PRODUCT: ${{ inputs.product }}
           MODE: ${{ inputs.mode }}
           BP: ${{ inputs.blueprint_id }}
           PP: ${{ inputs.provider_id }}

@@ -116,7 +116,7 @@ jobs:
 
           SPEC="rail/specs/$PRODUCT.json"
           if [ -f "$SPEC" ] && [ "$MODE" = "create" ]; then
-            pip install -q pillow numpy >/dev/null 2>&1
+            python3 -m pip install -q --break-system-packages pillow numpy
             BP=$(jq -r .blueprint_id "$SPEC"); PP=$(jq -r .provider_id "$SPEC")
             api GET "/catalog/blueprints/$BP/print_providers/$PP/variants.json"; cp resp.json cat.json
             : > areas.jsonl; : > vars.jsonl

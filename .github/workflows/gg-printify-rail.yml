@@ -67,9 +67,9 @@ jobs:
           echo "HTTP $code"
           if [ "$code" != "200" ]; then rm -f out.json; echo "Request failed; response body withheld from public log"; exit 1; fi
           if [ "$OP" = "shops" ]; then
-            # Account data is not printed in this public log: only a count and a yes/no check.
-            echo "shop_count=$(jq 'length' out.json)"
-            echo "god_gear_shop_connected=$(jq '[.[] | select(.id==29470786 and .sales_channel=="shopify")] | length > 0' out.json)"
+            # Account data: emit per-shop structural info (no personal data) as workflow notices
+            echo "::notice title=shop_count::$(jq 'length' out.json)"
+            echo "::notice title=god_gear_shop::$(jq -c '.[] | select(.id==29470786) | {id, sales_channel, auto_publish: (.auto_publish // "unknown-not-exposed"), keys: (keys)}' out.json)"
           else
             # Public Printify catalog data only.
             jq -c '.' out.json

@@ -22,6 +22,7 @@ on:
           - sync-draft
           - map
           - link-external
+          - test-order
       product:
         description: "Fixed product spec"
         required: true
@@ -71,7 +72,7 @@ jobs:
           BP: ${{ inputs.blueprint_id }}
           PP: ${{ inputs.provider_id }}
         run: |
-          case "$MODE" in plan|create|catalog|blueprints|audit|update|sync-draft|map|link-external) ;; *) echo "REJECTED: mode"; exit 2 ;; esac
+          case "$MODE" in plan|create|catalog|blueprints|audit|update|sync-draft|map|link-external|test-order) ;; *) echo "REJECTED: mode"; exit 2 ;; esac
           case "$PRODUCT" in gg-athletic-tee|gg-athletic-tee-canon|gg-active-tee-bmw-raised|gg-move-hoodie-bmw-raised|gg-culture-cap-bmw-raised) ;; *) echo "REJECTED: product not on allowlist"; exit 2 ;; esac
           [[ "$BP" =~ ^[0-9]{1,6}$ ]] || { echo "REJECTED: blueprint_id"; exit 2; }
           [[ "$PP" =~ ^[0-9]{1,6}$ ]] || { echo "REJECTED: provider_id"; exit 2; }
@@ -118,6 +119,34 @@ jobs:
             echo "STOP: choose provider_id and re-run"; exit 0
           fi
 
+          if [ "$MODE" = "test-order" ]; then
+            # Verifies Printify fulfillment accepts GG ATHLETIC canon product + variant.
+            # Creates order in HOLD state (send_to_production=false → no printing, no billing), then cancels it.
+            PRODUCT_ID=6ae41ac5cccda5b54006571c
+            jq -n --arg pid "$PRODUCT_ID"               '{external_id:"GG-ATH-RAIL-VERIFY-001", label:"RAIL VERIFY — do not fulfill",
+                line_items:[{product_id:$pid, variant_id:18102, quantity:1}],
+                shipping_method:1, send_shipping_notification:false,
+                address_to:{first_name:"Tellis", last_name:"Young", email:"youngfamilyllc1943@gmail.com", phone:"2602675149",
+                  country:"US", region:"IN", address1:"PO Box 11843", city:"Fort Wayne", zip:"46860"}}' > o.json
+            # First, dry-run cost estimate (no persisted order)
+            echo "::notice title=step1::cost-estimate (no order created)"
+            code=$(curl -sS -o resp.json -w '%{http_code}' -X POST -H "Authorization: Bearer $T" -H "User-Agent: GOD-GEAR-Rail" -H "Content-Type: application/json" --data @o.json "$BASE/shops/$SHOP_ID/orders/shipping.json")
+            echo "::notice title=shipping-rate::HTTP $code $(jq -c '.' resp.json | head -c 500)"
+            # Then: create order in HOLD mode
+            echo "::notice title=step2::create order (send_to_production=false → HOLD)"
+            code=$(curl -sS -o resp.json -w '%{http_code}' -X POST -H "Authorization: Bearer $T" -H "User-Agent: GOD-GEAR-Rail" -H "Content-Type: application/json" --data @o.json "$BASE/shops/$SHOP_ID/orders.json?send_to_production=false")
+            echo "::notice title=order-create::HTTP $code $(jq -c '{id,status,msg:(.message//.error//.errors)}' resp.json 2>/dev/null | head -c 500)"
+            if [ "${code:0:1}" = "2" ]; then
+              OID=$(jq -r '.id' resp.json)
+              # Cancel immediately to clean up
+              code=$(curl -sS -o resp.json -w '%{http_code}' -X POST -H "Authorization: Bearer $T" -H "User-Agent: GOD-GEAR-Rail" "$BASE/shops/$SHOP_ID/orders/$OID/cancel.json")
+              echo "::notice title=order-cancel::HTTP $code order=$OID"
+              echo "::notice title=VERIFIED::Printify accepts ATHLETIC canon product_id=$PRODUCT_ID variant_id=18102 — fulfillment path works"
+            else
+              echo "::notice title=FAILED::Printify rejected order; see order-create above"
+            fi
+            exit 0
+          fi
           if [ "$MODE" = "link-external" ]; then
             # Experiment: try to directly PUT external on Printify draft to link to existing Shopify product.
             # SAFE: PUT only; no publish, no delete. On rejection, no state change.

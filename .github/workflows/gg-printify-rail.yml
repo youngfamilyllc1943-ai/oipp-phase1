@@ -53,6 +53,7 @@ jobs:
           PID: ${{ inputs.provider_id }}
         run: |
           set -euo pipefail
+          T=$(printf '%s' "$T" | tr -d '[:space:]')
           BASE=https://api.printify.com/v1
           case "$OP" in
             shops)     URL="$BASE/shops.json" ;;

@@ -16,6 +16,7 @@ on:
           - plan
           - create
           - catalog
+          - blueprints
       product:
         description: "Fixed product spec"
         required: true
@@ -61,7 +62,7 @@ jobs:
           BP: ${{ inputs.blueprint_id }}
           PP: ${{ inputs.provider_id }}
         run: |
-          case "$MODE" in plan|create|catalog) ;; *) echo "REJECTED: mode"; exit 2 ;; esac
+          case "$MODE" in plan|create|catalog|blueprints) ;; *) echo "REJECTED: mode"; exit 2 ;; esac
           case "$PRODUCT" in gg-athletic-tee|gg-athletic-tee-canon) ;; *) echo "REJECTED: product not on allowlist"; exit 2 ;; esac
           [[ "$BP" =~ ^[0-9]{1,6}$ ]] || { echo "REJECTED: blueprint_id"; exit 2; }
           [[ "$PP" =~ ^[0-9]{1,6}$ ]] || { echo "REJECTED: provider_id"; exit 2; }
@@ -107,8 +108,16 @@ jobs:
             echo "STOP: choose provider_id and re-run"; exit 0
           fi
 
+          if [ "$MODE" = "blueprints" ]; then
+            api GET "/catalog/blueprints.json"
+            echo "::notice title=matches::$(jq -c '[.[] | select((.model|tostring|test("^(1717|18500|3001|3001T|3001Y|6245CM|6245)$")) or (.title|test("mbroider";"i"))) | {id,t:.title,b:.brand,m:.model}]' resp.json | head -c 60000)"
+            exit 0
+          fi
           if [ "$MODE" = "catalog" ]; then
+            api GET "/catalog/blueprints/$BP/print_providers.json"
+            echo "::notice title=providers::$(jq -c '[.[]|{id,title}]' resp.json)"
             api GET "/catalog/blueprints/$BP/print_providers/$PP/variants.json"
+            echo "::notice title=positions::$(jq -c '[.variants[].placeholders[]?.position]|unique' resp.json)"
             echo "::notice title=catalog::$(jq -c '[.variants[]|.options.color]|unique' resp.json)"
             echo "::notice title=sizes::$(jq -c '[.variants[]|.options.size]|unique' resp.json)"
             echo "::notice title=count::$(jq '.variants|length' resp.json)"

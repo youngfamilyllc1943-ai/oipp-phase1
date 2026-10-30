@@ -174,7 +174,13 @@ jobs:
             jq -n --slurpfile s "$SPEC" --slurpfile v vars.jsonl --slurpfile a areas.jsonl '{title:$s[0].title, description:$s[0].description, blueprint_id:$s[0].blueprint_id, print_provider_id:$s[0].provider_id, variants:$v, print_areas:$a}' > product.json
             if [ "$MODE" = "update" ]; then
               UPID=$(jq -r '.product_id // empty' "$SPEC"); [ -n "$UPID" ] || { echo "FAIL: spec has no product_id"; exit 1; }
-              api PUT "/shops/$SHOP_ID/products/$UPID.json" product.json
+              api GET "/shops/$SHOP_ID/products/$UPID.json"; cp resp.json cur.json
+              jq --slurpfile c cur.json '
+                ([.variants[].id]) as $en
+                | ([$c[0].variants[] | select(.id as $x | $en | index($x) | not)]) as $off
+                | .variants += ($off | map({id, price, is_enabled:false}))
+                | .print_areas[0].variant_ids += ($off | map(.id))' product.json > upd.json
+              api PUT "/shops/$SHOP_ID/products/$UPID.json" upd.json
             else
               api POST "/shops/$SHOP_ID/products.json" product.json
             fi

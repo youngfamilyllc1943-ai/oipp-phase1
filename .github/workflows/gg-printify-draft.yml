@@ -133,19 +133,25 @@ jobs:
             n=$(jq '.colors|length' "$SPEC")
             for i in $(seq 0 $((n-1))); do
               CN=$(jq -r ".colors[$i].name" "$SPEC"); HX=$(jq -r ".colors[$i].hex" "$SPEC")
-              python3 rail/tools/tonal.py "$ART_FILE" art_$i.png "$HX"
-              jq -n --rawfile c <(base64 -w0 art_$i.png) --arg f "GG_TONAL_${HX}.png" '{file_name:$f, contents:$c}' > up.json
-              api POST "/uploads/images.json" up.json; IMG=$(jq -r .id resp.json)
+              PH='[]'
+              na=$(jq '.art|length' "$SPEC")
+              for k in $(seq 0 $((na-1))); do
+                POS=$(jq -r ".art[$k].position" "$SPEC"); Y0=$(jq -r ".art[$k].crop[0]" "$SPEC"); Y1=$(jq -r ".art[$k].crop[1]" "$SPEC")
+                python3 rail/tools/tonal.py "$ART_FILE" art_${i}_$k.png "$HX" auto "$Y0" "$Y1"
+                jq -n --rawfile c <(base64 -w0 art_${i}_$k.png) --arg f "GG_TONAL_${HX}_${POS}.png" '{file_name:$f, contents:$c}' > up.json
+                api POST "/uploads/images.json" up.json; IMG=$(jq -r .id resp.json)
+                PH=$(jq -c --arg img "$IMG" --argjson k "$k" --slurpfile s "$SPEC" '. + [{position:$s[0].art[$k].position, images:[($s[0].art[$k] | {x,y,scale,angle}) + {id:$img}]}]' <<<"$PH")
+              done
               jq -c --arg c "$CN" --slurpfile s "$SPEC" '[.variants[] | select(.options.color==$c) | select(.options.size as $z | $s[0].sizes | index($z)) | {id, price: $s[0].prices[.options.size], is_enabled: true}]' cat.json > v_$i.json
-              echo "::notice title=color::$CN $(jq length v_$i.json) sizes, image $IMG"
+              echo "::notice title=color::$CN $(jq length v_$i.json) sizes, positions $(jq -c 'map(.position)' <<<"$PH")"
               jq -c '.[]' v_$i.json >> vars.jsonl
-              jq -c --arg img "$IMG" --slurpfile s "$SPEC" '{variant_ids: map(.id), placeholders: [{position:"front", images:[($s[0].placement + {id:$img})]}]}' v_$i.json >> areas.jsonl
+              jq -c --argjson ph "$PH" '{variant_ids: map(.id), placeholders: $ph}' v_$i.json >> areas.jsonl
             done
             tot=$(wc -l < vars.jsonl); if [ "$tot" -gt 100 ] || [ "$tot" -lt 1 ]; then echo "FAIL: $tot variants (Printify limit 100)"; exit 1; fi
             jq -n --slurpfile s "$SPEC" --slurpfile v vars.jsonl --slurpfile a areas.jsonl '{title:$s[0].title, description:$s[0].description, blueprint_id:$s[0].blueprint_id, print_provider_id:$s[0].provider_id, variants:$v, print_areas:$a}' > product.json
             api POST "/shops/$SHOP_ID/products.json" product.json
             echo "::notice title=created::id=$(jq -r .id resp.json) enabled=$(jq '[.variants[]|select(.is_enabled)]|length' resp.json)"
-            echo "::notice title=mockups::$(jq -c '[.images[] | select(.position=="front") | .src][0:6]' resp.json)"
+            echo "::notice title=mockups::$(jq -c '[.images[] | select(.position=="front" or .position=="back") | .src][0:8]' resp.json)"
             rm -f resp.json; exit 0
           fi
 

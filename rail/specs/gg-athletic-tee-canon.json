@@ -1,10 +1,58 @@
 {
-  "title": "GG ATHLETIC™ Tee — Black-on-Black",
-  "description": "FAITH IN MOTION.™ GOD GEAR™ canon black-on-black: tonal G mark and wordmark on the front. Bella+Canvas 3001. Made to order.",
-  "blueprint_id": 12,
-  "provider_id": 410,
-  "sizes": ["XS","S","M","L","XL","2XL","3XL","4XL","5XL"],
-  "prices": {"XS":4900,"S":4900,"M":4900,"L":4900,"XL":4900,"2XL":5400,"3XL":5900,"4XL":6400,"5XL":6900},
-  "colors": [{"name":"Black","hex":"0b0b0b"}],
-  "placement": {"x":0.5,"y":0.42,"scale":0.62,"angle":0}
+ "title": "GG ATHLETIC™ Everyday Tee — Black-on-Black",
+ "description": "FAITH IN MOTION.™ GOD GEAR™ canon black-on-black: tonal GOD GEAR™ wordmark center chest, large tonal G emblem on the back. Bella+Canvas 3001. Made to order.",
+ "blueprint_id": 12,
+ "provider_id": 410,
+ "sizes": [
+  "XS",
+  "S",
+  "M",
+  "L",
+  "XL",
+  "2XL",
+  "3XL",
+  "4XL",
+  "5XL"
+ ],
+ "prices": {
+  "XS": 4900,
+  "S": 4900,
+  "M": 4900,
+  "L": 4900,
+  "XL": 4900,
+  "2XL": 5400,
+  "3XL": 5900,
+  "4XL": 6400,
+  "5XL": 6900
+ },
+ "colors": [
+  {
+   "name": "Black",
+   "hex": "0b0b0b"
+  }
+ ],
+ "art": [
+  {
+   "position": "front",
+   "crop": [
+    1760,
+    2185
+   ],
+   "x": 0.5,
+   "y": 0.3,
+   "scale": 0.62,
+   "angle": 0
+  },
+  {
+   "position": "back",
+   "crop": [
+    0,
+    1720
+   ],
+   "x": 0.5,
+   "y": 0.4,
+   "scale": 0.72,
+   "angle": 0
+  }
+ ]
 }

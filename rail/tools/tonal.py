@@ -30,4 +30,9 @@ def tonal(src, hexcolor, mode="auto"):
 if __name__ == "__main__":
     src, dst, hexc = sys.argv[1:4]
     mode = sys.argv[4] if len(sys.argv) > 4 else "auto"
-    tonal(src, hexc.lstrip("#"), mode).save(dst, optimize=True)
+    out = tonal(src, hexc.lstrip("#"), mode)
+    if len(sys.argv) > 6:
+        y0, y1 = int(sys.argv[5]), int(sys.argv[6])
+        out = out.crop((0, y0, out.width, y1))
+        out = out.crop(out.getbbox())
+    out.save(dst, optimize=True)

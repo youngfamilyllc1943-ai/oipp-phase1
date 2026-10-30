@@ -22,6 +22,7 @@ on:
         type: choice
         options:
           - gg-athletic-tee
+          - gg-athletic-tee-canon
       blueprint_id:
         description: "Printify blueprint ID (digits)"
         required: true
@@ -49,7 +50,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          sparse-checkout: rail/art
+          sparse-checkout: |
+            rail/art
+            rail/specs
+            rail/tools
       - name: Validate inputs (runs before any secret is read)
         env:
           MODE: ${{ inputs.mode }}
@@ -58,7 +62,7 @@ jobs:
           PP: ${{ inputs.provider_id }}
         run: |
           case "$MODE" in plan|create|catalog) ;; *) echo "REJECTED: mode"; exit 2 ;; esac
-          case "$PRODUCT" in gg-athletic-tee) ;; *) echo "REJECTED: product not on allowlist"; exit 2 ;; esac
+          case "$PRODUCT" in gg-athletic-tee|gg-athletic-tee-canon) ;; *) echo "REJECTED: product not on allowlist"; exit 2 ;; esac
           [[ "$BP" =~ ^[0-9]{1,6}$ ]] || { echo "REJECTED: blueprint_id"; exit 2; }
           [[ "$PP" =~ ^[0-9]{1,6}$ ]] || { echo "REJECTED: provider_id"; exit 2; }
           if [ "$MODE" = "create" ] && [ "$PP" = "0" ]; then echo "REJECTED: create needs a provider_id"; exit 2; fi
@@ -108,6 +112,31 @@ jobs:
             echo "::notice title=sizes::$(jq -c '[.variants[]|.options.size]|unique' resp.json)"
             echo "::notice title=count::$(jq '.variants|length' resp.json)"
             exit 0
+          fi
+
+          SPEC="rail/specs/$PRODUCT.json"
+          if [ -f "$SPEC" ] && [ "$MODE" = "create" ]; then
+            pip install -q pillow numpy >/dev/null 2>&1
+            BP=$(jq -r .blueprint_id "$SPEC"); PP=$(jq -r .provider_id "$SPEC")
+            api GET "/catalog/blueprints/$BP/print_providers/$PP/variants.json"; cp resp.json cat.json
+            : > areas.jsonl; : > vars.jsonl
+            n=$(jq '.colors|length' "$SPEC")
+            for i in $(seq 0 $((n-1))); do
+              CN=$(jq -r ".colors[$i].name" "$SPEC"); HX=$(jq -r ".colors[$i].hex" "$SPEC")
+              python3 rail/tools/tonal.py "$ART_FILE" art_$i.png "$HX"
+              jq -n --rawfile c <(base64 -w0 art_$i.png) --arg f "GG_TONAL_${HX}.png" '{file_name:$f, contents:$c}' > up.json
+              api POST "/uploads/images.json" up.json; IMG=$(jq -r .id resp.json)
+              jq -c --arg c "$CN" --slurpfile s "$SPEC" '[.variants[] | select(.options.color==$c) | select(.options.size as $z | $s[0].sizes | index($z)) | {id, price: $s[0].prices[.options.size], is_enabled: true}]' cat.json > v_$i.json
+              echo "::notice title=color::$CN $(jq length v_$i.json) sizes, image $IMG"
+              jq -c '.[]' v_$i.json >> vars.jsonl
+              jq -c --arg img "$IMG" --slurpfile s "$SPEC" '{variant_ids: map(.id), placeholders: [{position:"front", images:[($s[0].placement + {id:$img})]}]}' v_$i.json >> areas.jsonl
+            done
+            tot=$(wc -l < vars.jsonl); if [ "$tot" -gt 100 ] || [ "$tot" -lt 1 ]; then echo "FAIL: $tot variants (Printify limit 100)"; exit 1; fi
+            jq -n --slurpfile s "$SPEC" --slurpfile v vars.jsonl --slurpfile a areas.jsonl '{title:$s[0].title, description:$s[0].description, blueprint_id:$s[0].blueprint_id, print_provider_id:$s[0].provider_id, variants:$v, print_areas:$a}' > product.json
+            api POST "/shops/$SHOP_ID/products.json" product.json
+            echo "::notice title=created::id=$(jq -r .id resp.json) enabled=$(jq '[.variants[]|select(.is_enabled)]|length' resp.json)"
+            echo "::notice title=mockups::$(jq -c '[.images[] | select(.position=="front") | .src][0:6]' resp.json)"
+            rm -f resp.json; exit 0
           fi
 
           # Step 3: variants -> GG ATHLETIC spec: Black, S-4XL, price ladder (cents) per Founder-approved Shopify draft

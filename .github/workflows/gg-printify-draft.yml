@@ -20,6 +20,7 @@ on:
           - audit
           - update
           - sync-draft
+          - map
       product:
         description: "Fixed product spec"
         required: true
@@ -69,7 +70,7 @@ jobs:
           BP: ${{ inputs.blueprint_id }}
           PP: ${{ inputs.provider_id }}
         run: |
-          case "$MODE" in plan|create|catalog|blueprints|audit|update|sync-draft) ;; *) echo "REJECTED: mode"; exit 2 ;; esac
+          case "$MODE" in plan|create|catalog|blueprints|audit|update|sync-draft|map) ;; *) echo "REJECTED: mode"; exit 2 ;; esac
           case "$PRODUCT" in gg-athletic-tee|gg-athletic-tee-canon|gg-active-tee-bmw-raised|gg-move-hoodie-bmw-raised|gg-culture-cap-bmw-raised) ;; *) echo "REJECTED: product not on allowlist"; exit 2 ;; esac
           [[ "$BP" =~ ^[0-9]{1,6}$ ]] || { echo "REJECTED: blueprint_id"; exit 2; }
           [[ "$PP" =~ ^[0-9]{1,6}$ ]] || { echo "REJECTED: provider_id"; exit 2; }
@@ -116,6 +117,14 @@ jobs:
             echo "STOP: choose provider_id and re-run"; exit 0
           fi
 
+          if [ "$MODE" = "map" ]; then
+            # Export verified Printify variant map for ATHLETIC canon draft (variant_id, size, price, cost) — no writes
+            api GET "/shops/$SHOP_ID/products/6ae41ac5cccda5b54006571c.json"
+            echo "::notice title=athletic-map::$(jq -c '[.variants[]|{id, title, sku, size:.title|split(" / ")|.[1], price, cost, is_enabled}]' resp.json | head -c 4000)"
+            echo "::notice title=athletic-images::$(jq -c '[.images[]|{src:.src, variant_ids, position:.position, is_default}]|.[0:6]' resp.json | head -c 2500)"
+            echo "::notice title=athletic-print-areas::$(jq -c '.print_areas|map({variant_ids: (.variant_ids|length), placeholders: [.placeholders[]|{position, images:[.images[]|{id,x,y,scale,angle}]}]})' resp.json | head -c 2500)"
+            exit 0
+          fi
           if [ "$MODE" = "sync-draft" ]; then
             # Printify → Shopify as DRAFT (unpublished). Allowlisted products only.
             case "$PRODUCT" in gg-athletic-tee-canon) PID=6ae41ac5cccda5b54006571c ;; *) echo "REJECTED: sync-draft not approved for $PRODUCT"; exit 2 ;; esac

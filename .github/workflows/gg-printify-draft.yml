@@ -19,6 +19,7 @@ on:
           - blueprints
           - audit
           - update
+          - sync-draft
       product:
         description: "Fixed product spec"
         required: true
@@ -68,7 +69,7 @@ jobs:
           BP: ${{ inputs.blueprint_id }}
           PP: ${{ inputs.provider_id }}
         run: |
-          case "$MODE" in plan|create|catalog|blueprints|audit|update) ;; *) echo "REJECTED: mode"; exit 2 ;; esac
+          case "$MODE" in plan|create|catalog|blueprints|audit|update|sync-draft) ;; *) echo "REJECTED: mode"; exit 2 ;; esac
           case "$PRODUCT" in gg-athletic-tee|gg-athletic-tee-canon|gg-active-tee-bmw-raised|gg-move-hoodie-bmw-raised|gg-culture-cap-bmw-raised) ;; *) echo "REJECTED: product not on allowlist"; exit 2 ;; esac
           [[ "$BP" =~ ^[0-9]{1,6}$ ]] || { echo "REJECTED: blueprint_id"; exit 2; }
           [[ "$PP" =~ ^[0-9]{1,6}$ ]] || { echo "REJECTED: provider_id"; exit 2; }
@@ -84,6 +85,7 @@ jobs:
       - name: Build draft (never publishes)
         env:
           T: ${{ secrets.PRINTIFY_TOKEN }}
+          SHOPIFY_TOKEN: ${{ secrets.SHOPIFY_TOKEN }}
           PRODUCT: ${{ inputs.product }}
           MODE: ${{ inputs.mode }}
           BP: ${{ inputs.blueprint_id }}
@@ -114,6 +116,34 @@ jobs:
             echo "STOP: choose provider_id and re-run"; exit 0
           fi
 
+          if [ "$MODE" = "sync-draft" ]; then
+            # Printify → Shopify as DRAFT (unpublished). Allowlisted products only.
+            case "$PRODUCT" in gg-athletic-tee-canon) PID=6ae41ac5cccda5b54006571c ;; *) echo "REJECTED: sync-draft not approved for $PRODUCT"; exit 2 ;; esac
+            # 1. Printify publishes to Shopify
+            jq -n '{title:true, description:true, images:true, variants:true, tags:true, keyFeatures:true, shipping_template:true}' > pub.json
+            api POST "/shops/$SHOP_ID/products/$PID/publish.json" pub.json
+            # 2. Printify needs an explicit publishing_succeeded callback to clear its queue; we send after a short wait so Shopify has the product
+            sleep 20
+            SPID=""
+            for i in 1 2 3 4 5; do
+              api GET "/shops/$SHOP_ID/products/$PID.json"
+              SPID=$(jq -r '.external.id // empty' resp.json)
+              [ -n "$SPID" ] && break
+              sleep 10
+            done
+            if [ -z "$SPID" ]; then echo "FAIL: no Shopify product id after publish"; exit 1; fi
+            echo "::notice title=shopify-id::$SPID"
+            jq -n --arg sid "$SPID" '{external:{id:$sid, handle:"god-gear"}}' > ok.json
+            api POST "/shops/$SHOP_ID/products/$PID/publishing_succeeded.json" ok.json
+            # 3. Force Shopify product to DRAFT status via Admin GraphQL
+            T2="${SHOPIFY_TOKEN:-}"
+            if [ -z "$T2" ]; then echo "::warning title=shopify::no SHOPIFY_TOKEN secret — Shopify side left in default (likely active). Set repo secret SHOPIFY_TOKEN to Admin API token with write_products"; exit 0; fi
+            Q='mutation d($id:ID!){productUpdate(product:{id:$id,status:DRAFT}){product{id status handle} userErrors{field message}}}'
+            BODY=$(jq -nc --arg q "$Q" --arg id "gid://shopify/Product/$SPID" '{query:$q, variables:{id:$id}}')
+            code=$(curl -sS -o sh.json -w '%{http_code}' -X POST -H "X-Shopify-Access-Token: $T2" -H "Content-Type: application/json" --data "$BODY" "https://ggmovement818.myshopify.com/admin/api/2026-01/graphql.json")
+            echo "::notice title=shopify-draft::HTTP $code $(jq -c '.data.productUpdate // .errors' sh.json 2>/dev/null | head -c 400)"
+            exit 0
+          fi
           if [ "$MODE" = "audit" ]; then
             # Read-only: provider, blueprint, cost vs price per variant, US shipping. One annotation per product.
             QUIET=1

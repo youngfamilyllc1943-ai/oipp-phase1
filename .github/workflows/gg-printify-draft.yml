@@ -77,6 +77,7 @@ jobs:
           PP: ${{ inputs.provider_id }}
         run: |
           set -euo pipefail
+          T=$(printf '%s' "$T" | tr -d '[:space:]')
           BASE=https://api.printify.com/v1
           api() { # method path [json-body-file]
             local m=$1 p=$2 b=${3:-}

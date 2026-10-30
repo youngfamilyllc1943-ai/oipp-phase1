@@ -23,6 +23,7 @@ on:
           - map
           - link-external
           - test-order
+          - cancel-test
       product:
         description: "Fixed product spec"
         required: true
@@ -72,7 +73,7 @@ jobs:
           BP: ${{ inputs.blueprint_id }}
           PP: ${{ inputs.provider_id }}
         run: |
-          case "$MODE" in plan|create|catalog|blueprints|audit|update|sync-draft|map|link-external|test-order) ;; *) echo "REJECTED: mode"; exit 2 ;; esac
+          case "$MODE" in plan|create|catalog|blueprints|audit|update|sync-draft|map|link-external|test-order|cancel-test) ;; *) echo "REJECTED: mode"; exit 2 ;; esac
           case "$PRODUCT" in gg-athletic-tee|gg-athletic-tee-canon|gg-active-tee-bmw-raised|gg-move-hoodie-bmw-raised|gg-culture-cap-bmw-raised) ;; *) echo "REJECTED: product not on allowlist"; exit 2 ;; esac
           [[ "$BP" =~ ^[0-9]{1,6}$ ]] || { echo "REJECTED: blueprint_id"; exit 2; }
           [[ "$PP" =~ ^[0-9]{1,6}$ ]] || { echo "REJECTED: provider_id"; exit 2; }
@@ -119,6 +120,19 @@ jobs:
             echo "STOP: choose provider_id and re-run"; exit 0
           fi
 
+          if [ "$MODE" = "cancel-test" ]; then
+            TORDER=6ae4e2ad99f5711d28006ad0
+            # Try multiple cleanup patterns in sequence
+            api GET "/shops/$SHOP_ID/orders/$TORDER.json"
+            echo "::notice title=order-state::$(jq -c '{id,status,on_hold:(.on_hold//null)}' resp.json | head -c 400)"
+            for M in "DELETE /shops/$SHOP_ID/orders/$TORDER.json" "POST /shops/$SHOP_ID/orders/$TORDER/cancel.json"; do
+              set -- $M; METH=$1; PATH_=$2
+              code=$(curl -sS -o resp.json -w '%{http_code}' -X "$METH" -H "Authorization: Bearer $T" -H "User-Agent: GOD-GEAR-Rail" "$BASE$PATH_")
+              echo "::notice title=try::$METH $PATH_ -> HTTP $code $(jq -c '.' resp.json 2>/dev/null | head -c 200)"
+              [ "${code:0:1}" = "2" ] && break
+            done
+            exit 0
+          fi
           if [ "$MODE" = "test-order" ]; then
             # Verifies Printify fulfillment accepts GG ATHLETIC canon product + variant.
             # Creates order in HOLD state (send_to_production=false → no printing, no billing), then cancels it.

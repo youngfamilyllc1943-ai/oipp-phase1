@@ -1,0 +1,33 @@
+name: GOD GEAR Printful Rail (allowlist)
+on:
+  workflow_dispatch:
+    inputs:
+      op:
+        description: "Operation"
+        required: true
+        type: choice
+        options: [check]
+permissions: {}
+concurrency:
+  group: gg-printful-rail
+  cancel-in-progress: false
+jobs:
+  run:
+    if: github.triggering_actor == 'youngfamilyllc1943-ai'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check secret is set
+        env: { T: "${{ secrets.PRINTFUL_TOKEN }}" }
+        run: |
+          if [ -z "$T" ]; then echo "CONTROLLED FAILURE - PRINTFUL_TOKEN not set"; exit 1; fi
+      - name: Read-only check (no account data printed beyond ids/names/counts)
+        env: { T: "${{ secrets.PRINTFUL_TOKEN }}" }
+        run: |
+          set -uo pipefail
+          T=$(printf '%s' "$T" | tr -d '[:space:]')
+          g(){ curl -sS -o r.json -w '%{http_code}' -H "Authorization: Bearer $T" -H "User-Agent: GOD-GEAR-Rail" "https://api.printful.com$1"; }
+          c=$(g /oauth/scopes); echo "::notice title=scopes::HTTP $c $(jq -c '[.result.scopes[]?.value]' r.json 2>/dev/null)"
+          c=$(g /stores); echo "::notice title=stores::HTTP $c $(jq -c '[.result[]?|{id,name,type}]' r.json 2>/dev/null)"
+          c=$(g "/store/products?limit=100"); echo "::notice title=products::HTTP $c count=$(jq '.paging.total // (.result|length)' r.json 2>/dev/null) $(jq -c '[.result[]?|{id,name}]' r.json 2>/dev/null | head -c 1500)"
+          rm -f r.json

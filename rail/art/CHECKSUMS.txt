@@ -1,7 +1,7 @@
-eccef934b80147e538d0079eae0b2c331720996427e428ee1ac02bee48b86d9a  maroon/GG-ART-A_God-is-my-Source.png
-69060b336e28238a20d75619fe8a24937caec02a4c2963b8575bd999910baf9a  maroon/GG-ART-B_Got-God-Got-Gear.png
-043b8ab8604a72e008a150f0d3fa7d81e398b84d8903c5d3b43a7ad07aeca76f  maroon/GG-ART-C_GOD-GEAR-stacked-distressed.png
-f823c2080ed40c8c46b6403360017a485c40464eed1933cb9bd06f46103b8530  maroon/GG-ART-D_Shield-lockup.png
-8298f70ba7d4973b62dfec1decc646208671be1656f238b02e55e980970ada51  maroon/GG-ART-E_Shield-cross.png
+eccef934b80147e538d0079eae0b2c331720996427e428ee1ac02bee48b86d9a  NOT-CANON-maroon-samples/GG-ART-A_God-is-my-Source.png
+69060b336e28238a20d75619fe8a24937caec02a4c2963b8575bd999910baf9a  NOT-CANON-maroon-samples/GG-ART-B_Got-God-Got-Gear.png
+043b8ab8604a72e008a150f0d3fa7d81e398b84d8903c5d3b43a7ad07aeca76f  NOT-CANON-maroon-samples/GG-ART-C_GOD-GEAR-stacked-distressed.png
+f823c2080ed40c8c46b6403360017a485c40464eed1933cb9bd06f46103b8530  NOT-CANON-maroon-samples/GG-ART-D_Shield-lockup.png
+8298f70ba7d4973b62dfec1decc646208671be1656f238b02e55e980970ada51  NOT-CANON-maroon-samples/GG-ART-E_Shield-cross.png
 08ea4bc537ebdab3fb5dfaacae5d2af291649033db90b162f447780c8aaf0af9  GG-WM-CHROME-FLAT.png
 bed1104524c7c56e31f3caf94d176d6aded6567a2949e6530576b3b3b4314b2a  GG-WM-STITCH-FLAT.png

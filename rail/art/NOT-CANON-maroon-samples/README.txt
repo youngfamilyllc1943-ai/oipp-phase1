@@ -1,0 +1,1 @@
+NOT CANON. Founder ruling 2026-10-31: maroon collection images are layout samples only. Shield/cross mark and these typeset files must not be used for production. Production uses canon logos GG-LOGO-01..05 (Drive folder 1YXvSrv0ysVIWhTmXhz3qo3I3X83gCbEc) only.

@@ -19,7 +19,7 @@ jobs:
   run:
     if: github.triggering_actor == 'youngfamilyllc1943-ai'
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 12
     steps:
       - name: Validate
         env: { OP: "${{ inputs.op }}", ARG: "${{ inputs.arg }}" }

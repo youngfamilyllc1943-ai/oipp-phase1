@@ -53,7 +53,7 @@ jobs:
               c=$(g "$ARG"); echo "::notice title=probe::GET $ARG HTTP $c $(jq -c '.' r.json 2>/dev/null | head -c 1500)" ;;
             mockup)
               SPEC="rail/pf-specs/$ARG.json"; [ -f "$SPEC" ] || { echo "REJECTED: no spec"; exit 2; }
-              T="$T" ONLY=Black python3 rail/tools/pf_mockup.py "$SPEC" ;;
+              T="$T" ONLY=Black JOBS=emb python3 rail/tools/pf_mockup.py "$SPEC" ;;
             sync)
               SPEC="rail/pf-specs/$ARG.json"; [ -f "$SPEC" ] || { echo "REJECTED: no spec"; exit 2; }
               RAW=https://raw.githubusercontent.com/youngfamilyllc1943-ai/oipp-phase1/main/rail/art/pf

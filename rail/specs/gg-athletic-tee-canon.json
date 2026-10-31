@@ -1,6 +1,6 @@
 {
- "title": "GG ATHLETIC™ Everyday Tee — Black-on-Black",
- "description": "FAITH IN MOTION.™ GOD GEAR™ canon black-on-black: tonal GOD GEAR™ wordmark center chest, large tonal G emblem on the back. Bella+Canvas 3001. Made to order.",
+ "title": "GG ATHLETIC\u2122 Everyday Tee \u2014 Tonal",
+ "description": "FAITH IN MOTION.\u2122 GOD GEAR\u2122 canon tone-on-tone: GOD GEAR\u2122 wordmark center chest, large G emblem on the back, G mark on the left sleeve. Black-on-black, white-on-white, maroon-on-maroon. Bella+Canvas 3001. Made to order.",
  "blueprint_id": 12,
  "provider_id": 410,
  "sizes": [
@@ -29,6 +29,14 @@
   {
    "name": "Black",
    "hex": "0b0b0b"
+  },
+  {
+   "name": "White",
+   "hex": "f2f2f0"
+  },
+  {
+   "name": "Maroon",
+   "hex": "5b1a26"
   }
  ],
  "art": [
@@ -52,6 +60,17 @@
    "x": 0.5,
    "y": 0.4,
    "scale": 0.72,
+   "angle": 0
+  },
+  {
+   "position": "left_sleeve",
+   "crop": [
+    0,
+    1720
+   ],
+   "x": 0.5,
+   "y": 0.5,
+   "scale": 0.6,
    "angle": 0
   }
  ],

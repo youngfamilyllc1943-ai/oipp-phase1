@@ -51,7 +51,8 @@ jobs:
             mockup)
               SPEC="rail/pf-specs/$ARG.json"; [ -f "$SPEC" ] || { echo "REJECTED: no spec"; exit 2; }
               RAW=https://raw.githubusercontent.com/youngfamilyllc1943-ai/oipp-phase1/main/rail/art/pf
-              CP=$(jq -r .catalog_product $SPEC); g /products/$CP >/dev/null; cp r.json cat.json
+              CP=$(jq -r .catalog_product $SPEC); c=$(g /products/$CP); cp r.json cat.json; echo "::notice title=m-start::cp=$CP http=$c colors=$(jq -c '.colors|keys' $SPEC)"
+              trap 'echo "::error title=m-fail::line $LINENO rc $?"' ERR
               for COL in $(jq -r '.colors|keys[]' $SPEC); do
                 CS=$(jq -c --arg c "$COL" '.colors[$c]' $SPEC); PFC=$(jq -r .pf <<<"$CS")
                 PV=$(jq -r --arg c "$PFC" '.result.variants[]|select(.color==$c and .size=="M")|.id' cat.json|head -1)

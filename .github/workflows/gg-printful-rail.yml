@@ -6,7 +6,11 @@ on:
         description: "Operation"
         required: true
         type: choice
-        options: [check]
+        options: [check, catalog, product]
+      arg:
+        description: "search term (catalog) or catalog product id (product)"
+        required: false
+        default: ""
 permissions: {}
 concurrency:
   group: gg-printful-rail
@@ -17,23 +21,27 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Check secret is set
-        env: { T: "${{ secrets.PRINTFUL_TOKEN }}" }
+      - name: Validate
+        env: { OP: "${{ inputs.op }}", ARG: "${{ inputs.arg }}" }
         run: |
-          if [ -z "$T" ]; then echo "CONTROLLED FAILURE - PRINTFUL_TOKEN not set"; exit 1; fi
-      - name: Read-only check (no account data printed beyond ids/names/counts)
-        env: { T: "${{ secrets.PRINTFUL_TOKEN }}" }
+          [[ "$ARG" =~ ^[A-Za-z0-9\ ]{0,40}$ ]] || { echo "REJECTED arg"; exit 2; }
+      - name: Read-only Printful calls (ids, names, counts, catalog data only)
+        env: { T: "${{ secrets.PRINTFUL_TOKEN }}", OP: "${{ inputs.op }}", ARG: "${{ inputs.arg }}" }
         run: |
           set -uo pipefail
-          T=$(printf '%s' "$T" | tr -d '[:space:]')
-          echo "::notice title=key-shape::length=${#T} prefix_alpha=$(printf '%s' "$T" | head -c1 | tr -c 'A-Za-z0-9' '?' | sed 's/[0-9]/digit/;s/[A-Za-z]/letter/')"
-          AUTH="Authorization: Bearer $T"
-          c=$(curl -sS -o r.json -w '%{http_code}' -H "$AUTH" https://api.printful.com/stores)
-          echo "::notice title=bearer-error::HTTP $c $(jq -c '.error.message // .result // empty' r.json 2>/dev/null | head -c 200) | chars: $(printf '%s' "$T" | tr -d 'A-Za-z0-9' | fold -w1 | sort -u | tr -d '\n')"
-          if [ "$c" = "401" ]; then B=$(printf '%s' "$T" | base64 -w0); AUTH="Authorization: Basic $B"; c2=$(curl -sS -o r.json -w '%{http_code}' -H "$AUTH" https://api.printful.com/store); echo "::notice title=legacy-basic::HTTP $c2"; fi
-          echo "::notice title=error-reason::$(jq -c '.error.message // .result // empty' r.json 2>/dev/null | head -c 200)"
-          g(){ curl -sS -o r.json -w '%{http_code}' -H "$AUTH" -H "User-Agent: GOD-GEAR-Rail" "https://api.printful.com$1"; }
-          c=$(g /oauth/scopes); echo "::notice title=scopes::HTTP $c $(jq -c '[.result.scopes[]?.value]' r.json 2>/dev/null)"
-          c=$(g /stores); echo "::notice title=stores::HTTP $c $(jq -c '[.result[]?|{id,name,type}]' r.json 2>/dev/null)"
-          c=$(g "/store/products?limit=100"); echo "::notice title=products::HTTP $c count=$(jq '.paging.total // (.result|length)' r.json 2>/dev/null) $(jq -c '[.result[]?|{id,name}]' r.json 2>/dev/null | head -c 1500)"
-          rm -f r.json
+          T=$(printf '%s' "$T" | tr -d '[:space:]'); [ -n "$T" ] || { echo "no token"; exit 1; }
+          S=18823775
+          g(){ curl -sS -o r.json -w '%{http_code}' -H "Authorization: Bearer $T" -H "X-PF-Store-Id: $S" -H "User-Agent: GOD-GEAR-Rail" "https://api.printful.com$1"; }
+          case "$OP" in
+            check)
+              c=$(g /stores); echo "::notice title=stores::HTTP $c $(jq -c '[.result[]?|{id,name,type}]' r.json)"
+              c=$(g "/store/products?limit=100"); echo "::notice title=store-products::HTTP $c total=$(jq '.paging.total' r.json) $(jq -c '[.result[]?|{id,name,synced}]' r.json | head -c 3000)" ;;
+            catalog)
+              c=$(g /products); jq -c --arg q "$ARG" '[.result[]|select((.title+" "+.model+" "+(.brand//""))|ascii_downcase|contains($q|ascii_downcase))|{id,title,model,techniques:[.techniques[]?.key],files:[.files[]?.type]}]' r.json > out.json
+              echo "::notice title=catalog::HTTP $c $(head -c 3500 out.json)" ;;
+            product)
+              [[ "$ARG" =~ ^[0-9]{1,6}$ ]] || { echo "REJECTED"; exit 2; }
+              c=$(g /products/$ARG); echo "::notice title=product::HTTP $c $(jq -c '.result.product|{id,title,model,techniques:[.techniques[]?|{key,display_name}],files:[.files[]?|{type,title,additional_price}],options:[.options[]?|{id,title,type,values:(.values|tostring|.[0:400]),additional_price}]}' r.json | head -c 3800)"
+              echo "::notice title=variants::$(jq -c '[.result.variants[]|{id,color,size,price}]|group_by(.color)|map({color:.[0].color,sizes:map(.size),ids:map(.id),price:.[0].price})' r.json | head -c 3800)" ;;
+          esac
+          rm -f r.json out.json

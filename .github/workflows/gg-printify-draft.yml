@@ -24,6 +24,7 @@ on:
           - link-external
           - test-order
           - cancel-test
+          - delete-test-drafts
       product:
         description: "Fixed product spec"
         required: true
@@ -34,6 +35,7 @@ on:
           - gg-active-tee-bmw-raised
           - gg-move-hoodie-bmw-raised
           - gg-culture-cap-bmw-raised
+          - gg-signature-tee-sleeve
       blueprint_id:
         description: "Printify blueprint ID (digits)"
         required: true
@@ -74,7 +76,7 @@ jobs:
           BP: ${{ inputs.blueprint_id }}
           PP: ${{ inputs.provider_id }}
         run: |
-          case "$MODE" in plan|create|catalog|blueprints|audit|update|sync-draft|map|link-external|test-order|cancel-test) ;; *) echo "REJECTED: mode"; exit 2 ;; esac
+          case "$MODE" in plan|create|catalog|blueprints|audit|update|sync-draft|map|link-external|test-order|cancel-test|delete-test-drafts) ;; *) echo "REJECTED: mode"; exit 2 ;; esac
           case "$PRODUCT" in gg-athletic-tee|gg-athletic-tee-canon|gg-active-tee-bmw-raised|gg-move-hoodie-bmw-raised|gg-culture-cap-bmw-raised) ;; *) echo "REJECTED: product not on allowlist"; exit 2 ;; esac
           [[ "$BP" =~ ^[0-9]{1,6}$ ]] || { echo "REJECTED: blueprint_id"; exit 2; }
           [[ "$PP" =~ ^[0-9]{1,6}$ ]] || { echo "REJECTED: provider_id"; exit 2; }
@@ -189,9 +191,17 @@ jobs:
             echo "::notice title=athletic-print-areas::$(jq -c '.print_areas|map({variant_ids: (.variant_ids|length), placeholders: [.placeholders[]|{position, images:[.images[]|{id,x,y,scale,angle}]}]})' resp.json | head -c 2500)"
             exit 0
           fi
+          if [ "$MODE" = "delete-test-drafts" ]; then
+            # Founder-authorized 2026-10-31: delete exactly these two unpublished test drafts. No other IDs.
+            for DPID in 6ae5a4aeaa7972528106ae11 6ae5ab65aa7972528106b49f; do
+              code=$(curl -sS -o resp.json -w '%{http_code}' -X DELETE -H "Authorization: Bearer $T" -H "User-Agent: GOD-GEAR-Rail" "$BASE/shops/$SHOP_ID/products/$DPID.json")
+              echo "::notice title=delete::$DPID HTTP $code"
+            done
+            exit 0
+          fi
           if [ "$MODE" = "sync-draft" ]; then
             # Printify → Shopify as DRAFT (unpublished). Allowlisted products only.
-            case "$PRODUCT" in gg-athletic-tee-canon) PID=6ae41ac5cccda5b54006571c ;; *) echo "REJECTED: sync-draft not approved for $PRODUCT"; exit 2 ;; esac
+            case "$PRODUCT" in gg-athletic-tee-canon) PID=6ae41ac5cccda5b54006571c ;; gg-signature-tee-sleeve) PID=6ae5ac5a944026b113052245 ;; *) echo "REJECTED: sync-draft not approved for $PRODUCT"; exit 2 ;; esac
             # 1. Printify publishes to Shopify
             jq -n '{title:true, description:true, images:true, variants:true, tags:true, keyFeatures:true, shipping_template:true}' > pub.json
             api POST "/shops/$SHOP_ID/products/$PID/publish.json" pub.json

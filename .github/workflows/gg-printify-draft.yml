@@ -311,15 +311,20 @@ jobs:
           jq -n --rawfile c art.b64 '{file_name:"GG-LOGO-03-print.png", contents:$c}' > up.json
           api POST "/uploads/images.json" up.json
           IMG=$(jq -r '.id' resp.json); echo "::notice title=image::$IMG $(jq -c '{width,height}' resp.json)"
+          base64 -w0 rail/art/GG-LOGO-05-Gmark-sleeve.png > sl.b64
+          jq -n --rawfile c sl.b64 '{file_name:"GG-LOGO-05-Gmark-sleeve.png", contents:$c}' > up2.json
+          api POST "/uploads/images.json" up2.json
+          SIMG=$(jq -r '.id' resp.json); echo "::notice title=sleeve-image::$SIMG"
 
           # Step 5: create product (unpublished; publish endpoint is never called)
-          jq -n --argjson bp "$BP" --argjson pp "$PP" --arg img "$IMG" --slurpfile v variants.json '{
-            title: "GOD GEAR™ Signature Tee — Silver & Gold (CANON GG-LOGO-03)",
-            description: "FAITH IN MOTION.™ GOD GEAR™ canon silver and gold GOD GEAR™ wordmark (GG-LOGO-03) across the chest. Made to order.",
+          jq -n --argjson bp "$BP" --argjson pp "$PP" --arg img "$IMG" --arg simg "$SIMG" --slurpfile v variants.json '{
+            title: "GOD GEAR™ Signature Tee — Silver & Gold + Sleeve G (CANON)",
+            description: "FAITH IN MOTION.™ GOD GEAR™ canon silver and gold GOD GEAR™ wordmark (GG-LOGO-03) across the chest; canon G mark on the left sleeve. Made to order.",
             blueprint_id: $bp, print_provider_id: $pp,
             variants: ($v[0] | map({id, price, is_enabled})),
             print_areas: [{ variant_ids: ($v[0] | map(.id)),
-              placeholders: [{ position: "front", images: [{ id: $img, x: 0.5, y: 0.3, scale: 0.85, angle: 0 }] }] }]
+              placeholders: [{ position: "front", images: [{ id: $img, x: 0.5, y: 0.3, scale: 0.85, angle: 0 }] },
+                             { position: "left_sleeve", images: [{ id: $simg, x: 0.5, y: 0.5, scale: 0.6, angle: 0 }] }] }]
           }' > product.json
           api POST "/shops/$SHOP_ID/products.json" product.json
           echo "::notice title=created::id=$(jq -r '.id' resp.json) visible=$(jq -r '.visible' resp.json) enabled=$(jq '[.variants[]|select(.is_enabled)]|length' resp.json)"

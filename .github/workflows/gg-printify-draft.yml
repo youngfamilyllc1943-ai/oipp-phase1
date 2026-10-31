@@ -57,7 +57,8 @@ jobs:
     env:
       SHOP_ID: "29470786"
       # Allowlisted artwork: GOD GEAR master logo (G mark + wordmark + FAITH IN MOTION.), transparent print file in this repo.
-      ART_FILE: "rail/art/GG-LOGO-03-print.png"
+      ART_FILE: "rail/art/gg-master-logo-print.png"
+      CANON_TEE_ART: "rail/art/GG-LOGO-03-print.png"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -307,7 +308,7 @@ jobs:
           if [ "$MODE" = "plan" ]; then echo "PLAN OK: $n variants would be created. No write performed."; exit 0; fi
 
           # Step 4: upload allowlisted artwork by URL
-          base64 -w0 "$ART_FILE" > art.b64
+          base64 -w0 "$CANON_TEE_ART" > art.b64
           jq -n --rawfile c art.b64 '{file_name:"GG-LOGO-03-print.png", contents:$c}' > up.json
           api POST "/uploads/images.json" up.json
           IMG=$(jq -r '.id' resp.json); echo "::notice title=image::$IMG $(jq -c '{width,height}' resp.json)"

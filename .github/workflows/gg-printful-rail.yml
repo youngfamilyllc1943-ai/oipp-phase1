@@ -35,7 +35,8 @@ jobs:
           case "$OP" in
             check)
               c=$(g /stores); echo "::notice title=stores::HTTP $c $(jq -c '[.result[]?|{id,name,type}]' r.json)"
-              c=$(g "/store/products?limit=100"); echo "::notice title=store-products::HTTP $c total=$(jq '.paging.total' r.json) $(jq -c '[.result[]?|{id,name,synced}]' r.json | head -c 3000)" ;;
+              c=$(g "/store/products?limit=100"); echo "::notice title=store-products::HTTP $c $(jq -c '.error.message // empty' r.json | head -c 300)"
+              c=$(g "/sync/products?limit=100"); echo "::notice title=sync-products::HTTP $c total=$(jq '.paging.total' r.json) $(jq -c '[.result[]?|{id,external_id,name,variants,synced}]' r.json | head -c 3000) $(jq -c '.error.message // empty' r.json | head -c 300)" ;;
             catalog)
               c=$(g /products); jq -c --arg q "$ARG" '[.result[]|select((.title+" "+.model+" "+(.brand//""))|ascii_downcase|contains($q|ascii_downcase))|{id,title,model,techniques:[.techniques[]?.key],files:[.files[]?.type]}]' r.json > out.json
               echo "::notice title=catalog::HTTP $c $(head -c 3500 out.json)" ;;

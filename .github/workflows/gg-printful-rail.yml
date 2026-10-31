@@ -6,7 +6,7 @@ on:
         description: "Operation"
         required: true
         type: choice
-        options: [check, catalog, product]
+        options: [check, catalog, product, sync]
       arg:
         description: "search term (catalog) or catalog product id (product)"
         required: false
@@ -24,8 +24,10 @@ jobs:
       - name: Validate
         env: { OP: "${{ inputs.op }}", ARG: "${{ inputs.arg }}" }
         run: |
-          [[ "$ARG" =~ ^[A-Za-z0-9\ ]{0,40}$ ]] || { echo "REJECTED arg"; exit 2; }
-      - name: Read-only Printful calls (ids, names, counts, catalog data only)
+          [[ "$ARG" =~ ^[A-Za-z0-9\ -]{0,40}$ ]] || { echo "REJECTED arg"; exit 2; }
+      - uses: actions/checkout@v4
+        with: { sparse-checkout: rail/pf-specs }
+      - name: Printful calls (ids, names, counts, catalog data only)
         env: { T: "${{ secrets.PRINTFUL_TOKEN }}", OP: "${{ inputs.op }}", ARG: "${{ inputs.arg }}" }
         run: |
           set -uo pipefail
@@ -44,5 +46,26 @@ jobs:
               [[ "$ARG" =~ ^[0-9]{1,6}$ ]] || { echo "REJECTED"; exit 2; }
               c=$(g /products/$ARG); echo "::notice title=product::HTTP $c $(jq -c '.result.product|{id,title,model,techniques:[.techniques[]?|{key,display_name}],files:[.files[]?|{type,title,additional_price}],options:[.options[]?|{id,title,type,values:(.values|tostring|.[0:400]),additional_price}]}' r.json | head -c 3800)"
               echo "::notice title=variants::$(jq -c '[.result.variants[]|{id,color,size,price}]|group_by(.color)|map({color:.[0].color,sizes:map(.size),ids:map(.id),price:.[0].price})' r.json | head -c 3800)" ;;
+            sync)
+              SPEC="rail/pf-specs/$ARG.json"; [ -f "$SPEC" ] || { echo "REJECTED: no spec"; exit 2; }
+              RAW=https://raw.githubusercontent.com/youngfamilyllc1943-ai/oipp-phase1/main/rail/art/pf
+              CP=$(jq -r .catalog_product $SPEC); SP=$(jq -r .shopify_product $SPEC)
+              g /products/$CP >/dev/null; cp r.json cat.json
+              c=$(g "/sync/products/@$SP"); echo "::notice title=sync-product::HTTP $c $(jq -c '{id:.result.sync_product.id,name:.result.sync_product.name,variants:.result.sync_product.variants,synced:.result.sync_product.synced} // .error' r.json)"
+              [ "$c" = "200" ] || exit 1
+              ok=0; bad=0
+              for row in $(jq -c '.result.sync_variants[]|{id,ext:.external_id,name}' r.json); do
+                VID=$(jq -r .id <<<"$row"); NM=$(jq -r .name <<<"$row"); OPT=${NM##* - }; COL=${OPT%% / *}; SZ=${OPT##* / }
+                CS=$(jq -c --arg c "$COL" '.colors[$c] // empty' $SPEC); [ -n "$CS" ] || { echo "skip $NM"; bad=$((bad+1)); continue; }
+                PFC=$(jq -r .pf <<<"$CS")
+                PV=$(jq -r --arg c "$PFC" --arg s "$SZ" '.result.variants[]|select(.color==$c and .size==$s)|.id' cat.json | head -1)
+                [ -n "$PV" ] || { echo "no catalog variant $PFC $SZ"; bad=$((bad+1)); continue; }
+                jq -n --argjson pv "$PV" --arg raw "$RAW" --argjson cs "$CS" --slurpfile s $SPEC '{variant_id:$pv,
+                  files:[{type:"embroidery_chest_center",url:($raw+"/"+$cs.wm+".png")},{type:"embroidery_sleeve_left_top",url:($raw+"/"+$s[0].sleeve+".png")},{type:"back",url:($raw+"/"+$cs.back+".png")}],
+                  options:[{id:"thread_colors_chest_center",value:[$cs.thread]},{id:"thread_colors_sleeve_left_top",value:[$s[0].sleeve_thread]}]}' > body.json
+                code=$(curl -sS -o r2.json -w '%{http_code}' -X PUT -H "Authorization: Bearer $T" -H "X-PF-Store-Id: $S" -H "Content-Type: application/json" --data @body.json "https://api.printful.com/sync/variant/$VID")
+                if [ "$code" = "200" ]; then ok=$((ok+1)); else bad=$((bad+1)); echo "::warning title=variant $OPT::HTTP $code $(jq -c '.error.message // .result' r2.json | head -c 300)"; fi
+              done
+              echo "::notice title=sync-result::ok=$ok failed=$bad" ;;
           esac
-          rm -f r.json out.json
+          rm -f r.json out.json cat.json r2.json body.json

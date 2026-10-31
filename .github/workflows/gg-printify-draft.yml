@@ -57,7 +57,7 @@ jobs:
     env:
       SHOP_ID: "29470786"
       # Allowlisted artwork: GOD GEAR master logo (G mark + wordmark + FAITH IN MOTION.), transparent print file in this repo.
-      ART_FILE: "rail/art/gg-master-logo-print.png"
+      ART_FILE: "rail/art/GG-LOGO-03-print.png"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -308,18 +308,18 @@ jobs:
 
           # Step 4: upload allowlisted artwork by URL
           base64 -w0 "$ART_FILE" > art.b64
-          jq -n --rawfile c art.b64 '{file_name:"GG_MASTER_LOGO_PRINT.png", contents:$c}' > up.json
+          jq -n --rawfile c art.b64 '{file_name:"GG-LOGO-03-print.png", contents:$c}' > up.json
           api POST "/uploads/images.json" up.json
           IMG=$(jq -r '.id' resp.json); echo "::notice title=image::$IMG $(jq -c '{width,height}' resp.json)"
 
           # Step 5: create product (unpublished; publish endpoint is never called)
           jq -n --argjson bp "$BP" --argjson pp "$PP" --arg img "$IMG" --slurpfile v variants.json '{
-            title: "GG ATHLETIC™ Everyday Tee",
-            description: "FAITH IN MOTION.™ GOD GEAR™ gold and silver G mark and wordmark on the front. Made to order.",
+            title: "GOD GEAR™ Signature Tee — Silver & Gold (CANON GG-LOGO-03)",
+            description: "FAITH IN MOTION.™ GOD GEAR™ canon silver and gold GOD GEAR™ wordmark (GG-LOGO-03) across the chest. Made to order.",
             blueprint_id: $bp, print_provider_id: $pp,
             variants: ($v[0] | map({id, price, is_enabled})),
             print_areas: [{ variant_ids: ($v[0] | map(.id)),
-              placeholders: [{ position: "front", images: [{ id: $img, x: 0.5, y: 0.45, scale: 0.75, angle: 0 }] }] }]
+              placeholders: [{ position: "front", images: [{ id: $img, x: 0.5, y: 0.3, scale: 0.85, angle: 0 }] }] }]
           }' > product.json
           api POST "/shops/$SHOP_ID/products.json" product.json
           echo "::notice title=created::id=$(jq -r '.id' resp.json) visible=$(jq -r '.visible' resp.json) enabled=$(jq '[.variants[]|select(.is_enabled)]|length' resp.json)"

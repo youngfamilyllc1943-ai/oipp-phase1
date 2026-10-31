@@ -21,6 +21,7 @@ try:
         return struct.unpack('>II',h[16:24])
     def pos(vid, placement, url, frac_w, top_frac):
         vp=[x for x in pf['variant_printfiles'] if x['variant_id']==vid][0]['placements']
+        note('placements',json.dumps(list(vp.keys()))) if placement not in vp else None
         f=pfile[vp[placement]]; AW,AH=f['width'],f['height']; w,h=png_size(url)
         W=int(AW*frac_w); H=int(W*h/w)
         if H>AH: H=AH; W=int(H*w/h)

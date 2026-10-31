@@ -14,7 +14,11 @@ try:
     def note(t,m): print(f'::notice title={t}::{m}'[:3000]); sys.stdout.flush()
     cp=spec['catalog_product']; _,cat=call('GET',f'/products/{cp}')
     _,pfs=call('GET',f'/mockup-generator/printfiles/{cp}'); pf=pfs['result']
-    pfile={p['printfile_id']:p for p in pf['printfiles']}
+    _,pfe=call('GET',f'/mockup-generator/printfiles/{cp}?technique=EMBROIDERY'); pe=pfe['result']
+    pfile={p['printfile_id']:p for p in pf['printfiles']+pe['printfiles']}
+    for vpe in pe['variant_printfiles']:
+        for x in pf['variant_printfiles']:
+            if x['variant_id']==vpe['variant_id']: x['placements'].update(vpe['placements'])
     import struct
     def png_size(url):
         with urllib.request.urlopen(url,timeout=60) as r: h=r.read(32)

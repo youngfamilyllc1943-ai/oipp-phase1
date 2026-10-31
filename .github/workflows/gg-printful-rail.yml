@@ -6,7 +6,7 @@ on:
         description: "Operation"
         required: true
         type: choice
-        options: [check, catalog, product, sync]
+        options: [check, catalog, product, sync, probe]
       arg:
         description: "search term (catalog) or catalog product id (product)"
         required: false
@@ -24,7 +24,7 @@ jobs:
       - name: Validate
         env: { OP: "${{ inputs.op }}", ARG: "${{ inputs.arg }}" }
         run: |
-          [[ "$ARG" =~ ^[A-Za-z0-9\ -]{0,40}$ ]] || { echo "REJECTED arg"; exit 2; }
+          [[ "$ARG" =~ ^[A-Za-z0-9\ /_?=-]{0,80}$ ]] || { echo "REJECTED arg"; exit 2; }
       - uses: actions/checkout@v4
         with: { sparse-checkout: rail/pf-specs }
       - name: Printful calls (ids, names, counts, catalog data only)
@@ -46,6 +46,8 @@ jobs:
               [[ "$ARG" =~ ^[0-9]{1,6}$ ]] || { echo "REJECTED"; exit 2; }
               c=$(g /products/$ARG); echo "::notice title=product::HTTP $c $(jq -c '.result.product|{id,title,model,techniques:[.techniques[]?|{key,display_name}],files:[.files[]?|{type,title,additional_price}],options:[.options[]?|{id,title,type,values:(.values|tostring|.[0:400]),additional_price}]}' r.json | head -c 3800)"
               echo "::notice title=variants::$(jq -c '[.result.variants[]|{id,color,size,price}]|group_by(.color)|map({color:.[0].color,sizes:map(.size),ids:map(.id),price:.[0].price})' r.json | head -c 3800)" ;;
+            probe)
+              c=$(g "$ARG"); echo "::notice title=probe::GET $ARG HTTP $c $(jq -c '.' r.json 2>/dev/null | head -c 1500)" ;;
             sync)
               SPEC="rail/pf-specs/$ARG.json"; [ -f "$SPEC" ] || { echo "REJECTED: no spec"; exit 2; }
               RAW=https://raw.githubusercontent.com/youngfamilyllc1943-ai/oipp-phase1/main/rail/art/pf

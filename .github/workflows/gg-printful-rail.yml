@@ -26,7 +26,10 @@ jobs:
         run: |
           [[ "$ARG" =~ ^[A-Za-z0-9\ /_?=-]{0,80}$ ]] || { echo "REJECTED arg"; exit 2; }
       - uses: actions/checkout@v4
-        with: { sparse-checkout: rail/pf-specs }
+        with:
+          sparse-checkout: |
+            rail/pf-specs
+            rail/tools
       - name: Printful calls (ids, names, counts, catalog data only)
         env: { T: "${{ secrets.PRINTFUL_TOKEN }}", OP: "${{ inputs.op }}", ARG: "${{ inputs.arg }}" }
         run: |
@@ -50,22 +53,7 @@ jobs:
               c=$(g "$ARG"); echo "::notice title=probe::GET $ARG HTTP $c $(jq -c '.' r.json 2>/dev/null | head -c 1500)" ;;
             mockup)
               SPEC="rail/pf-specs/$ARG.json"; [ -f "$SPEC" ] || { echo "REJECTED: no spec"; exit 2; }
-              RAW=https://raw.githubusercontent.com/youngfamilyllc1943-ai/oipp-phase1/main/rail/art/pf
-              CP=$(jq -r .catalog_product $SPEC); c=$(g /products/$CP); cp r.json cat.json; echo "::notice title=m-start::cp=$CP http=$c colors=$(jq -c '.colors|keys' $SPEC)"
-              trap 'echo "::error title=m-fail::line $LINENO rc $?"' ERR
-              for COL in $(jq -r '.colors|keys[]' $SPEC); do
-                CS=$(jq -c --arg c "$COL" '.colors[$c]' $SPEC); PFC=$(jq -r .pf <<<"$CS")
-                PV=$(jq -r --arg c "$PFC" '.result.variants[]|select(.color==$c and .size=="M")|.id' cat.json|head -1)
-                jq -n --argjson pv "$PV" --arg raw "$RAW" --argjson cs "$CS" --slurpfile s $SPEC '{variant_ids:[$pv],format:"jpg",
-                  files:[{placement:"embroidery_chest_center",image_url:($raw+"/"+$cs.wm+".png")},{placement:"embroidery_sleeve_left_top",image_url:($raw+"/"+$s[0].sleeve+".png")},{placement:"back",image_url:($raw+"/"+$cs.back+".png")}],
-                  options:[{id:"thread_colors_chest_center",value:[$cs.thread]},{id:"thread_colors_sleeve_left_top",value:[$s[0].sleeve_thread]}]}' > body.json
-                code=$(curl -sS -o r2.json -w '%{http_code}' -X POST -H "Authorization: Bearer $T" -H "X-PF-Store-Id: $S" -H "Content-Type: application/json" --data @body.json "https://api.printful.com/mockup-generator/create-task/$CP")
-                TK=$(jq -r '.result.task_key // empty' r2.json); echo "::notice title=task $COL::HTTP $code $TK $(jq -c '.error.message // empty' r2.json|head -c 300)"
-                [ -n "$TK" ] || continue
-                for i in $(seq 1 12); do sleep 5; g "/mockup-generator/task?task_key=$TK" >/dev/null; st=$(jq -r .result.status r.json); [ "$st" = completed ] && break; [ "$st" = failed ] && break; done
-                echo "::notice title=mockups $COL::$st $(jq -c '[.result.mockups[]?|{placement,url:.mockup_url,extra:[.extra[]?|.url][0:3]}]' r.json | head -c 1800) $(jq -c '.result.error // empty' r.json|head -c 300)"
-                sleep 2
-              done ;;
+              T="$T" python3 rail/tools/pf_mockup.py "$SPEC" ;;
             sync)
               SPEC="rail/pf-specs/$ARG.json"; [ -f "$SPEC" ] || { echo "REJECTED: no spec"; exit 2; }
               RAW=https://raw.githubusercontent.com/youngfamilyllc1943-ai/oipp-phase1/main/rail/art/pf

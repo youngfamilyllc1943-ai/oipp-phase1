@@ -26,7 +26,12 @@ jobs:
         run: |
           set -uo pipefail
           T=$(printf '%s' "$T" | tr -d '[:space:]')
-          g(){ curl -sS -o r.json -w '%{http_code}' -H "Authorization: Bearer $T" -H "User-Agent: GOD-GEAR-Rail" "https://api.printful.com$1"; }
+          echo "::notice title=key-shape::length=${#T} prefix_alpha=$(printf '%s' "$T" | head -c1 | tr -c 'A-Za-z0-9' '?' | sed 's/[0-9]/digit/;s/[A-Za-z]/letter/')"
+          AUTH="Authorization: Bearer $T"
+          c=$(curl -sS -o r.json -w '%{http_code}' -H "$AUTH" https://api.printful.com/stores)
+          if [ "$c" = "401" ]; then B=$(printf '%s' "$T" | base64 -w0); AUTH="Authorization: Basic $B"; c2=$(curl -sS -o r.json -w '%{http_code}' -H "$AUTH" https://api.printful.com/store); echo "::notice title=legacy-basic::HTTP $c2"; fi
+          echo "::notice title=error-reason::$(jq -c '.error.message // .result // empty' r.json 2>/dev/null | head -c 200)"
+          g(){ curl -sS -o r.json -w '%{http_code}' -H "$AUTH" -H "User-Agent: GOD-GEAR-Rail" "https://api.printful.com$1"; }
           c=$(g /oauth/scopes); echo "::notice title=scopes::HTTP $c $(jq -c '[.result.scopes[]?.value]' r.json 2>/dev/null)"
           c=$(g /stores); echo "::notice title=stores::HTTP $c $(jq -c '[.result[]?|{id,name,type}]' r.json 2>/dev/null)"
           c=$(g "/store/products?limit=100"); echo "::notice title=products::HTTP $c count=$(jq '.paging.total // (.result|length)' r.json 2>/dev/null) $(jq -c '[.result[]?|{id,name}]' r.json 2>/dev/null | head -c 1500)"

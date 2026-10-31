@@ -35,8 +35,8 @@ try:
         if not pv: note('m '+col,'no variant'); continue
         u1,u2,u3=f"{RAW}/{cs['wm']}.png",f"{RAW}/{spec['sleeve']}.png",f"{RAW}/{cs['back']}.png"
         jobs=[j for j in [('emb',{'variant_ids':pv,'format':'jpg','technique':'EMBROIDERY','files':[
-            {'placement':'embroidery_chest_center','image_url':u1,'position':pos(pv[0],'embroidery_chest_center',u1,1.0,0.5),'options':[{'id':'thread_colors','value':[cs['thread']]}]},
-            {'placement':'embroidery_sleeve_left_top','image_url':u2,'position':pos(pv[0],'embroidery_sleeve_left_top',u2,1.0,0.5),'options':[{'id':'thread_colors','value':[spec['sleeve_thread']]}]}]}),
+            {'placement':'embroidery_chest_center','image_url':u1,'position':pos(pv[0],'embroidery_chest_center',u1,1.0,0.5),'options':[{'id':'thread_colors_chest_center','value':[cs['thread']]}]},
+            {'placement':'embroidery_sleeve_left_top','image_url':u2,'position':pos(pv[0],'embroidery_sleeve_left_top',u2,1.0,0.5),'options':[{'id':'thread_colors_sleeve_left_top','value':[spec['sleeve_thread']]}]}]}),
           ('back',{'variant_ids':pv,'format':'jpg','technique':'DTG','files':[{'placement':'back','image_url':u3,'position':pos(pv[0],'back',u3,0.7,0.15)}]})] if j[0] in os.environ.get('JOBS','emb back')]
         for tag,body in jobs:
             c,r=call('POST',f'/mockup-generator/create-task/{cp}',body)

@@ -6,7 +6,7 @@ on:
         description: "Operation"
         required: true
         type: choice
-        options: [check, catalog, product, sync, probe, mockup, estimate, find, info, build, map]
+        options: [check, catalog, product, sync, probe, mockup, estimate, find, info, build, map, relaytest]
       arg:
         description: "search term (catalog) or catalog product id (product)"
         required: false
@@ -30,6 +30,7 @@ jobs:
           sparse-checkout: |
             rail/pf-specs
             rail/tools
+            rail/relay
             rail/line
       - name: Printful calls (ids, names, counts, catalog data only)
         env: { T: "${{ secrets.PRINTFUL_TOKEN }}", OP: "${{ inputs.op }}", ARG: "${{ inputs.arg }}" }
@@ -57,6 +58,8 @@ jobs:
               T="$T" ONLY=Black JOBS=emb python3 rail/tools/pf_mockup.py "$SPEC" ;;
             build)
               T="$T" NCOL=2 python3 rail/tools/pf_build.py "$ARG" ;;
+            relaytest)
+              c=$(curl -sS -o r.json -w '%{http_code}' -X POST -H "Authorization: Bearer $T" -H "X-PF-Store-Id: $S" -H 'Content-Type: application/json' -H 'User-Agent: GOD-GEAR-Rail' --data @rail/relay/test-order.json https://api.printful.com/orders/estimate-costs); echo "::notice title=relaytest::HTTP $c $(jq -c '.result.costs // .error // .result' r.json | head -c 1500)" ;;
             map)
               T="$T" python3 rail/tools/pf_map.py ;;
             info)

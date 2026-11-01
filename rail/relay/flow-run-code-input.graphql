@@ -1,0 +1,15 @@
+query {
+  order {
+    name
+    email
+    shippingAddress { name address1 address2 city provinceCode countryCodeV2 zip phone }
+    lineItems {
+      id
+      quantity
+      variant {
+        selectedOptions { name value }
+        product { metafield(namespace: "godgear", key: "printful") { value } }
+      }
+    }
+  }
+}

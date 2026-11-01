@@ -38,7 +38,7 @@ for col,tonal in cols:
     items=[{'variant_id':vid,'quantity':1,'files':[{'type':e['placement'],'url':e['url']} for e in emb]+[{'type':p['placement'],'url':p['url']} for p in prn],
             'options':[{'id':'thread_colors_'+e['placement'].replace('embroidery_',''),'value':[e['thread']]} for e in emb]}]
     c,r=call('POST','/orders/estimate-costs',{'recipient':{'name':'Estimate','address1':'100 Main St','city':'Fort Wayne','state_code':'IN','country_code':'US','zip':'46802'},'items':items})
-    note(f'{KEY} {col} cost',f"HTTP {c} {json.dumps((r.get('result') or {}).get('costs') or r.get('error'))[:500]}")
+    note(f'{KEY} {col} cost',f"HTTP {c} {json.dumps(r['result'].get('costs') if isinstance(r.get('result'),dict) else [r.get('result'),r.get('error')])[:500]}")
     jobs=[('EMBROIDERY',[{'placement':e['placement'],'image_url':e['url'],'position':pos(vid,e['placement'],e['url'])} for e in emb])]
     if prn: jobs.append(('DTG',[{'placement':p['placement'],'image_url':p['url'],'position':pos(vid,p['placement'],p['url'],p['frac'],p['top'])} for p in prn]))
     for tech,files in jobs:

@@ -1,4 +1,5 @@
-import json, os, sys, time, struct, urllib.request
+import json, os, sys, time, struct, urllib.request, traceback
+sys.excepthook=lambda t,v,tb: print('::error title=trace::'+' | '.join(traceback.format_exception(t,v,tb))[-3000:].replace('\n',' '))
 T=os.environ['T'].strip(); S='18823775'; KEY=sys.argv[1]; N=int(os.environ.get('NCOL','2'))
 spec=json.load(open('rail/line/gg-line.json'))['products'][KEY]
 RAW='https://raw.githubusercontent.com/youngfamilyllc1943-ai/oipp-phase1/main/rail/art/pf'

@@ -6,7 +6,7 @@ on:
         description: "Operation"
         required: true
         type: choice
-        options: [check, catalog, product, sync, probe, mockup, estimate, find, info]
+        options: [check, catalog, product, sync, probe, mockup, estimate, find, info, build]
       arg:
         description: "search term (catalog) or catalog product id (product)"
         required: false
@@ -19,7 +19,7 @@ jobs:
   run:
     if: github.triggering_actor == 'youngfamilyllc1943-ai'
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 30
     steps:
       - name: Validate
         env: { OP: "${{ inputs.op }}", ARG: "${{ inputs.arg }}" }
@@ -30,6 +30,7 @@ jobs:
           sparse-checkout: |
             rail/pf-specs
             rail/tools
+            rail/line
       - name: Printful calls (ids, names, counts, catalog data only)
         env: { T: "${{ secrets.PRINTFUL_TOKEN }}", OP: "${{ inputs.op }}", ARG: "${{ inputs.arg }}" }
         run: |
@@ -54,6 +55,8 @@ jobs:
             mockup)
               SPEC="rail/pf-specs/$ARG.json"; [ -f "$SPEC" ] || { echo "REJECTED: no spec"; exit 2; }
               T="$T" ONLY=Black JOBS=emb python3 rail/tools/pf_mockup.py "$SPEC" ;;
+            build)
+              T="$T" NCOL=2 python3 rail/tools/pf_build.py "$ARG" ;;
             info)
               T="$T" python3 rail/tools/pf_info.py ;;
             find)

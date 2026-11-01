@@ -6,7 +6,7 @@ on:
         description: "Operation"
         required: true
         type: choice
-        options: [check, catalog, product, sync, probe, mockup, estimate, find]
+        options: [check, catalog, product, sync, probe, mockup, estimate, find, info]
       arg:
         description: "search term (catalog) or catalog product id (product)"
         required: false
@@ -54,6 +54,8 @@ jobs:
             mockup)
               SPEC="rail/pf-specs/$ARG.json"; [ -f "$SPEC" ] || { echo "REJECTED: no spec"; exit 2; }
               T="$T" ONLY=Black JOBS=emb python3 rail/tools/pf_mockup.py "$SPEC" ;;
+            info)
+              T="$T" python3 rail/tools/pf_info.py ;;
             find)
               T="$T" python3 rail/tools/pf_find.py ;;
             estimate)

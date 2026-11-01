@@ -1,0 +1,51 @@
+name: GOD GEAR media archive + contact sheet
+on:
+  workflow_dispatch:
+    inputs:
+      list:
+        description: "Media list JSON path under rail/review"
+        required: true
+        default: "line-v1-media.json"
+permissions: {}
+jobs:
+  run:
+    if: github.triggering_actor == 'youngfamilyllc1943-ai'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Archive + sheet
+        env:
+          L: ${{ inputs.list }}
+        run: |
+          set -euo pipefail
+          [[ "$L" =~ ^[a-z0-9-]+\.json$ ]] || { echo "bad list"; exit 2; }
+          pip install -q pillow
+          python3 - <<'PY'
+          import json,os,urllib.request,hashlib
+          from PIL import Image,ImageDraw
+          L=os.environ['L']; items=json.load(open('rail/review/'+L)); tag=L[:-5]
+          d=f'rail/art/mockups/{tag}'; os.makedirs(d,exist_ok=True)
+          sums=[]
+          for it in items:
+              p=f"{d}/{it['product']}__{it['file']}"
+              if not os.path.exists(p):
+                  urllib.request.urlretrieve(it['url'],p)
+              sums.append(hashlib.sha256(open(p,'rb').read()).hexdigest()+'  '+os.path.basename(p)); it['path']=p
+          open(f'{d}/CHECKSUMS.sha256','w').write('\n'.join(sums)+'\n')
+          prods={}
+          for it in items: prods.setdefault(it['product'],[]).append(it)
+          for k,its in prods.items():
+              T=420; cols=4; rows=(len(its)+cols-1)//cols
+              S=Image.new('RGB',(cols*T,rows*(T+24)),'white'); D=ImageDraw.Draw(S)
+              for i,it in enumerate(its):
+                  im=Image.open(it['path']).convert('RGB'); im.thumbnail((T,T))
+                  x,y=(i%cols)*T,(i//cols)*(T+24); S.paste(im,(x,y)); D.text((x+6,y+T+4),it['alt'],fill='black')
+              S.save(f'rail/review/{tag}-{k}.jpg',quality=85)
+          PY
+          git config user.name gg-rail; git config user.email gg-rail@users.noreply.github.com
+          git add rail/art/mockups rail/review
+          git commit -m "Archive mockups + contact sheets ($L)" || true
+          git push

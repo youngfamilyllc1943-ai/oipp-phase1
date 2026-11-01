@@ -21,7 +21,11 @@ for tech in ('','?technique=EMBROIDERY'):
 def size(u):
     with urllib.request.urlopen(u,timeout=60) as r: h=r.read(32)
     return struct.unpack('>II',h[16:24])
+def mp(vid,pl):
+    k=pf[('v',vid)]
+    return pl if pl in k else next((x for x in k if x.startswith(pl)), next((x for x in k if 'front' in x or 'chest' in x), pl))
 def pos(vid,pl,u,frac=1.0,top=0.5):
+    pl=mp(vid,pl)
     if pl not in pf[('v',vid)]: note('placements',json.dumps(list(pf[('v',vid)].keys())))
     f=pf[pf[('v',vid)][pl]]; AW,AH=f['width'],f['height']; w,h=size(u)
     W=int(AW*frac); H=int(W*h/w)
@@ -40,7 +44,7 @@ for col,tonal in cols:
             'options':[{'id':('thread_colors' if e['placement']=='embroidery_front' else 'thread_colors_'+e['placement'].replace('embroidery_','')),'value':[e['thread']]} for e in emb]}]
     c,r=call('POST','/orders/estimate-costs',{'recipient':{'name':'Estimate','address1':'100 Main St','city':'Fort Wayne','state_code':'IN','country_code':'US','zip':'46802'},'items':items})
     note(f'{KEY} {col} cost',f"HTTP {c} {json.dumps(r['result'].get('costs') if isinstance(r.get('result'),dict) else [r.get('result'),r.get('error')])[:500]}")
-    jobs=[('EMBROIDERY',[{'placement':e['placement'],'image_url':e['url'],'position':pos(vid,e['placement'],e['url'])} for e in emb])]
+    jobs=[('EMBROIDERY',[{'placement':mp(vid,e['placement']),'image_url':e['url'],'position':pos(vid,e['placement'],e['url'])} for e in emb])]
     if prn: jobs.append(('DTG',[{'placement':p['placement'],'image_url':p['url'],'position':pos(vid,p['placement'],p['url'],p['frac'],p['top'])} for p in prn]))
     for tech,files in jobs:
         c,r=call('POST',f'/mockup-generator/create-task/{cp}',{'variant_ids':[vid],'format':'jpg','technique':tech,'files':files})

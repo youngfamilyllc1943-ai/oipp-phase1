@@ -24,7 +24,7 @@ jobs:
       - name: Validate
         env: { OP: "${{ inputs.op }}", ARG: "${{ inputs.arg }}" }
         run: |
-          [[ "$ARG" =~ ^[A-Za-z0-9\ /_?=-]{0,80}$ ]] || { echo "REJECTED arg"; exit 2; }
+          [[ "$ARG" =~ ^[A-Za-z0-9\ /_?=:,-]{0,120}$ ]] || { echo "REJECTED arg"; exit 2; }
       - uses: actions/checkout@v4
         with:
           sparse-checkout: |

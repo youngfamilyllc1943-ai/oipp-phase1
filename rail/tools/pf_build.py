@@ -1,6 +1,8 @@
 import json, os, sys, time, struct, urllib.request, traceback
 sys.excepthook=lambda t,v,tb: print('::error title=trace::'+' | '.join(traceback.format_exception(t,v,tb))[-3000:].replace('\n',' '))
-T=os.environ['T'].strip(); S='18823775'; KEY=sys.argv[1]; N=int(os.environ.get('NCOL','2'))
+T=os.environ['T'].strip(); S='18823775'; KEY=sys.argv[1].split(':')[0];
+if ':' in sys.argv[1]: os.environ['COLS']=sys.argv[1].split(':',1)[1]
+N=int(os.environ.get('NCOL','2'))
 spec=json.load(open('rail/line/gg-line.json'))['products'][KEY]
 RAW='https://raw.githubusercontent.com/youngfamilyllc1943-ai/oipp-phase1/main/rail/art/pf'
 def call(m,p,b=None):
@@ -33,6 +35,7 @@ def pos(vid,pl,u,frac=1.0,top=0.5):
     return {'area_width':AW,'area_height':AH,'width':W,'height':H,'top':int((AH-H)*top),'left':int((AW-W)/2)}
 def url(art,hexv): return f"{RAW}/{art}-{hexv}.png"
 cols=list(spec['colors'].items())[:N]
+if os.environ.get('COLS'): cols=[(c,spec['colors'][c]) for c in os.environ['COLS'].split(',')]
 for col,tonal in cols:
     vs=[v for v in cat['result']['variants'] if v['color']==col]
     pick=[v for v in vs if v['size'] in ('M','One size','S/M')] or vs
@@ -41,7 +44,7 @@ for col,tonal in cols:
     prn=[{'placement':p['p'],'url':url(p['art'],tonal),'frac':p['frac'],'top':p['top']} for p in spec['print']]
     # estimate
     items=[{'variant_id':vid,'quantity':1,'files':[{'type':e['placement'],'url':e['url']} for e in emb]+[{'type':p['placement'],'url':p['url']} for p in prn],
-            'options':[{'id':('thread_colors' if e['placement']=='embroidery_front' else 'thread_colors_'+e['placement'].replace('embroidery_','')),'value':[e['thread']]} for e in emb]}]
+            'options':[{'id':({'embroidery_front':'thread_colors','embroidery_apparel_front':'thread_colors_apparel'}.get(e['placement']) or 'thread_colors_'+e['placement'].replace('embroidery_','')),'value':[e['thread']]} for e in emb]}]
     c,r=call('POST','/orders/estimate-costs',{'recipient':{'name':'Estimate','address1':'100 Main St','city':'Fort Wayne','state_code':'IN','country_code':'US','zip':'46802'},'items':items})
     note(f'{KEY} {col} cost',f"HTTP {c} {json.dumps(r['result'].get('costs') if isinstance(r.get('result'),dict) else [r.get('result'),r.get('error')])[:500]}")
     jobs=[('EMBROIDERY',[{'placement':mp(vid,e['placement']),'image_url':e['url'],'position':pos(vid,e['placement'],e['url'])} for e in emb])]

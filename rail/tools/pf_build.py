@@ -22,6 +22,7 @@ def size(u):
     with urllib.request.urlopen(u,timeout=60) as r: h=r.read(32)
     return struct.unpack('>II',h[16:24])
 def pos(vid,pl,u,frac=1.0,top=0.5):
+    if pl not in pf[('v',vid)]: note('placements',json.dumps(list(pf[('v',vid)].keys())))
     f=pf[pf[('v',vid)][pl]]; AW,AH=f['width'],f['height']; w,h=size(u)
     W=int(AW*frac); H=int(W*h/w)
     if H>AH: H=AH; W=int(H*w/h)
@@ -36,7 +37,7 @@ for col,tonal in cols:
     prn=[{'placement':p['p'],'url':url(p['art'],tonal),'frac':p['frac'],'top':p['top']} for p in spec['print']]
     # estimate
     items=[{'variant_id':vid,'quantity':1,'files':[{'type':e['placement'],'url':e['url']} for e in emb]+[{'type':p['placement'],'url':p['url']} for p in prn],
-            'options':[{'id':'thread_colors_'+e['placement'].replace('embroidery_',''),'value':[e['thread']]} for e in emb]}]
+            'options':[{'id':('thread_colors' if e['placement']=='embroidery_front' else 'thread_colors_'+e['placement'].replace('embroidery_','')),'value':[e['thread']]} for e in emb]}]
     c,r=call('POST','/orders/estimate-costs',{'recipient':{'name':'Estimate','address1':'100 Main St','city':'Fort Wayne','state_code':'IN','country_code':'US','zip':'46802'},'items':items})
     note(f'{KEY} {col} cost',f"HTTP {c} {json.dumps(r['result'].get('costs') if isinstance(r.get('result'),dict) else [r.get('result'),r.get('error')])[:500]}")
     jobs=[('EMBROIDERY',[{'placement':e['placement'],'image_url':e['url'],'position':pos(vid,e['placement'],e['url'])} for e in emb])]

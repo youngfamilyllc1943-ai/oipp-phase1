@@ -1,64 +1,65 @@
 {
- "title": "GG MOVE\u2122 Hoodie \u2014 GENESIS Colors",
- "description": "FAITH IN MOTION.\u2122 GOD GEAR\u2122 wordmark embroidered tone-on-tone at center chest, thread matched to the garment. Gildan 18500 heavy blend hoodie. GG\u2014GENESIS\u2122. Made to order.",
- "blueprint_id": 77,
- "provider_id": 410,
- "sizes": [
-  "S",
-  "M",
-  "L",
-  "XL",
-  "2XL",
-  "3XL"
- ],
- "prices": {
-  "S": 5900,
-  "M": 5900,
-  "L": 5900,
-  "XL": 5900,
-  "2XL": 6400,
-  "3XL": 6900
- },
- "colors": [
-  {
-   "name": "Charcoal",
-   "hex": "3C3C3C",
-   "thread": "3C3C3C"
+  "title": "GG MOVE™ Hoodie — GENESIS Colors",
+  "description": "FAITH IN MOTION.™ GOD GEAR™ wordmark embroidered tone-on-tone at center chest, thread matched to the garment. Gildan 18500 heavy blend hoodie. GG—GENESIS™. Made to order.",
+  "blueprint_id": 77,
+  "provider_id": 410,
+  "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+  ],
+  "prices": {
+    "S": 5900,
+    "M": 5900,
+    "L": 5900,
+    "XL": 5900,
+    "2XL": 6400,
+    "3XL": 6900
   },
-  {
-   "name": "Navy",
-   "hex": "1F2A44",
-   "thread": "1F2A44"
-  },
-  {
-   "name": "Military Green",
-   "hex": "4B5320",
-   "thread": "4B5320"
-  },
-  {
-   "name": "Maroon",
-   "hex": "5A1F2B",
-   "thread": "5A1F2B"
-  },
-  {
-   "name": "Sand",
-   "hex": "C8B89A",
-   "thread": "C8B89A"
-  },
-  {
-   "name": "Forest Green",
-   "hex": "2E4A36",
-   "thread": "2E4A36"
-  }
- ],
- "art": [
-  {
-   "position": "front_center_chest",
-   "file": "rail/art/embroidery/gg-wordmark-canon.png",
-   "x": 0.5,
-   "y": 0.5,
-   "scale": 1,
-   "angle": 0
-  }
- ]
+  "colors": [
+    {
+      "name": "Charcoal",
+      "hex": "3C3C3C",
+      "thread": "3C3C3C"
+    },
+    {
+      "name": "Navy",
+      "hex": "1F2A44",
+      "thread": "1F2A44"
+    },
+    {
+      "name": "Military Green",
+      "hex": "4B5320",
+      "thread": "4B5320"
+    },
+    {
+      "name": "Maroon",
+      "hex": "5A1F2B",
+      "thread": "5A1F2B"
+    },
+    {
+      "name": "Sand",
+      "hex": "C8B89A",
+      "thread": "C8B89A"
+    },
+    {
+      "name": "Forest Green",
+      "hex": "2E4A36",
+      "thread": "2E4A36"
+    }
+  ],
+  "art": [
+    {
+      "position": "front_center_chest",
+      "file": "rail/art/embroidery/gg-wordmark-canon.png",
+      "x": 0.5,
+      "y": 0.5,
+      "scale": 1,
+      "angle": 0
+    }
+  ],
+  "product_id": "6aef7736a15478d56109dbd7"
 }

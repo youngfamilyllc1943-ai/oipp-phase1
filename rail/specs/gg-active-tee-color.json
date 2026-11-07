@@ -1,64 +1,65 @@
 {
- "title": "GG ACTIVE\u2122 Garment-Dyed Tee \u2014 GENESIS Colors",
- "description": "FAITH IN MOTION.\u2122 GOD GEAR\u2122 wordmark embroidered tone-on-tone at center chest. Comfort Colors 1717 garment-dyed heavyweight tee. GG\u2014GENESIS\u2122. Made to order.",
- "blueprint_id": 706,
- "provider_id": 410,
- "sizes": [
-  "S",
-  "M",
-  "L",
-  "XL",
-  "2XL",
-  "3XL"
- ],
- "prices": {
-  "S": 4900,
-  "M": 4900,
-  "L": 4900,
-  "XL": 4900,
-  "2XL": 5400,
-  "3XL": 5900
- },
- "colors": [
-  {
-   "name": "Pepper",
-   "hex": "4A4A48",
-   "thread": "4A4A48"
+  "title": "GG ACTIVE™ Garment-Dyed Tee — GENESIS Colors",
+  "description": "FAITH IN MOTION.™ GOD GEAR™ wordmark embroidered tone-on-tone at center chest. Comfort Colors 1717 garment-dyed heavyweight tee. GG—GENESIS™. Made to order.",
+  "blueprint_id": 706,
+  "provider_id": 410,
+  "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+  ],
+  "prices": {
+    "S": 4900,
+    "M": 4900,
+    "L": 4900,
+    "XL": 4900,
+    "2XL": 5400,
+    "3XL": 5900
   },
-  {
-   "name": "Navy",
-   "hex": "1F2A44",
-   "thread": "1F2A44"
-  },
-  {
-   "name": "Moss",
-   "hex": "5F6B4A",
-   "thread": "5F6B4A"
-  },
-  {
-   "name": "Ivory",
-   "hex": "EDE6D3",
-   "thread": "EDE6D3"
-  },
-  {
-   "name": "Crimson",
-   "hex": "7A1F2B",
-   "thread": "7A1F2B"
-  },
-  {
-   "name": "Khaki",
-   "hex": "B8A27E",
-   "thread": "B8A27E"
-  }
- ],
- "art": [
-  {
-   "position": "front_center_chest",
-   "file": "rail/art/embroidery/gg-wordmark-canon.png",
-   "x": 0.5,
-   "y": 0.5,
-   "scale": 1,
-   "angle": 0
-  }
- ]
+  "colors": [
+    {
+      "name": "Pepper",
+      "hex": "4A4A48",
+      "thread": "4A4A48"
+    },
+    {
+      "name": "Navy",
+      "hex": "1F2A44",
+      "thread": "1F2A44"
+    },
+    {
+      "name": "Moss",
+      "hex": "5F6B4A",
+      "thread": "5F6B4A"
+    },
+    {
+      "name": "Ivory",
+      "hex": "EDE6D3",
+      "thread": "EDE6D3"
+    },
+    {
+      "name": "Crimson",
+      "hex": "7A1F2B",
+      "thread": "7A1F2B"
+    },
+    {
+      "name": "Khaki",
+      "hex": "B8A27E",
+      "thread": "B8A27E"
+    }
+  ],
+  "art": [
+    {
+      "position": "front_center_chest",
+      "file": "rail/art/embroidery/gg-wordmark-canon.png",
+      "x": 0.5,
+      "y": 0.5,
+      "scale": 1,
+      "angle": 0
+    }
+  ],
+  "product_id": "6aef7751623b6f03430a25c4"
 }

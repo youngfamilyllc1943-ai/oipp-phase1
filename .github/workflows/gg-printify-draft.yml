@@ -38,6 +38,14 @@ on:
           - gg-signature-tee-sleeve
           - gg-signature-hoodie
           - gg-gold-tee
+          - gg-move-crew
+          - gg-culture-dad
+          - gg-culture-beanie
+          - gg-move-jogger
+          - gg-culture-snapback
+          - gg-move-hoodie-color
+          - gg-active-tee-color
+          - gg-move-zip
       blueprint_id:
         description: "Printify blueprint ID (digits)"
         required: true
@@ -243,7 +251,7 @@ jobs:
           fi
           if [ "$MODE" = "blueprints" ]; then
             api GET "/catalog/blueprints.json"
-            echo "::notice title=matches::$(jq -c '[.[] | select((.model|tostring|test("^(1717|18500|3001|3001T|3001Y|6245CM|6245)$")) or (.title|test("mbroider|puff|3d";"i"))) | {id,t:.title,b:.brand,m:.model}]' resp.json | head -c 60000)"
+            echo "::notice title=matches::$(jq -c '[.[] | select(.title|test("beanie|dad hat|cap|jogger|sweatpant|crewneck|quarter|polo|trucker";"i")) | {id,t:.title,b:.brand,m:.model}]' resp.json | head -c 60000)"
             exit 0
           fi
           if [ "$MODE" = "catalog" ]; then

@@ -1,0 +1,59 @@
+{
+ "title": "GG MOVE\u2122 Fleece Joggers \u2014 Embroidered",
+ "description": "GOD GEAR\u2122 wordmark embroidered tone-on-tone. Cotton Heritage M7580 fleece sweatpants. Pairs with the GG MOVE\u2122 Hoodie. Made to order.",
+ "blueprint_id": 1731,
+ "provider_id": 410,
+ "sizes": [
+  "XS",
+  "S",
+  "M",
+  "L",
+  "XL",
+  "2XL"
+ ],
+ "prices": {
+  "XS": 5900,
+  "S": 5900,
+  "M": 5900,
+  "L": 5900,
+  "XL": 5900,
+  "2XL": 6400
+ },
+ "colors": [
+  {
+   "name": "Black",
+   "hex": "000000",
+   "thread": "000000"
+  },
+  {
+   "name": "White",
+   "hex": "FFFFFF",
+   "thread": "FFFFFF"
+  },
+  {
+   "name": "Charcoal Heather",
+   "hex": "3C3C3C",
+   "thread": "3C3C3C"
+  },
+  {
+   "name": "Military Green",
+   "hex": "4B5320",
+   "thread": "4B5320"
+  },
+  {
+   "name": "Navy Blazer",
+   "hex": "1F2A44",
+   "thread": "1F2A44"
+  }
+ ],
+ "art": [
+  {
+   "position": "front_apparel_embroidery",
+   "file": "rail/art/embroidery/gg-wordmark-canon.png",
+   "x": 0.5,
+   "y": 0.5,
+   "scale": 1,
+   "angle": 0
+  }
+ ]
+}

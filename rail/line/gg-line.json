@@ -47,17 +47,17 @@
    "title": "GG MOVE™ Embroidered Premium Hoodie",
    "type": "Hoodie",
    "price": {
-    "XS": 69,
-    "S": 69,
-    "M": 69,
-    "L": 69,
-    "XL": 69,
-    "2XL": 74,
-    "3XL": 79,
-    "4XL": 84
+    "XS": 59,
+    "S": 59,
+    "M": 59,
+    "L": 59,
+    "XL": 59,
+    "2XL": 64,
+    "3XL": 69,
+    "4XL": 74
    },
    "colors": {
-    "Black": "A67843",
+    "Black": "000000",
     "Carbon Grey": "96A1A8",
     "Maroon": "A67843",
     "Navy Blazer": "A67843",
@@ -72,17 +72,10 @@
     {
      "p": "embroidery_wrist_left",
      "art": "badgeG",
-     "thread": "A67843"
+     "thread": "tonal"
     }
    ],
-   "print": [
-    {
-     "p": "back",
-     "art": "backG",
-     "frac": 0.75,
-     "top": 0.12
-    }
-   ]
+   "print": []
   },
   "classic-crew": {
    "catalog": 145,

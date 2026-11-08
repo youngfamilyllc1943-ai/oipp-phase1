@@ -1,68 +1,69 @@
 {
- "title": "GG MOVE\u2122 Crewneck",
- "description": "FAITH IN MOTION.\u2122 Wordmark at the chest, split-G on the upper back and left sleeve, wordmark at the right wrist \u2014 all tone-on-tone embroidery. Gildan 18000 heavyweight crewneck. GG\u2014GENESIS\u2122. Made to order.",
- "blueprint_id": 49,
- "provider_id": 410,
- "sizes": [
-  "S",
-  "M",
-  "L",
-  "XL",
-  "2XL",
-  "3XL"
- ],
- "prices": {
-  "S": 5400,
-  "M": 5400,
-  "L": 5400,
-  "XL": 5400,
-  "2XL": 5900,
-  "3XL": 6400
- },
- "colors": [
-  {
-   "name": "Black",
-   "hex": "0b0b0b",
-   "thread": "000000"
+  "title": "GG MOVE™ Crewneck",
+  "description": "FAITH IN MOTION.™ Wordmark at the chest, split-G on the upper back and left sleeve, wordmark at the right wrist — all tone-on-tone embroidery. Gildan 18000 heavyweight crewneck. GG—GENESIS™. Made to order.",
+  "blueprint_id": 49,
+  "provider_id": 410,
+  "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL"
+  ],
+  "prices": {
+    "S": 5400,
+    "M": 5400,
+    "L": 5400,
+    "XL": 5400,
+    "2XL": 5900,
+    "3XL": 6400
   },
-  {
-   "name": "White",
-   "hex": "f5f5f5",
-   "thread": "FFFFFF"
-  }
- ],
- "art": [
-  {
-   "position": "front_center_chest",
-   "file": "rail/art/embroidery/gg-wordmark-canon.png",
-   "x": 0.5,
-   "y": 0.5,
-   "scale": 1,
-   "angle": 0
-  },
-  {
-   "position": "back",
-   "file": "rail/art/embroidery/gg-gmark.png",
-   "x": 0.5,
-   "y": 0.2,
-   "scale": 0.3,
-   "angle": 0
-  },
-  {
-   "position": "left_sleeve",
-   "file": "rail/art/embroidery/gg-gmark.png",
-   "x": 0.5,
-   "y": 0.5,
-   "scale": 1,
-   "angle": 0
-  },
-  {
-   "position": "right_wrist",
-   "file": "rail/art/embroidery/gg-wordmark-canon.png",
-   "x": 0.5,
-   "y": 0.5,
-   "scale": 1,
-   "angle": 0
-  }
- ]
+  "colors": [
+    {
+      "name": "Black",
+      "hex": "0b0b0b",
+      "thread": "000000"
+    },
+    {
+      "name": "White",
+      "hex": "f5f5f5",
+      "thread": "FFFFFF"
+    }
+  ],
+  "art": [
+    {
+      "position": "front_center_chest",
+      "file": "rail/art/embroidery/gg-wordmark-canon.png",
+      "x": 0.5,
+      "y": 0.5,
+      "scale": 1,
+      "angle": 0
+    },
+    {
+      "position": "back",
+      "file": "rail/art/embroidery/gg-gmark.png",
+      "x": 0.5,
+      "y": 0.2,
+      "scale": 0.3,
+      "angle": 0
+    },
+    {
+      "position": "left_sleeve",
+      "file": "rail/art/embroidery/gg-gmark.png",
+      "x": 0.5,
+      "y": 0.5,
+      "scale": 1,
+      "angle": 0
+    },
+    {
+      "position": "right_wrist",
+      "file": "rail/art/embroidery/gg-wordmark-canon.png",
+      "x": 0.5,
+      "y": 0.5,
+      "scale": 1,
+      "angle": 0
+    }
+  ],
+  "product_id": "6af08dd7dbf00728560c3968"
 }

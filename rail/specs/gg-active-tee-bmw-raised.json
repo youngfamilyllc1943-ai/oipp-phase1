@@ -48,7 +48,7 @@
     },
     {
       "position": "back",
-      "file": "rail/art/embroidery/gg-gmark.png",
+      "file": "rail/art/embroidery/gg-gmark-black.png",
       "x": 0.5,
       "y": 0.25,
       "scale": 0.7,
@@ -60,7 +60,7 @@
     },
     {
       "position": "left_sleeve",
-      "file": "rail/art/embroidery/gg-gmark.png",
+      "file": "rail/art/embroidery/gg-gmark-black.png",
       "x": 0.5,
       "y": 0.5,
       "scale": 1,

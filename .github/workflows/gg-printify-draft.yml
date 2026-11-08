@@ -218,7 +218,7 @@ jobs:
             python3 -m pip install -q --break-system-packages pillow
             python3 -c "import glob;from PIL import Image;[ (lambda im:(im.thumbnail((700,700)),im.save(f,quality=80)))(Image.open(f).convert('RGB')) for f in glob.glob('proofs/*.jpg')]"
             git config user.name gg-rail; git config user.email rail@users.noreply.github.com
-            git checkout -B proofs-out; git add -f proofs; git commit -qm proofs; git push -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" proofs-out
+            git checkout -B proofs-out; git add --sparse -f proofs; git commit -qm proofs; git push -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" proofs-out
             exit 0
           fi
           if [ "$MODE" = "upload-art" ]; then

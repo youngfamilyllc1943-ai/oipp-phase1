@@ -27,6 +27,7 @@ on:
           - delete-test-drafts
           - delete-all-products
           - upload-art
+          - proofs
       product:
         description: "Fixed product spec"
         required: true
@@ -89,7 +90,7 @@ jobs:
           BP: ${{ inputs.blueprint_id }}
           PP: ${{ inputs.provider_id }}
         run: |
-          case "$MODE" in plan|create|catalog|blueprints|audit|update|sync-draft|map|link-external|test-order|cancel-test|delete-test-drafts|delete-all-products|upload-art) ;; *) echo "REJECTED: mode"; exit 2 ;; esac
+          case "$MODE" in plan|create|catalog|blueprints|audit|update|sync-draft|map|link-external|test-order|cancel-test|delete-test-drafts|delete-all-products|upload-art|proofs) ;; *) echo "REJECTED: mode"; exit 2 ;; esac
           case "$PRODUCT" in gg-athletic-tee|gg-athletic-tee-canon|gg-active-tee-bmw-raised|gg-move-hoodie-bmw-raised|gg-culture-cap-bmw-raised|gg-signature-tee-sleeve|gg-signature-hoodie|gg-gold-tee|gg-move-crew|gg-culture-dad|gg-culture-beanie|gg-move-jogger|gg-culture-snapback|gg-move-hoodie-color|gg-active-tee-color|gg-move-zip) ;; *) echo "REJECTED: product not on allowlist"; exit 2 ;; esac
           [[ "$BP" =~ ^[0-9]{1,6}$ ]] || { echo "REJECTED: blueprint_id"; exit 2; }
           [[ "$PP" =~ ^[0-9]{1,6}$ ]] || { echo "REJECTED: provider_id"; exit 2; }
@@ -203,6 +204,20 @@ jobs:
             echo "::notice title=athletic-images::$(jq -c '[.images[]|{src:.src, variant_ids, position:.position, is_default}]|.[0:6]' resp.json | head -c 2500)"
             echo "::notice title=athletic-print-areas::$(jq -c '.print_areas|map({variant_ids: (.variant_ids|length), placeholders: [.placeholders[]|{position, images:[.images[]|{id,x,y,scale,angle}]}]})' resp.json | head -c 2500)"
             exit 0
+          fi
+          if [ "$MODE" = "proofs" ]; then
+            mkdir -p proofs
+            for f in rail/specs/*.json; do PID=$(jq -r '.product_id // empty' $f); [ -n "$PID" ] || continue; n=$(basename $f .json)
+              curl -sS -o p.json -H "Authorization: Bearer $T" -H "User-Agent: GOD-GEAR-Rail" "$BASE/shops/$SHOP_ID/products/$PID.json" || continue
+              i=0; for u in $(jq -r '[.images[]|select(.src|test("Black|black|Camo")) ] | if length==0 then . else . end | .[0:4][].src' p.json); do i=$((i+1)); curl -sSL -o "proofs/${n}_$i.jpg" "$u"; done
+              [ $i -gt 0 ] || { i=0; for u in $(jq -r '.images[0:4][].src' p.json); do i=$((i+1)); curl -sSL -o "proofs/${n}_$i.jpg" "$u"; done; }
+            done
+            python3 -m pip install -q --break-system-packages pillow
+            python3 -c "
+import glob;from PIL import Image
+for f in glob.glob('proofs/*.jpg'):
+  im=Image.open(f).convert('RGB');im.thumbnail((700,700));im.save(f,quality=80)"
+            ls proofs; exit 0
           fi
           if [ "$MODE" = "upload-art" ]; then
             python3 -m pip install -q --break-system-packages pillow numpy
@@ -382,3 +397,9 @@ jobs:
           echo "::notice title=created::id=$(jq -r '.id' resp.json) visible=$(jq -r '.visible' resp.json) enabled=$(jq '[.variants[]|select(.is_enabled)]|length' resp.json)"
           echo "::notice title=mockups::$(jq -c '[.images[] | select(.is_default or (.position=="front")) | .src][0:4]' resp.json)"
           rm -f resp.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: proofs
+          path: proofs/
+          if-no-files-found: ignore

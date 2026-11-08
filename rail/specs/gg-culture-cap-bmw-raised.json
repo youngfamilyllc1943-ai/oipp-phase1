@@ -1,47 +1,48 @@
 {
- "blueprint_id": 1744,
- "provider_id": 410,
- "sizes": [
-  "S/M",
-  "L/XL"
- ],
- "prices": {
-  "S/M": 4200,
-  "L/XL": 4200
- },
- "art": [
-  {
-   "position": "front",
-   "file": "rail/art/embroidery/gg-gmark-cap.png",
-   "x": 0.5,
-   "y": 0.5,
-   "scale": 0.9,
-   "angle": 0
+  "blueprint_id": 1744,
+  "provider_id": 410,
+  "sizes": [
+    "S/M",
+    "L/XL"
+  ],
+  "prices": {
+    "S/M": 4200,
+    "L/XL": 4200
   },
-  {
-   "position": "back_hat_embroidery",
-   "file": "rail/art/embroidery/gg-wordmark-canon.png",
-   "x": 0.5,
-   "y": 0.5,
-   "scale": 1,
-   "angle": 0
-  },
-  {
-   "position": "left_hat_embroidery",
-   "file": "rail/art/embroidery/gg-gmark-cap.png",
-   "x": 0.5,
-   "y": 0.5,
-   "scale": 1,
-   "angle": 0
-  }
- ],
- "title": "GG\u2014RELOADED\u2122 Green Camo Fitted Cap",
- "description": "GG\u2014RELOADED\u2122. Multicam green camo fitted cap \u2014 black split-G emblem on the front, GOD GEAR\u2122 wordmark on the back, split-G on the side. Flexfit 6277 closed-back structured fit. Made to order.",
- "colors": [
-  {
-   "name": "Multicam Green",
-   "hex": "4B5320",
-   "thread": "000000"
-  }
- ]
+  "art": [
+    {
+      "position": "front",
+      "file": "rail/art/embroidery/gg-gmark-cap.png",
+      "x": 0.5,
+      "y": 0.5,
+      "scale": 0.9,
+      "angle": 0
+    },
+    {
+      "position": "back_hat_embroidery",
+      "file": "rail/art/embroidery/gg-wordmark-canon.png",
+      "x": 0.5,
+      "y": 0.5,
+      "scale": 1,
+      "angle": 0
+    },
+    {
+      "position": "left_hat_embroidery",
+      "file": "rail/art/embroidery/gg-gmark-cap.png",
+      "x": 0.5,
+      "y": 0.5,
+      "scale": 1,
+      "angle": 0
+    }
+  ],
+  "title": "GG—RELOADED™ Green Camo Fitted Cap",
+  "description": "GG—RELOADED™. Multicam green camo fitted cap — black split-G emblem on the front, GOD GEAR™ wordmark on the back, split-G on the side. Flexfit 6277 closed-back structured fit. Made to order.",
+  "colors": [
+    {
+      "name": "Multicam Green",
+      "hex": "4B5320",
+      "thread": "000000"
+    }
+  ],
+  "product_id": "6af09e875ae5922ce90eb384"
 }

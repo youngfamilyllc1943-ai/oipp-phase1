@@ -213,10 +213,7 @@ jobs:
               [ $i -gt 0 ] || { i=0; for u in $(jq -r '.images[0:4][].src' p.json); do i=$((i+1)); curl -sSL -o "proofs/${n}_$i.jpg" "$u"; done; }
             done
             python3 -m pip install -q --break-system-packages pillow
-            python3 -c "
-import glob;from PIL import Image
-for f in glob.glob('proofs/*.jpg'):
-  im=Image.open(f).convert('RGB');im.thumbnail((700,700));im.save(f,quality=80)"
+            python3 -c "import glob;from PIL import Image;[ (lambda im:(im.thumbnail((700,700)),im.save(f,quality=80)))(Image.open(f).convert('RGB')) for f in glob.glob('proofs/*.jpg')]"
             ls proofs; exit 0
           fi
           if [ "$MODE" = "upload-art" ]; then

@@ -253,7 +253,7 @@ jobs:
           fi
           if [ "$MODE" = "sync-draft" ]; then
             # Printify → Shopify as DRAFT (unpublished). Allowlisted products only.
-            case "$PRODUCT" in gg-athletic-tee-canon) PID=6ae41ac5cccda5b54006571c ;; gg-signature-tee-sleeve) PID=6ae5ac5a944026b113052245 ;; gg-signature-hoodie|gg-gold-tee) PID=$(cat rail/ids/$PRODUCT 2>/dev/null) ; [ -n "$PID" ] || { echo "FAIL: no id"; exit 1; } ;; gg-move-crew|gg-culture-dad|gg-culture-beanie|gg-move-jogger|gg-culture-snapback|gg-move-hoodie-color|gg-active-tee-color|gg-move-zip|gg-move-hoodie-bmw-raised|gg-active-tee-bmw-raised) PID=$(jq -r ".product_id // empty" rail/specs/$PRODUCT.json); [ -n "$PID" ] || { echo "FAIL: no id"; exit 1; } ;; *) echo "REJECTED: sync-draft not approved for $PRODUCT"; exit 2 ;; esac
+            case "$PRODUCT" in gg-athletic-tee-canon) PID=6ae41ac5cccda5b54006571c ;; gg-signature-tee-sleeve) PID=6ae5ac5a944026b113052245 ;; gg-signature-hoodie|gg-gold-tee) PID=$(cat rail/ids/$PRODUCT 2>/dev/null) ; [ -n "$PID" ] || { echo "FAIL: no id"; exit 1; } ;; gg-move-crew|gg-culture-dad|gg-culture-beanie|gg-move-jogger|gg-culture-snapback|gg-move-hoodie-color|gg-active-tee-color|gg-move-zip|gg-move-hoodie-bmw-raised|gg-active-tee-bmw-raised|gg-culture-cap-bmw-raised) PID=$(jq -r ".product_id // empty" rail/specs/$PRODUCT.json); [ -n "$PID" ] || { echo "FAIL: no id"; exit 1; } ;; *) echo "REJECTED: sync-draft not approved for $PRODUCT"; exit 2 ;; esac
             # 1. Printify publishes to Shopify
             jq -n '{title:true, description:true, images:true, variants:true, tags:true, keyFeatures:true, shipping_template:true}' > pub.json
             api POST "/shops/$SHOP_ID/products/$PID/publish.json" pub.json

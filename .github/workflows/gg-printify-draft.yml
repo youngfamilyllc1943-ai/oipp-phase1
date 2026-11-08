@@ -26,6 +26,7 @@ on:
           - cancel-test
           - delete-test-drafts
           - delete-all-products
+          - upload-art
       product:
         description: "Fixed product spec"
         required: true
@@ -88,7 +89,7 @@ jobs:
           BP: ${{ inputs.blueprint_id }}
           PP: ${{ inputs.provider_id }}
         run: |
-          case "$MODE" in plan|create|catalog|blueprints|audit|update|sync-draft|map|link-external|test-order|cancel-test|delete-test-drafts|delete-all-products) ;; *) echo "REJECTED: mode"; exit 2 ;; esac
+          case "$MODE" in plan|create|catalog|blueprints|audit|update|sync-draft|map|link-external|test-order|cancel-test|delete-test-drafts|delete-all-products|upload-art) ;; *) echo "REJECTED: mode"; exit 2 ;; esac
           case "$PRODUCT" in gg-athletic-tee|gg-athletic-tee-canon|gg-active-tee-bmw-raised|gg-move-hoodie-bmw-raised|gg-culture-cap-bmw-raised|gg-signature-tee-sleeve|gg-signature-hoodie|gg-gold-tee|gg-move-crew|gg-culture-dad|gg-culture-beanie|gg-move-jogger|gg-culture-snapback|gg-move-hoodie-color|gg-active-tee-color|gg-move-zip) ;; *) echo "REJECTED: product not on allowlist"; exit 2 ;; esac
           [[ "$BP" =~ ^[0-9]{1,6}$ ]] || { echo "REJECTED: blueprint_id"; exit 2; }
           [[ "$PP" =~ ^[0-9]{1,6}$ ]] || { echo "REJECTED: provider_id"; exit 2; }
@@ -201,6 +202,17 @@ jobs:
             echo "::notice title=athletic-map::$(jq -c '[.variants[]|select(.is_enabled)|{id, size:.title|split(" / ")|.[1], color:.title|split(" / ")|.[0], price, cost}]' resp.json)"
             echo "::notice title=athletic-images::$(jq -c '[.images[]|{src:.src, variant_ids, position:.position, is_default}]|.[0:6]' resp.json | head -c 2500)"
             echo "::notice title=athletic-print-areas::$(jq -c '.print_areas|map({variant_ids: (.variant_ids|length), placeholders: [.placeholders[]|{position, images:[.images[]|{id,x,y,scale,angle}]}]})' resp.json | head -c 2500)"
+            exit 0
+          fi
+          if [ "$MODE" = "upload-art" ]; then
+            python3 -m pip install -q --break-system-packages pillow numpy
+            python3 rail/tools/tonal.py rail/art/embroidery/gg-wordmark-canon.png wm-white.png FFFFFF recolor
+            python3 rail/tools/tonal.py rail/art/embroidery/gg-gmark.png g-white.png FFFFFF recolor
+            for f in rail/art/embroidery/gg-wordmark-canon.png rail/art/embroidery/gg-gmark.png wm-white.png g-white.png; do
+              jq -n --rawfile c <(base64 -w0 "$f") --arg n "GG-$(basename $f)" '{file_name:$n, contents:$c}' > up.json
+              curl -sS -o resp.json -X POST -H "Authorization: Bearer $T" -H "Content-Type: application/json" -H "User-Agent: GOD-GEAR-Rail" --data @up.json "$BASE/uploads/images.json"
+              echo "ART $(basename $f) $(jq -r .preview_url resp.json)"
+            done
             exit 0
           fi
           if [ "$MODE" = "delete-all-products" ]; then

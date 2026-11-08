@@ -68,9 +68,12 @@ jobs:
   run:
     if: github.triggering_actor == 'youngfamilyllc1943-ai'
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    permissions:
+      contents: write
+    timeout-minutes: 15
     env:
       SHOP_ID: "29470786"
+      GH_TOKEN: ${{ github.token }}
       # Allowlisted artwork: GOD GEAR master logo (G mark + wordmark + FAITH IN MOTION.), transparent print file in this repo.
       ART_FILE: "rail/art/gg-master-logo-print.png"
       CANON_TEE_ART: "rail/art/GG-LOGO-03-print.png"
@@ -214,7 +217,9 @@ jobs:
             done
             python3 -m pip install -q --break-system-packages pillow
             python3 -c "import glob;from PIL import Image;[ (lambda im:(im.thumbnail((700,700)),im.save(f,quality=80)))(Image.open(f).convert('RGB')) for f in glob.glob('proofs/*.jpg')]"
-            ls proofs; exit 0
+            git config user.name gg-rail; git config user.email rail@users.noreply.github.com
+            git checkout -B proofs-out; git add -f proofs; git commit -qm proofs; git push -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" proofs-out
+            exit 0
           fi
           if [ "$MODE" = "upload-art" ]; then
             python3 -m pip install -q --break-system-packages pillow numpy

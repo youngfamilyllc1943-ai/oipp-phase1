@@ -25,6 +25,7 @@ on:
           - test-order
           - cancel-test
           - delete-test-drafts
+          - delete-all-products
       product:
         description: "Fixed product spec"
         required: true
@@ -87,7 +88,7 @@ jobs:
           BP: ${{ inputs.blueprint_id }}
           PP: ${{ inputs.provider_id }}
         run: |
-          case "$MODE" in plan|create|catalog|blueprints|audit|update|sync-draft|map|link-external|test-order|cancel-test|delete-test-drafts) ;; *) echo "REJECTED: mode"; exit 2 ;; esac
+          case "$MODE" in plan|create|catalog|blueprints|audit|update|sync-draft|map|link-external|test-order|cancel-test|delete-test-drafts|delete-all-products) ;; *) echo "REJECTED: mode"; exit 2 ;; esac
           case "$PRODUCT" in gg-athletic-tee|gg-athletic-tee-canon|gg-active-tee-bmw-raised|gg-move-hoodie-bmw-raised|gg-culture-cap-bmw-raised|gg-signature-tee-sleeve|gg-signature-hoodie|gg-gold-tee|gg-move-crew|gg-culture-dad|gg-culture-beanie|gg-move-jogger|gg-culture-snapback|gg-move-hoodie-color|gg-active-tee-color|gg-move-zip) ;; *) echo "REJECTED: product not on allowlist"; exit 2 ;; esac
           [[ "$BP" =~ ^[0-9]{1,6}$ ]] || { echo "REJECTED: blueprint_id"; exit 2; }
           [[ "$PP" =~ ^[0-9]{1,6}$ ]] || { echo "REJECTED: provider_id"; exit 2; }
@@ -200,6 +201,17 @@ jobs:
             echo "::notice title=athletic-map::$(jq -c '[.variants[]|select(.is_enabled)|{id, size:.title|split(" / ")|.[1], color:.title|split(" / ")|.[0], price, cost}]' resp.json)"
             echo "::notice title=athletic-images::$(jq -c '[.images[]|{src:.src, variant_ids, position:.position, is_default}]|.[0:6]' resp.json | head -c 2500)"
             echo "::notice title=athletic-print-areas::$(jq -c '.print_areas|map({variant_ids: (.variant_ids|length), placeholders: [.placeholders[]|{position, images:[.images[]|{id,x,y,scale,angle}]}]})' resp.json | head -c 2500)"
+            exit 0
+          fi
+          if [ "$MODE" = "delete-all-products" ]; then
+            # Founder-authorized 2026-11-07: total rebuild, delete every product in the GOD GEAR Printify shop.
+            for pg in 1 2 3 4 5; do
+              curl -sS -o list.json -H "Authorization: Bearer $T" -H "User-Agent: GOD-GEAR-Rail" "$BASE/shops/$SHOP_ID/products.json?limit=50&page=1"
+              ids=$(jq -r '.data[]?.id' list.json); [ -z "$ids" ] && break
+              for DPID in $ids; do code=$(curl -sS -o resp.json -w '%{http_code}' -X DELETE -H "Authorization: Bearer $T" -H "User-Agent: GOD-GEAR-Rail" "$BASE/shops/$SHOP_ID/products/$DPID.json"); echo "delete $DPID HTTP $code"; done
+            done
+            curl -sS -o list.json -H "Authorization: Bearer $T" -H "User-Agent: GOD-GEAR-Rail" "$BASE/shops/$SHOP_ID/products.json?limit=50"
+            echo "::notice title=remaining::$(jq '.data|length' list.json)"
             exit 0
           fi
           if [ "$MODE" = "delete-test-drafts" ]; then

@@ -1,6 +1,6 @@
 {
-  "title": "GG MOVE™ Fleece Joggers",
-  "description": "GOD GEAR™ wordmark embroidered tone-on-tone. Cotton Heritage fleece joggers — pairs with the GG MOVE™ Hoodie. GG—GENESIS™. Made to order.",
+  "title": "GG MOVE\u2122 Fleece Joggers",
+  "description": "GOD GEAR\u2122 wordmark embroidered tone-on-tone. Cotton Heritage fleece joggers \u2014 pairs with the GG MOVE\u2122 Hoodie. GG\u2014GENESIS\u2122. Made to order.",
   "blueprint_id": 1731,
   "provider_id": 410,
   "sizes": [
@@ -38,7 +38,35 @@
       "x": 0.5,
       "y": 0.5,
       "scale": 1,
-      "angle": 0
+      "angle": 0,
+      "crop": [
+        0,
+        1
+      ]
+    },
+    {
+      "position": "back_apparel_embroidery",
+      "file": "rail/art/embroidery/gg-gmark.png",
+      "x": 0.5,
+      "y": 0.4,
+      "scale": 0.7,
+      "angle": 0,
+      "crop": [
+        0,
+        1
+      ]
+    },
+    {
+      "position": "left_leg_embroidery",
+      "file": "rail/art/embroidery/gg-wordmark-canon.png",
+      "x": 0.5,
+      "y": 0.5,
+      "scale": 0.8,
+      "angle": 0,
+      "crop": [
+        0,
+        1
+      ]
     }
   ],
   "product_id": "6af0900b6d33a624590340ae"

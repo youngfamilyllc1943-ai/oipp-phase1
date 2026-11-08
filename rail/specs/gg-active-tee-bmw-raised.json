@@ -1,6 +1,6 @@
 {
-  "title": "GG ACTIVE™ Heavyweight Tee",
-  "description": "FAITH IN MOTION.™ GOD GEAR™ wordmark embroidered tone-on-tone at the chest, split-G emblem on the upper back and left sleeve. Comfort Colors 1717 garment-dyed heavyweight tee. GG—GENESIS™. Made to order.",
+  "title": "GG ACTIVE\u2122 Heavyweight Tee",
+  "description": "FAITH IN MOTION.\u2122 GOD GEAR\u2122 wordmark embroidered tone-on-tone at the chest, split-G emblem on the upper back and left sleeve. Comfort Colors 1717 garment-dyed heavyweight tee. GG\u2014GENESIS\u2122. Made to order.",
   "blueprint_id": 706,
   "provider_id": 410,
   "sizes": [
@@ -40,15 +40,23 @@
       "x": 0.5,
       "y": 0.5,
       "scale": 1,
-      "angle": 0
+      "angle": 0,
+      "crop": [
+        0,
+        1
+      ]
     },
     {
       "position": "back",
       "file": "rail/art/embroidery/gg-gmark.png",
       "x": 0.5,
-      "y": 0.2,
-      "scale": 0.3,
-      "angle": 0
+      "y": 0.25,
+      "scale": 0.7,
+      "angle": 0,
+      "crop": [
+        0,
+        1
+      ]
     },
     {
       "position": "left_sleeve",
@@ -56,7 +64,11 @@
       "x": 0.5,
       "y": 0.5,
       "scale": 1,
-      "angle": 0
+      "angle": 0,
+      "crop": [
+        0,
+        1
+      ]
     }
   ],
   "product_id": "6af08fdb6d33a62459034072"

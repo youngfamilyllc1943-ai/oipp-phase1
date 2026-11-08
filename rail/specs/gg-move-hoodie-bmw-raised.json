@@ -38,6 +38,30 @@
       "y": 0.5,
       "scale": 1,
       "angle": 0
+    },
+    {
+      "position": "back",
+      "file": "rail/art/embroidery/gg-gmark.png",
+      "x": 0.5,
+      "y": 0.2,
+      "scale": 0.3,
+      "angle": 0
+    },
+    {
+      "position": "left_sleeve",
+      "file": "rail/art/embroidery/gg-gmark.png",
+      "x": 0.5,
+      "y": 0.5,
+      "scale": 1,
+      "angle": 0
+    },
+    {
+      "position": "right_wrist",
+      "file": "rail/art/embroidery/gg-wordmark-canon.png",
+      "x": 0.5,
+      "y": 0.5,
+      "scale": 1,
+      "angle": 0
     }
   ],
   "product_id": "6ae45451fc0f61752e04efce"

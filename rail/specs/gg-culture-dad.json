@@ -1,50 +1,51 @@
 {
- "title": "GG CULTURE\u2122 Dad Cap",
- "description": "Split-G emblem on the front, GOD GEAR\u2122 wordmark on the back, split-G on the side \u2014 tone-on-tone embroidery. Yupoong 6245CM. GG\u2014GENESIS\u2122. Made to order.",
- "blueprint_id": 1447,
- "provider_id": 410,
- "sizes": [
-  "One size"
- ],
- "prices": {
-  "One size": 3400
- },
- "colors": [
-  {
-   "name": "Black",
-   "hex": "0b0b0b",
-   "thread": "000000"
+  "title": "GG CULTURE™ Dad Cap",
+  "description": "Split-G emblem on the front, GOD GEAR™ wordmark on the back, split-G on the side — tone-on-tone embroidery. Yupoong 6245CM. GG—GENESIS™. Made to order.",
+  "blueprint_id": 1447,
+  "provider_id": 410,
+  "sizes": [
+    "One size"
+  ],
+  "prices": {
+    "One size": 3400
   },
-  {
-   "name": "White",
-   "hex": "f5f5f5",
-   "thread": "FFFFFF"
-  }
- ],
- "art": [
-  {
-   "position": "front",
-   "file": "rail/art/embroidery/gg-gmark.png",
-   "x": 0.5,
-   "y": 0.5,
-   "scale": 0.55,
-   "angle": 0
-  },
-  {
-   "position": "back_hat_embroidery",
-   "file": "rail/art/embroidery/gg-wordmark-canon.png",
-   "x": 0.5,
-   "y": 0.5,
-   "scale": 1,
-   "angle": 0
-  },
-  {
-   "position": "left_hat_embroidery",
-   "file": "rail/art/embroidery/gg-gmark.png",
-   "x": 0.5,
-   "y": 0.5,
-   "scale": 1,
-   "angle": 0
-  }
- ]
+  "colors": [
+    {
+      "name": "Black",
+      "hex": "0b0b0b",
+      "thread": "000000"
+    },
+    {
+      "name": "White",
+      "hex": "f5f5f5",
+      "thread": "FFFFFF"
+    }
+  ],
+  "art": [
+    {
+      "position": "front",
+      "file": "rail/art/embroidery/gg-gmark.png",
+      "x": 0.5,
+      "y": 0.5,
+      "scale": 0.55,
+      "angle": 0
+    },
+    {
+      "position": "back_hat_embroidery",
+      "file": "rail/art/embroidery/gg-wordmark-canon.png",
+      "x": 0.5,
+      "y": 0.5,
+      "scale": 1,
+      "angle": 0
+    },
+    {
+      "position": "left_hat_embroidery",
+      "file": "rail/art/embroidery/gg-gmark.png",
+      "x": 0.5,
+      "y": 0.5,
+      "scale": 1,
+      "angle": 0
+    }
+  ],
+  "product_id": "6af08e0afb9024aaf3087123"
 }

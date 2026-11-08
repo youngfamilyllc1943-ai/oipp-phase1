@@ -1,62 +1,63 @@
 {
- "title": "GG ACTIVE\u2122 Heavyweight Tee",
- "description": "FAITH IN MOTION.\u2122 GOD GEAR\u2122 wordmark embroidered tone-on-tone at the chest, split-G emblem on the upper back and left sleeve. Comfort Colors 1717 garment-dyed heavyweight tee. GG\u2014GENESIS\u2122. Made to order.",
- "blueprint_id": 706,
- "provider_id": 410,
- "sizes": [
-  "S",
-  "M",
-  "L",
-  "XL",
-  "2XL",
-  "3XL",
-  "4XL"
- ],
- "prices": {
-  "S": 4900,
-  "M": 4900,
-  "L": 4900,
-  "XL": 4900,
-  "2XL": 5400,
-  "3XL": 5900,
-  "4XL": 6400
- },
- "colors": [
-  {
-   "name": "Black",
-   "hex": "0b0b0b",
-   "thread": "000000"
+  "title": "GG ACTIVE™ Heavyweight Tee",
+  "description": "FAITH IN MOTION.™ GOD GEAR™ wordmark embroidered tone-on-tone at the chest, split-G emblem on the upper back and left sleeve. Comfort Colors 1717 garment-dyed heavyweight tee. GG—GENESIS™. Made to order.",
+  "blueprint_id": 706,
+  "provider_id": 410,
+  "sizes": [
+    "S",
+    "M",
+    "L",
+    "XL",
+    "2XL",
+    "3XL",
+    "4XL"
+  ],
+  "prices": {
+    "S": 4900,
+    "M": 4900,
+    "L": 4900,
+    "XL": 4900,
+    "2XL": 5400,
+    "3XL": 5900,
+    "4XL": 6400
   },
-  {
-   "name": "White",
-   "hex": "f5f5f5",
-   "thread": "FFFFFF"
-  }
- ],
- "art": [
-  {
-   "position": "front_center_chest",
-   "file": "rail/art/embroidery/gg-wordmark-canon.png",
-   "x": 0.5,
-   "y": 0.5,
-   "scale": 1,
-   "angle": 0
-  },
-  {
-   "position": "back",
-   "file": "rail/art/embroidery/gg-gmark.png",
-   "x": 0.5,
-   "y": 0.2,
-   "scale": 0.3,
-   "angle": 0
-  },
-  {
-   "position": "left_sleeve",
-   "file": "rail/art/embroidery/gg-gmark.png",
-   "x": 0.5,
-   "y": 0.5,
-   "scale": 1,
-   "angle": 0
-  }
- ]
+  "colors": [
+    {
+      "name": "Black",
+      "hex": "0b0b0b",
+      "thread": "000000"
+    },
+    {
+      "name": "White",
+      "hex": "f5f5f5",
+      "thread": "FFFFFF"
+    }
+  ],
+  "art": [
+    {
+      "position": "front_center_chest",
+      "file": "rail/art/embroidery/gg-wordmark-canon.png",
+      "x": 0.5,
+      "y": 0.5,
+      "scale": 1,
+      "angle": 0
+    },
+    {
+      "position": "back",
+      "file": "rail/art/embroidery/gg-gmark.png",
+      "x": 0.5,
+      "y": 0.2,
+      "scale": 0.3,
+      "angle": 0
+    },
+    {
+      "position": "left_sleeve",
+      "file": "rail/art/embroidery/gg-gmark.png",
+      "x": 0.5,
+      "y": 0.5,
+      "scale": 1,
+      "angle": 0
+    }
+  ],
+  "product_id": "6af08dbdfb9024aaf30870c5"
 }

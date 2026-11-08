@@ -1,6 +1,6 @@
 {
- "title": "GG CULTURE\u2122 Trucker Snapback \u2014 Split-G",
- "description": "The GOD GEAR\u2122 split-G emblem embroidered on the front. Richardson 112 trucker snapback with mesh back. Made to order.",
+ "title": "GG CULTURE\u2122 Trucker Snapback",
+ "description": "Split-G emblem embroidered on the front. Richardson 112 trucker snapback. GG\u2014GENESIS\u2122. Made to order.",
  "blueprint_id": 1743,
  "provider_id": 410,
  "sizes": [
@@ -27,9 +27,8 @@
    "file": "rail/art/embroidery/gg-gmark.png",
    "x": 0.5,
    "y": 0.5,
-   "scale": 0.6,
+   "scale": 0.55,
    "angle": 0
   }
- ],
- "product_id": "6aef778b9ed4cd2ce40b6cde"
+ ]
 }

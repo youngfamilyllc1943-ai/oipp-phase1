@@ -1,6 +1,6 @@
 {
- "title": "GG MOVE\u2122 Fleece Joggers \u2014 Embroidered",
- "description": "GOD GEAR\u2122 wordmark embroidered tone-on-tone. Cotton Heritage M7580 fleece sweatpants. Pairs with the GG MOVE\u2122 Hoodie. Made to order.",
+ "title": "GG MOVE\u2122 Fleece Joggers",
+ "description": "GOD GEAR\u2122 wordmark embroidered tone-on-tone. Cotton Heritage fleece joggers \u2014 pairs with the GG MOVE\u2122 Hoodie. GG\u2014GENESIS\u2122. Made to order.",
  "blueprint_id": 1731,
  "provider_id": 410,
  "sizes": [
@@ -22,12 +22,12 @@
  "colors": [
   {
    "name": "Black",
-   "hex": "000000",
+   "hex": "0b0b0b",
    "thread": "000000"
   },
   {
    "name": "White",
-   "hex": "FFFFFF",
+   "hex": "f5f5f5",
    "thread": "FFFFFF"
   }
  ],
@@ -40,6 +40,5 @@
    "scale": 1,
    "angle": 0
   }
- ],
- "product_id": "6aef77b7c8ee5ac40d0dca46"
+ ]
 }

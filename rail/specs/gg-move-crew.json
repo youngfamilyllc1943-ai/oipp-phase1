@@ -1,6 +1,6 @@
 {
- "title": "GG MOVE\u2122 Crewneck \u2014 Embroidered",
- "description": "FAITH IN MOTION.\u2122 GOD GEAR\u2122 wordmark embroidered tone-on-tone at center chest. Gildan 18000 heavy blend crewneck. GG\u2014GENESIS\u2122. Made to order.",
+ "title": "GG MOVE\u2122 Crewneck",
+ "description": "FAITH IN MOTION.\u2122 Wordmark at the chest, split-G on the upper back and left sleeve, wordmark at the right wrist \u2014 all tone-on-tone embroidery. Gildan 18000 heavyweight crewneck. GG\u2014GENESIS\u2122. Made to order.",
  "blueprint_id": 49,
  "provider_id": 410,
  "sizes": [
@@ -22,12 +22,12 @@
  "colors": [
   {
    "name": "Black",
-   "hex": "000000",
+   "hex": "0b0b0b",
    "thread": "000000"
   },
   {
    "name": "White",
-   "hex": "FFFFFF",
+   "hex": "f5f5f5",
    "thread": "FFFFFF"
   }
  ],
@@ -39,7 +39,30 @@
    "y": 0.5,
    "scale": 1,
    "angle": 0
+  },
+  {
+   "position": "back",
+   "file": "rail/art/embroidery/gg-gmark.png",
+   "x": 0.5,
+   "y": 0.2,
+   "scale": 0.3,
+   "angle": 0
+  },
+  {
+   "position": "left_sleeve",
+   "file": "rail/art/embroidery/gg-gmark.png",
+   "x": 0.5,
+   "y": 0.5,
+   "scale": 1,
+   "angle": 0
+  },
+  {
+   "position": "right_wrist",
+   "file": "rail/art/embroidery/gg-wordmark-canon.png",
+   "x": 0.5,
+   "y": 0.5,
+   "scale": 1,
+   "angle": 0
   }
- ],
- "product_id": "6aef71ddc810263d2003e891"
+ ]
 }

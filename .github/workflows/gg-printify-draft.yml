@@ -292,7 +292,7 @@ jobs:
           fi
           if [ "$MODE" = "blueprints" ]; then
             api GET "/catalog/blueprints.json"
-            echo "::notice title=matches::$(jq -c '[.[] | select(.title|test("fitted|flexfit|structured|baseball|6277|6089|snapback";"i") or (.model|tostring|test("6277|6089|110|6297|6210|6006";"i"))) | {id,t:.title,b:.brand,m:.model}]' resp.json | head -c 60000)"
+            echo "::notice title=matches::$(jq -c '[.[] | select((.title|test("fitted|flexfit|structured|baseball";"i")) or (.model|tostring|test("6277|6089|110|6297|6210";"i"))) | {id,t:.title,b:.brand,m:.model}]' resp.json | head -c 60000)"
             exit 0
           fi
           if [ "$MODE" = "catalog" ]; then

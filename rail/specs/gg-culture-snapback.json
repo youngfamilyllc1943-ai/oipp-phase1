@@ -1,34 +1,35 @@
 {
- "title": "GG CULTURE\u2122 Trucker Snapback",
- "description": "Split-G emblem embroidered on the front. Richardson 112 trucker snapback. GG\u2014GENESIS\u2122. Made to order.",
- "blueprint_id": 1743,
- "provider_id": 410,
- "sizes": [
-  "One size"
- ],
- "prices": {
-  "One size": 3800
- },
- "colors": [
-  {
-   "name": "Black",
-   "hex": "000000",
-   "thread": "000000"
+  "title": "GG CULTURE™ Trucker Snapback",
+  "description": "Split-G emblem embroidered on the front. Richardson 112 trucker snapback. GG—GENESIS™. Made to order.",
+  "blueprint_id": 1743,
+  "provider_id": 410,
+  "sizes": [
+    "One size"
+  ],
+  "prices": {
+    "One size": 3800
   },
-  {
-   "name": "Black / White",
-   "hex": "000000",
-   "thread": "000000"
-  }
- ],
- "art": [
-  {
-   "position": "front",
-   "file": "rail/art/embroidery/gg-gmark.png",
-   "x": 0.5,
-   "y": 0.5,
-   "scale": 0.55,
-   "angle": 0
-  }
- ]
+  "colors": [
+    {
+      "name": "Black",
+      "hex": "000000",
+      "thread": "000000"
+    },
+    {
+      "name": "Black / White",
+      "hex": "000000",
+      "thread": "000000"
+    }
+  ],
+  "art": [
+    {
+      "position": "front",
+      "file": "rail/art/embroidery/gg-gmark.png",
+      "x": 0.5,
+      "y": 0.5,
+      "scale": 0.55,
+      "angle": 0
+    }
+  ],
+  "product_id": "6af08e1ff180f4f0340b1e73"
 }

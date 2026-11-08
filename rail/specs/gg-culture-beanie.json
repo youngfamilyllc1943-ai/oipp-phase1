@@ -1,50 +1,35 @@
 {
-  "title": "GG CULTURE™ Cuffed Beanie — Embroidered",
-  "description": "GOD GEAR™ wordmark embroidered tone-on-tone on the cuff. Yupoong 1501KC classic cuffed beanie. Made to order.",
-  "blueprint_id": 1691,
-  "provider_id": 410,
-  "sizes": [
-    "One size"
-  ],
-  "prices": {
-    "One size": 3200
+ "title": "GG CULTURE\u2122 Cuffed Beanie \u2014 Embroidered",
+ "description": "GOD GEAR\u2122 wordmark embroidered tone-on-tone on the cuff. Yupoong 1501KC classic cuffed beanie. Made to order.",
+ "blueprint_id": 1691,
+ "provider_id": 410,
+ "sizes": [
+  "One size"
+ ],
+ "prices": {
+  "One size": 3200
+ },
+ "colors": [
+  {
+   "name": "Black",
+   "hex": "000000",
+   "thread": "000000"
   },
-  "colors": [
-    {
-      "name": "Black",
-      "hex": "000000",
-      "thread": "000000"
-    },
-    {
-      "name": "White",
-      "hex": "FFFFFF",
-      "thread": "FFFFFF"
-    },
-    {
-      "name": "Heather Grey",
-      "hex": "9E9E9E",
-      "thread": "9E9E9E"
-    },
-    {
-      "name": "Navy",
-      "hex": "1F2A44",
-      "thread": "1F2A44"
-    },
-    {
-      "name": "Olive",
-      "hex": "556B2F",
-      "thread": "556B2F"
-    }
-  ],
-  "art": [
-    {
-      "position": "front",
-      "file": "rail/art/embroidery/gg-wordmark-canon.png",
-      "x": 0.5,
-      "y": 0.5,
-      "scale": 1,
-      "angle": 0
-    }
-  ],
-  "product_id": "6aef77a1a15478d56109dc1e"
+  {
+   "name": "White",
+   "hex": "FFFFFF",
+   "thread": "FFFFFF"
+  }
+ ],
+ "art": [
+  {
+   "position": "front",
+   "file": "rail/art/embroidery/gg-wordmark-canon.png",
+   "x": 0.5,
+   "y": 0.5,
+   "scale": 1,
+   "angle": 0
+  }
+ ],
+ "product_id": "6aef77a1a15478d56109dc1e"
 }

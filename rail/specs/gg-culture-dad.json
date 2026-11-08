@@ -1,55 +1,40 @@
 {
-  "title": "GG CULTURE™ Dad Cap — Split-G Embroidered",
-  "description": "The GOD GEAR™ split-G emblem embroidered on the front panel, tone-on-tone. Yupoong 6245CM unstructured dad cap, adjustable strap. Includes Green Camo (GG—RELOADED™). Made to order.",
-  "blueprint_id": 1447,
-  "provider_id": 410,
-  "sizes": [
-    "One size"
-  ],
-  "prices": {
-    "One size": 3400
+ "title": "GG CULTURE\u2122 Dad Cap \u2014 Split-G Embroidered",
+ "description": "The GOD GEAR\u2122 split-G emblem embroidered on the front panel, tone-on-tone. Yupoong 6245CM unstructured dad cap, adjustable strap. Includes Green Camo (GG\u2014RELOADED\u2122). Made to order.",
+ "blueprint_id": 1447,
+ "provider_id": 410,
+ "sizes": [
+  "One size"
+ ],
+ "prices": {
+  "One size": 3400
+ },
+ "colors": [
+  {
+   "name": "Black",
+   "hex": "000000",
+   "thread": "000000"
   },
-  "colors": [
-    {
-      "name": "Black",
-      "hex": "000000",
-      "thread": "000000"
-    },
-    {
-      "name": "White",
-      "hex": "FFFFFF",
-      "thread": "FFFFFF"
-    },
-    {
-      "name": "Navy",
-      "hex": "1F2A44",
-      "thread": "1F2A44"
-    },
-    {
-      "name": "Khaki",
-      "hex": "C3B091",
-      "thread": "C3B091"
-    },
-    {
-      "name": "Stone",
-      "hex": "CFC6B4",
-      "thread": "CFC6B4"
-    },
-    {
-      "name": "Green Camo",
-      "hex": "4B5320",
-      "thread": "000000"
-    }
-  ],
-  "art": [
-    {
-      "position": "front",
-      "file": "rail/art/embroidery/gg-gmark.png",
-      "x": 0.5,
-      "y": 0.5,
-      "scale": 1,
-      "angle": 0
-    }
-  ],
-  "product_id": "6aef776cc810263d2003ed68"
+  {
+   "name": "White",
+   "hex": "FFFFFF",
+   "thread": "FFFFFF"
+  },
+  {
+   "name": "Green Camo",
+   "hex": "4B5320",
+   "thread": "000000"
+  }
+ ],
+ "art": [
+  {
+   "position": "front",
+   "file": "rail/art/embroidery/gg-gmark.png",
+   "x": 0.5,
+   "y": 0.5,
+   "scale": 1,
+   "angle": 0
+  }
+ ],
+ "product_id": "6aef776cc810263d2003ed68"
 }

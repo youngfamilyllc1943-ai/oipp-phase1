@@ -1,65 +1,45 @@
 {
-  "title": "GG MOVE™ Crewneck — Embroidered",
-  "description": "FAITH IN MOTION.™ GOD GEAR™ wordmark embroidered tone-on-tone at center chest. Gildan 18000 heavy blend crewneck. GG—GENESIS™. Made to order.",
-  "blueprint_id": 49,
-  "provider_id": 410,
-  "sizes": [
-    "S",
-    "M",
-    "L",
-    "XL",
-    "2XL",
-    "3XL"
-  ],
-  "prices": {
-    "S": 5400,
-    "M": 5400,
-    "L": 5400,
-    "XL": 5400,
-    "2XL": 5900,
-    "3XL": 6400
+ "title": "GG MOVE\u2122 Crewneck \u2014 Embroidered",
+ "description": "FAITH IN MOTION.\u2122 GOD GEAR\u2122 wordmark embroidered tone-on-tone at center chest. Gildan 18000 heavy blend crewneck. GG\u2014GENESIS\u2122. Made to order.",
+ "blueprint_id": 49,
+ "provider_id": 410,
+ "sizes": [
+  "S",
+  "M",
+  "L",
+  "XL",
+  "2XL",
+  "3XL"
+ ],
+ "prices": {
+  "S": 5400,
+  "M": 5400,
+  "L": 5400,
+  "XL": 5400,
+  "2XL": 5900,
+  "3XL": 6400
+ },
+ "colors": [
+  {
+   "name": "Black",
+   "hex": "000000",
+   "thread": "000000"
   },
-  "colors": [
-    {
-      "name": "Black",
-      "hex": "000000",
-      "thread": "000000"
-    },
-    {
-      "name": "White",
-      "hex": "FFFFFF",
-      "thread": "FFFFFF"
-    },
-    {
-      "name": "Charcoal",
-      "hex": "3C3C3C",
-      "thread": "3C3C3C"
-    },
-    {
-      "name": "Navy",
-      "hex": "1F2A44",
-      "thread": "1F2A44"
-    },
-    {
-      "name": "Military Green",
-      "hex": "4B5320",
-      "thread": "4B5320"
-    },
-    {
-      "name": "Maroon",
-      "hex": "5A1F2B",
-      "thread": "5A1F2B"
-    }
-  ],
-  "art": [
-    {
-      "position": "front_center_chest",
-      "file": "rail/art/embroidery/gg-wordmark-canon.png",
-      "x": 0.5,
-      "y": 0.5,
-      "scale": 1,
-      "angle": 0
-    }
-  ],
-  "product_id": "6aef71ddc810263d2003e891"
+  {
+   "name": "White",
+   "hex": "FFFFFF",
+   "thread": "FFFFFF"
+  }
+ ],
+ "art": [
+  {
+   "position": "front_center_chest",
+   "file": "rail/art/embroidery/gg-wordmark-canon.png",
+   "x": 0.5,
+   "y": 0.5,
+   "scale": 1,
+   "angle": 0
+  }
+ ],
+ "product_id": "6aef71ddc810263d2003e891"
 }

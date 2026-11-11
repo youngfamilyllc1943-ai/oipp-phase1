@@ -1,0 +1,151 @@
+name: GOD GEAR Theme Updater
+
+# Manual-dispatch only. Updates the LIVE Shopify theme files for GOD GEAR — V2 REBUILD.
+# Supported modes:
+#   hero      — swap the homepage hero image (requires hero_image_path input)
+#   index-json — write a full replacement templates/index.json (requires index_json input)
+#   read-hero — read-only: print current hero section from templates/index.json
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Operation mode"
+        required: true
+        type: choice
+        default: read-hero
+        options:
+          - read-hero
+          - hero
+          - index-json
+      hero_image_path:
+        description: "New hero image shopify:// path (hero mode only)"
+        required: false
+        default: "shopify://shop_images/FD581783-04ED-4911-A8F0-2F38153ADED3.png"
+      index_json:
+        description: "Full replacement index.json content (index-json mode — paste minified JSON)"
+        required: false
+        default: ""
+
+permissions: {}
+
+concurrency:
+  group: gg-theme-update
+  cancel-in-progress: false
+
+jobs:
+  run:
+    if: github.triggering_actor == 'youngfamilyllc1943-ai'
+    runs-on: ubuntu-latest
+    permissions: {}
+    timeout-minutes: 10
+    env:
+      SHOPIFY_TOKEN: ${{ secrets.SHOPIFY_TOKEN }}
+      THEME_GID: "gid://shopify/OnlineStoreTheme/160275103936"
+      SHOP: "ggmovement818.myshopify.com"
+      MODE: ${{ inputs.mode }}
+      HERO_PATH: ${{ inputs.hero_image_path }}
+    steps:
+      - name: Theme update
+        run: |
+          set -euo pipefail
+          T="${SHOPIFY_TOKEN:-}"
+          [ -n "$T" ] || { echo "::error::SHOPIFY_TOKEN secret missing"; exit 1; }
+
+          GQL_URL="https://$SHOP/admin/api/2026-01/graphql.json"
+
+          shopify_gql() {
+            local body="$1"
+            code=$(curl -sS -o resp.json -w '%{http_code}' \
+              -X POST \
+              -H "X-Shopify-Access-Token: $T" \
+              -H "Content-Type: application/json" \
+              --data "$body" \
+              "$GQL_URL")
+            echo "HTTP $code"
+            if [ "${code:0:1}" != "2" ]; then
+              echo "::error::$(cat resp.json | head -c 800)"
+              exit 1
+            fi
+            cat resp.json
+          }
+
+          # ── READ CURRENT INDEX.JSON ──────────────────────────────────────────
+          if [ "$MODE" = "read-hero" ] || [ "$MODE" = "hero" ] || [ "$MODE" = "index-json" ]; then
+            echo "::notice title=read::Fetching current templates/index.json..."
+            READ_QUERY=$(jq -nc \
+              --arg tid "$THEME_GID" \
+              '{query: "query($tid:ID!){theme(id:$tid){files(filenames:[\"templates/index.json\"]){nodes{filename body{... on OnlineStoreThemeFileBodyText{content}}}}}}",
+                variables: {tid: $tid}}')
+            shopify_gql "$READ_QUERY"
+            CURRENT=$(jq -r '.data.theme.files.nodes[0].body.content // empty' resp.json)
+            echo "::notice title=current-hero::$(echo "$CURRENT" | jq -r '.sections.hero_gg.settings.image_1 // "not found"' 2>/dev/null)"
+            if [ "$MODE" = "read-hero" ]; then
+              echo "::notice title=index-json::$(echo "$CURRENT" | jq -c '{hero: .sections.hero_gg.settings, order: .order}' 2>/dev/null | head -c 1000)"
+              exit 0
+            fi
+          fi
+
+          # ── HERO SWAP ────────────────────────────────────────────────────────
+          if [ "$MODE" = "hero" ]; then
+            echo "::notice title=hero::Swapping hero image to $HERO_PATH"
+            # Patch image_1 in hero_gg section, keep everything else
+            NEW_CONTENT=$(echo "$CURRENT" | jq \
+              --arg img "$HERO_PATH" \
+              '.sections.hero_gg.settings.image_1 = $img')
+
+            UPSERT_BODY=$(jq -nc \
+              --arg tid "$THEME_GID" \
+              --arg content "$NEW_CONTENT" \
+              '{query: "mutation($tid:ID!,$files:[OnlineStoreThemeFilesUpsertFileInput!]!){themeFilesUpsert(themeId:$tid,files:$files){upsertedThemeFiles{filename} userErrors{field message}}}",
+                variables: {
+                  tid: $tid,
+                  files: [{
+                    filename: "templates/index.json",
+                    body: { type: "TEXT", value: $content }
+                  }]
+                }}')
+            shopify_gql "$UPSERT_BODY"
+            ERRS=$(jq -c '.data.themeFilesUpsert.userErrors // []' resp.json)
+            if [ "$ERRS" != "[]" ]; then
+              echo "::error::userErrors: $ERRS"
+              exit 1
+            fi
+            UPSERTED=$(jq -r '.data.themeFilesUpsert.upsertedThemeFiles[0].filename // "none"' resp.json)
+            echo "::notice title=done::Updated $UPSERTED — hero now $HERO_PATH"
+            exit 0
+          fi
+
+          # ── FULL INDEX.JSON REPLACEMENT ──────────────────────────────────────
+          if [ "$MODE" = "index-json" ]; then
+            RAW_JSON='${{ inputs.index_json }}'
+            if [ -z "$RAW_JSON" ]; then
+              echo "::error::index_json input is empty for index-json mode"
+              exit 1
+            fi
+            # Validate it parses
+            echo "$RAW_JSON" | jq . > /dev/null || { echo "::error::index_json is not valid JSON"; exit 1; }
+
+            UPSERT_BODY=$(jq -nc \
+              --arg tid "$THEME_GID" \
+              --arg content "$RAW_JSON" \
+              '{query: "mutation($tid:ID!,$files:[OnlineStoreThemeFilesUpsertFileInput!]!){themeFilesUpsert(themeId:$tid,files:$files){upsertedThemeFiles{filename} userErrors{field message}}}",
+                variables: {
+                  tid: $tid,
+                  files: [{
+                    filename: "templates/index.json",
+                    body: { type: "TEXT", value: $content }
+                  }]
+                }}')
+            shopify_gql "$UPSERT_BODY"
+            ERRS=$(jq -c '.data.themeFilesUpsert.userErrors // []' resp.json)
+            if [ "$ERRS" != "[]" ]; then
+              echo "::error::userErrors: $ERRS"
+              exit 1
+            fi
+            UPSERTED=$(jq -r '.data.themeFilesUpsert.upsertedThemeFiles[0].filename // "none"' resp.json)
+            echo "::notice title=done::Full index.json replaced — $UPSERTED"
+            exit 0
+          fi
+
+          echo "::error::Unknown mode: $MODE"
+          exit 1
